@@ -6,10 +6,26 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>quizorb</title>
 	<link rel="stylesheet" href="css/style.css">
-	<script src="js/script.js"></script>
+	<script defer src="js/script.js"></script>
 </head>
 
 <body>
+	<section class="intro">
+		<div class="intro__container container">
+			<button class="intro__begin-quiz-btn">Начать</button>
+		</div>
 
+		<div class="intro-members">
+			<div class="intro-members__open-btn">Участников - <span>0</span><img src="img/members-arrow.svg" alt=""></div>
+			<div class="intro-members__wrapper">
+				<div class="intro-members__add-member-block active">
+					<p>Добавить</p>
+					<input type="text" placeholder="Фамилия" name="surname">
+					<input type="text" placeholder="Имя" name="name">
+					<button class="intro-members-item__name">Добавить</button>
+				</div>
+			</div>
+		</div>
+	</section>
 </body>
 </html>

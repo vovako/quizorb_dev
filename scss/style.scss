@@ -5,7 +5,7 @@
 body {
 	font-family: "consolas";
 	background-color: var(--bg-color);
-	font-size: 16px;
+	font-size: 20px;
 }
 
 $minWidth: 320;
@@ -24,6 +24,7 @@ $maxWidth: 480;
 
 //===========================================================
 
+@import 'intro';
 
 //===========================================================
 
