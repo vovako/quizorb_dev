@@ -54,4 +54,4 @@ function interfacePage() {
 	})
 }
 
-export default interfacePage()
+export default interfacePage

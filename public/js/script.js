@@ -1,12 +1,11 @@
 import interfacePage from './interfacePage.js'
-import viewPage from './interfacePage.js'
-
-switch (location.hostname) {
+import viewPage from './viewPage.js'
+switch (location.pathname) {
 	case '/': 
-	case 'index.html':
+	case '/index.html':
 		interfacePage()
 		break
-	case 'view.html':
+	case '/view.html':
 		viewPage()
 		break
 }

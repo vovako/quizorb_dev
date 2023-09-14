@@ -1,5 +1,5 @@
 function viewPage() {
-
+	console.log('view page');
 }
 
-export default viewPage()
+export default viewPage
