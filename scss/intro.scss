@@ -31,6 +31,7 @@
 			top: 0;
 			left: 50%;
 			transform: translate(-50%, -100%);
+			cursor: pointer;
 		}
 	}
 
@@ -48,6 +49,11 @@
 			img {
 				transform: translate(-50%, -100%) rotate(180deg);
 			}
+		}
+	}
+	&:not(.active) {
+		.intro-members__open-btn {
+			cursor: pointer;
 		}
 	}
 
@@ -96,5 +102,97 @@
 	}
 
 	&__name {
+	}
+}
+
+.members {
+	&__container {
+	}
+
+	&__list {
+		&.lock {
+			* {
+				cursor: default;
+			}
+		}
+	}
+
+	&__to-tiles {
+		background-color: rgba(white, 0.7);
+		padding: 10px 20px;
+		border-bottom-left-radius: 20px;
+		border-bottom-right-radius: 20px;
+		position: fixed;
+		top: 0;
+		left: 50%;
+		transform: translateX(-50%);
+		display: none;
+
+		button {
+			padding: 4px 10px;
+			font-size: 18px;
+			border: 1px solid black;
+		}
+
+		&.active {
+			display: block;
+		}
+	}
+}
+
+.members-item {
+	display: flex;
+	align-items: center;
+	background-color: rgba(white, 0.5);
+	padding: 10px;
+	gap: 10px;
+	cursor: pointer;
+	&:not(:last-child) {
+		margin-bottom: 10px;
+	}
+
+	& * {
+		pointer-events: none;
+	}
+
+	&__name {
+		flex: 1;
+	}
+
+	&__points {
+		padding-right: 20px;
+	}
+
+	&__deny-btn {
+		background-color: red;
+		padding: 4px 10px;
+		margin: -4px 0;
+		display: none;
+		color: white;
+		font-size: 0.8em;
+		pointer-events: all;
+	}
+
+	&__apply-btn {
+		@extend .members-item__deny-btn;
+		background-color: green;
+		margin-right: 20px;
+	}
+
+	&.active {
+		.members-item__deny-btn {
+			display: block;
+		}
+		cursor: default;
+	}
+	&.disabled {
+		cursor: default;
+		background-color: red;
+		color: white;
+	}
+	&.solved {
+		cursor: default;
+		background-color: green;
+		color: white;
 	}
 }

@@ -1,5 +1,7 @@
+import { toPage } from "./functions.js"
+
 function viewPage() {
-	console.log('view page');
+	toPage('question')
 }
 
 export default viewPage

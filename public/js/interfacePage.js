@@ -1,3 +1,26 @@
+import { toPage } from "./functions.js"
+
+const MEMBERS = [
+	{
+		name: 'Сергей',
+		surname: 'Никитин',
+		id: 1,
+		points: 0
+	},
+	{
+		name: 'Виктор',
+		surname: 'Бубылда',
+		id: 2,
+		points: 0
+	},
+	{
+		name: 'Добрыня',
+		surname: 'Горыныч',
+		id: 3,
+		points: 0
+	},
+]
+
 function interfacePage() {
 	const openMembersBtn = document.querySelector('.intro-members__open-btn')
 	openMembersBtn.addEventListener('click', function (evt) {
@@ -49,9 +72,60 @@ function interfacePage() {
 				name: member.querySelector('.intro-members-item__name').textContent
 			})
 		});
-
+		toPage('tiles')
 		console.log(members);
 	})
+
+	function membersReset() {
+		document.querySelector('.members__to-tiles').classList.remove('active')
+		const membersBox = document.querySelector('.members__list')
+		membersBox.classList.remove('lock')
+		membersBox.innerHTML = ''
+
+		MEMBERS.forEach(member => {
+			membersBox.insertAdjacentHTML('beforeend', `
+			<div class="members-item" data-member-id="${member.id}">
+				<div class="members-item__name">${member.surname} ${member.name}</div>
+				<button class="members-item__deny-btn">Неправильно</button>
+				<button class="members-item__apply-btn">Правильно</button>
+				<div class="members-item__points">${member.points}</div>
+			</div>
+			`)
+		})
+	}
+
+	document.addEventListener('click', function (evt) {
+		const target = evt.target
+
+		if (target.classList.contains('members-item') && !target.classList.contains('active') && !target.classList.contains('disabled') && !target.classList.contains('solved') && !target.closest('.members__list.lock')) {
+			document.querySelector('.members-item.active')?.classList.remove('active')
+			target.classList.add('active')
+		} else if (target.classList.contains('members-item__deny-btn')) {
+			const item = target.closest('.members-item')
+			item.classList.remove('active')
+			item.classList.add('disabled')
+
+			const members = document.querySelectorAll('.members-item')
+			if (members.length === [...members].filter(m => m.classList.contains('disabled')).length) {
+				document.querySelector('.members__to-tiles').classList.add('active')
+			}
+
+		} else if (target.classList.contains('members-item__apply-btn')) {
+			const item = target.closest('.members-item')
+			item.classList.remove('active')
+			item.classList.add('solved')
+			const pointsEl = item.querySelector('.members-item__points')
+			pointsEl.textContent = ++pointsEl.textContent
+			target.closest('.members__list').classList.add('lock')
+			document.querySelector('.members__to-tiles').classList.add('active')
+		} else if (target.hasAttribute('data-page-target')) {
+			toPage(target.dataset.pageTarget)
+		} else if (target.classList.contains('tiles-item') && !target.classList.contains('checked')) {
+			membersReset()
+			toPage('members')
+		}
+	})
+
 }
 
 export default interfacePage
