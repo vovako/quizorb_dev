@@ -1,7 +1,9 @@
 import { toPage } from "./functions.js"
 
-function viewPage() {
-	toPage('question')
+async function viewPage(ws) {
+	ws.onmessage = function () {
+		toPage('tiles')
+	}
 }
 
 export default viewPage

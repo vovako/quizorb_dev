@@ -1,27 +1,8 @@
 import { toPage } from "./functions.js"
 
-const MEMBERS = [
-	{
-		name: 'Сергей',
-		surname: 'Никитин',
-		id: 1,
-		points: 0
-	},
-	{
-		name: 'Виктор',
-		surname: 'Бубылда',
-		id: 2,
-		points: 0
-	},
-	{
-		name: 'Добрыня',
-		surname: 'Горыныч',
-		id: 3,
-		points: 0
-	},
-]
+const MEMBERS = []
 
-function interfacePage() {
+function interfacePage(ws) {
 	const openMembersBtn = document.querySelector('.intro-members__open-btn')
 	openMembersBtn.addEventListener('click', function (evt) {
 		const mainBlock = openMembersBtn.parentElement
@@ -50,6 +31,13 @@ function interfacePage() {
 		<div class="intro-members-item__name">${name.value}</div>
 	</div>
 	`)
+		MEMBERS.push({
+			name: name.value,
+			surname: surname.value,
+			id: MEMBERS.length,
+			points: 0
+		})
+
 		surname.value = ''
 		name.value = ''
 		updateMembersCount()
@@ -64,16 +52,7 @@ function interfacePage() {
 
 	const beginGameBtn = document.querySelector('.intro__begin-quiz-btn')
 	beginGameBtn.addEventListener('click', function () {
-		const members = []
-		const membersItems = document.querySelectorAll('.intro-members-item')
-		membersItems.forEach(member => {
-			members.push({
-				surname: member.querySelector('.intro-members-item__surname').textContent,
-				name: member.querySelector('.intro-members-item__name').textContent
-			})
-		});
-		toPage('tiles')
-		console.log(members);
+		ws.send(JSON.stringify(MEMBERS))
 	})
 
 	function membersReset() {
@@ -114,8 +93,13 @@ function interfacePage() {
 			const item = target.closest('.members-item')
 			item.classList.remove('active')
 			item.classList.add('solved')
+
+			const memberId = +item.dataset.memberId
+			const member = MEMBERS.filter(m => m.id === memberId)[0]
+			member.points++
+
 			const pointsEl = item.querySelector('.members-item__points')
-			pointsEl.textContent = ++pointsEl.textContent
+			pointsEl.textContent = member.points
 			target.closest('.members__list').classList.add('lock')
 			document.querySelector('.members__to-tiles').classList.add('active')
 		} else if (target.hasAttribute('data-page-target')) {
@@ -126,6 +110,9 @@ function interfacePage() {
 		}
 	})
 
+	ws.onmessage = function() {
+		toPage('tiles')
+	}
 }
 
 export default interfacePage
