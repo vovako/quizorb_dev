@@ -43,9 +43,9 @@ async function viewPage() {
 		qImgEl.src = data.IMGAnswer !== '' ? data.IMGAnswer : 'img/temp/img.svg'
 	}
 
-	setTimeout(() => {
-		// window.close()
-	}, 200)
+	window.onbeforeunload = function () {
+		return false
+	}
 }
 
 export default viewPage

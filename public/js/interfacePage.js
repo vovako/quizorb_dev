@@ -2,7 +2,7 @@ import { toPage } from "./functions.js"
 
 const MEMBERS = []
 const QUESTIONS = [
-	{ Question: "Пассажир первого поезда «Самара-Оренбург».Один из величайших писателей мировой литературы.", Answer: "ЛЕВ НИКОЛАЕВИЧ ТОЛСТОЙ", IMGAnswer: "", IMGQuestion: "https://xn----7sbbaazuatxpyidedi7gqh.xn--p1ai/i/trans/parovoz/28.jpg", Solved: false },
+	{ Question: "Пассажир первого поезда «Самара-Оренбург».Один из величайших писателей мировой литературы.", Answer: "ЛЕВ НИКОЛАЕВИЧ ТОЛСТОЙ", IMGAnswer: "https://sun6-20.userapi.com/impg/_LOvXE4SiaeIBwwHbzjr2bzakg6gfiC2mQ1a-g/czlixfGFsvM.jpg?size=576x680&quality=95&sign=1e5d9d5301e81fc2457e656153ff8939&c_uniq_tag=eJYBYp_YqUNS2ysp3JS5vOTFSvGwOrMWr2iTRtUDSEA&type=album", IMGQuestion: "https://xn----7sbbaazuatxpyidedi7gqh.xn--p1ai/i/trans/parovoz/28.jpg", Solved: false },
 	{ Question: "«Отец» Штирлица. Работал в Оренбуржье над биографией лидера белого казачества атамана Александра Дутова.", Answer: "ЮЛИАН СЕМЕНОВ", IMGAnswer: "", IMGQuestion: "", Solved: false },
 	{ Question: "По итогу визита в Оренбург и Бердскую слободу местные жители сделали вывод – приезжал антихрест. Особенно оренбуржцев поразила темная кожа и длинные ногти гостя.", Answer: "АЛЕКСАНДР СЕРГЕЕВИЧ ПУШКИН", IMGAnswer: "", IMGQuestion: "", Solved: false },
 	{ Question: "Массаракш — распространённое ругательство, употребляемое жителями вымышленной планеты Саракш, дословно обозначающее «Мир наизнанку». Название «Саракш» было	образовано от названия посёлка Саракташ	Оренбургской области, аналогично другому фантастическому топониму в творчестве братьев — названию фигурирующего в романе «Отягощённые злом, или Сорок лет спустя» города Ташлинск, образованного от наименования села Ташла, также расположенного в Оренбургской области.", Answer: "АРКАДИЙ И БОРИС СТРУГАЦКИЕ", IMGAnswer: "", IMGQuestion: "", Solved: false },
@@ -54,6 +54,11 @@ let curQuestionIndex = null
 function interfacePage() {
 	const viewWin = window.open(location.origin + '/view.html')
 
+	const tilesBox = document.querySelector('.tiles__container')
+	QUESTIONS.forEach((q, i) => {
+		tilesBox.insertAdjacentHTML('beforeend', `<div class="tiles-item">${i + 1}</div>`)
+	});
+
 	const openMembersBtn = document.querySelector('.intro-members__open-btn')
 	openMembersBtn.addEventListener('click', function (evt) {
 		const mainBlock = openMembersBtn.parentElement
@@ -103,6 +108,7 @@ function interfacePage() {
 
 	const beginGameBtn = document.querySelector('.intro__begin-quiz-btn')
 	beginGameBtn.addEventListener('click', function () {
+		viewWin.document.querySelector('.tiles').innerHTML = document.querySelector('.tiles').innerHTML
 		toTiles()
 	})
 
@@ -207,6 +213,9 @@ function interfacePage() {
 		viewWin.postMessage(JSON.stringify(msg), location.origin)
 	}
 
+	window.onbeforeunload = function() {
+		viewWin.close()
+	}
 }
 
 export default interfacePage
