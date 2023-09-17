@@ -1,7 +1,8 @@
 import { toPage } from "./functions.js"
 
 async function viewPage(ws) {
-	ws.onmessage = function () {
+	ws.onmessage = function (event) {
+		console.log(event.data)
 		toPage('tiles')
 	}
 }

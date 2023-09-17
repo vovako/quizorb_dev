@@ -110,7 +110,8 @@ function interfacePage(ws) {
 		}
 	})
 
-	ws.onmessage = function() {
+	ws.onmessage = function(event) {
+		console.log(event.data)
 		toPage('tiles')
 	}
 }
