@@ -52,7 +52,6 @@ textarea, input {
 body {
   font-family: "consolas";
   background-color: var(--bg-color);
-  background: linear-gradient(170deg, white, blue, red);
   font-size: 20px;
 }
 
@@ -62,8 +61,10 @@ body {
 }
 
 section {
+  background: linear-gradient(170deg, white, blue, red);
   padding: 30px 0;
   display: none;
+  min-height: 100%;
 }
 section.active {
   display: block;
@@ -81,7 +82,7 @@ section.active {
 }
 
 .intro-members {
-  width: 50vw;
+  width: 450px;
   position: fixed;
   left: 50%;
   bottom: 0;
@@ -94,6 +95,7 @@ section.active {
   text-align: center;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
+  color: white;
 }
 .intro-members__open-btn img {
   position: absolute;
@@ -101,6 +103,17 @@ section.active {
   left: 50%;
   transform: translate(-50%, -100%);
   cursor: pointer;
+}
+.intro-members__open-btn.empty-list {
+  animation: emptyMembersList 500ms;
+}
+@keyframes emptyMembersList {
+  from {
+    background-color: rgba(255, 0, 0, 0.5);
+  }
+  to {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
 }
 .intro-members__wrapper {
   background-color: rgba(255, 255, 255, 0.5);
@@ -271,7 +284,7 @@ section.active {
 
 .question__image {
   width: 100%;
-  height: 95vh;
+  height: calc(100vh - 60px);
   position: relative;
 }
 .question__image img {
@@ -288,6 +301,9 @@ section.active {
   bottom: 0;
   left: 0;
   font-size: 50px;
+}
+.question__text:empty {
+  display: none;
 }
 
 .dn {

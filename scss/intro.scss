@@ -13,7 +13,7 @@
 }
 
 .intro-members {
-	width: 50vw;
+	width: 450px;
 	position: fixed;
 	left: 50%;
 	bottom: 0;
@@ -26,12 +26,26 @@
 		text-align: center;
 		border-top-left-radius: 30px;
 		border-top-right-radius: 30px;
+		color: white;
 		img {
 			position: absolute;
 			top: 0;
 			left: 50%;
 			transform: translate(-50%, -100%);
 			cursor: pointer;
+		}
+
+		&.empty-list {
+			animation: emptyMembersList 500ms;
+		}
+
+		@keyframes emptyMembersList {
+			from {
+				background-color: rgba(red, 0.5);
+			}
+			to {
+				background-color: rgba(white, 0.5);
+			}
 		}
 	}
 
