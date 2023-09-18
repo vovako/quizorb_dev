@@ -124,6 +124,43 @@
 	}
 }
 
+.intro-tiles {
+	&__container {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+}
+
+.intro-tiles-item {
+	background-color: rgba(white, 0.5);
+	padding: 10px;
+	&__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	&__number {
+	}
+
+	&__apply-btn {
+	}
+
+	&__image {
+		height: 100px;
+
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+		}
+	}
+
+	&__descr {
+	}
+}
+
 .members {
 	&__container {
 	}

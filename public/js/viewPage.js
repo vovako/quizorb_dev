@@ -4,8 +4,16 @@ async function viewPage() {
 
 	window.addEventListener('message', function (evt) {
 		const msg = JSON.parse(evt.data)
+		console.log(msg);
 
 		switch (msg.msg) {
+			case 'start':
+				toPage('tiles')
+				const tilesBox = document.querySelector('.tiles__container')
+				for (let i = 1; i <= msg.data; i++) {
+					tilesBox.insertAdjacentHTML('beforeend', `<div class="tiles-item">${i}</div>`)
+				}
+				break;
 			case 'tiles':
 				toPage('tiles')
 				updateTiles(msg.data)

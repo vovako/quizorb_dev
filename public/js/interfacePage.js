@@ -52,16 +52,35 @@ let curQuestionIndex = null
 
 function interfacePage() {
 	const viewWin = window.open(location.origin + '/view.html')
-	const sesstion = localStorage.getItem('session') ? JSON.parse(localStorage.getItem('session')) : { members: [], page: '' }
-	console.log(sesstion);
+	const sesstion = localStorage.getItem('state') ? JSON.parse(localStorage.getItem('state')) : { members: [], page: '' }
 
 	if (sesstion.members.length) {
 		updateIntroMembersList()
 	}
 
-	const tilesBox = document.querySelector('.tiles__container')
+	viewWin.onload = function () {
+		const msg = {
+			msg: 'start',
+			data: QUESTIONS.length
+		}
+		viewWin.postMessage(JSON.stringify(msg), location.origin)
+		toPage('tiles')
+	}
+
+	const tilesBox = document.querySelector('.intro-tiles__container')
 	QUESTIONS.forEach((q, i) => {
-		tilesBox.insertAdjacentHTML('beforeend', `<div class="tiles-item">${i + 1}</div>`)
+		tilesBox.insertAdjacentHTML('beforeend', `
+			<div class="intro-tiles-item"  data-tiles-id="${i}">
+				<div class="intro-tiles-item__header">
+					<div class="intro-tiles-item__number">${i + 1}</div>
+					<button class="intro-tiles-item__apply-btn">Выбрать</button>
+				</div>
+				<div class="intro-tiles-item__image">
+					<img src="${q.IMGQuestion}" alt="">
+					<div class="intro-tiles-item__descr">${q.Question}</div>
+				</div>
+			</div>
+		`)
 	});
 
 	const openMembersBtn = document.querySelector('.intro-members__open-btn')
@@ -74,12 +93,6 @@ function interfacePage() {
 			mainBlock.classList.remove('active')
 		}
 	})
-	function updateHeightIntroMembersList() {
-		const introMembersEl = document.querySelector('.intro-members')
-		const wrapper = introMembersEl.querySelector('.intro-members__wrapper')
-		introMembersEl.style.bottom = wrapper.clientHeight + 'px'
-		introMembersEl.classList.add('active')
-	}
 
 	const addMemberBtn = document.querySelector('.intro-members__add-member-block button')
 	addMemberBtn.addEventListener('click', function () {
@@ -114,6 +127,13 @@ function interfacePage() {
 			})
 		}
 	})
+
+	function updateHeightIntroMembersList() {
+		const introMembersEl = document.querySelector('.intro-members')
+		const wrapper = introMembersEl.querySelector('.intro-members__wrapper')
+		introMembersEl.style.bottom = wrapper.clientHeight + 'px'
+		introMembersEl.classList.add('active')
+	}
 
 	function membersReset() {
 		document.querySelector('.members__to-tiles').classList.remove('active')
@@ -239,7 +259,7 @@ function interfacePage() {
 
 		membersCountEl.textContent = sesstion.members.length
 
-		localStorage.setItem('session', JSON.stringify(sesstion))
+		localStorage.setItem('state', JSON.stringify(sesstion))
 	}
 
 	window.onbeforeunload = function () {
