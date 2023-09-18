@@ -52,7 +52,7 @@ let curQuestionIndex = null
 
 function interfacePage() {
 	const viewWin = window.open(location.origin + '/view.html')
-	const sesstion = JSON.parse(localStorage.getItem('session')) ?? { members: [], page: '' }
+	const sesstion = localStorage.getItem('session') ? JSON.parse(localStorage.getItem('session')) : { members: [], page: '' }
 	console.log(sesstion);
 
 	if (sesstion.members.length) {
