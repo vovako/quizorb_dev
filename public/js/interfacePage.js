@@ -1,6 +1,5 @@
 import { toPage } from "./functions.js"
 
-const MEMBERS = []
 const QUESTIONS = [
 	{ Question: "Пассажир первого поезда «Самара-Оренбург».Один из величайших писателей мировой литературы.", Answer: "ЛЕВ НИКОЛАЕВИЧ ТОЛСТОЙ", IMGAnswer: "https://sun6-20.userapi.com/impg/_LOvXE4SiaeIBwwHbzjr2bzakg6gfiC2mQ1a-g/czlixfGFsvM.jpg?size=576x680&quality=95&sign=1e5d9d5301e81fc2457e656153ff8939&c_uniq_tag=eJYBYp_YqUNS2ysp3JS5vOTFSvGwOrMWr2iTRtUDSEA&type=album", IMGQuestion: "https://xn----7sbbaazuatxpyidedi7gqh.xn--p1ai/i/trans/parovoz/28.jpg", Solved: false },
 	{ Question: "«Отец» Штирлица. Работал в Оренбуржье над биографией лидера белого казачества атамана Александра Дутова.", Answer: "ЮЛИАН СЕМЕНОВ", IMGQuestion: "https://cdn.iz.ru/sites/default/files/styles/1920x1080/public/article-2018-10/RIAN_2409537.HR_.ru_.jpg?itok=ftIhTNFz", IMGAnswer: "https://upload.wikimedia.org/wikipedia/commons/c/c5/Dutov.jpg", Solved: false },
@@ -53,6 +52,12 @@ let curQuestionIndex = null
 
 function interfacePage() {
 	const viewWin = window.open(location.origin + '/view.html')
+	const sesstion = JSON.parse(localStorage.getItem('session')) ?? { members: [], page: '' }
+	console.log(sesstion);
+
+	if (sesstion.members.length) {
+		updateIntroMembersList()
+	}
 
 	const tilesBox = document.querySelector('.tiles__container')
 	QUESTIONS.forEach((q, i) => {
@@ -63,17 +68,17 @@ function interfacePage() {
 	openMembersBtn.addEventListener('click', function (evt) {
 		const mainBlock = openMembersBtn.parentElement
 		if (!mainBlock.classList.contains('active')) {
-			openMemberPanel()
+			updateHeightIntroMembersList()
 		} else if (evt.target === openMembersBtn.querySelector('img')) {
 			mainBlock.style.bottom = null
 			mainBlock.classList.remove('active')
 		}
 	})
-	function openMemberPanel() {
-		const mainBlock = openMembersBtn.parentElement
-		const wrapper = openMembersBtn.nextElementSibling
-		mainBlock.style.bottom = wrapper.clientHeight + 'px'
-		mainBlock.classList.add('active')
+	function updateHeightIntroMembersList() {
+		const introMembersEl = document.querySelector('.intro-members')
+		const wrapper = introMembersEl.querySelector('.intro-members__wrapper')
+		introMembersEl.style.bottom = wrapper.clientHeight + 'px'
+		introMembersEl.classList.add('active')
 	}
 
 	const addMemberBtn = document.querySelector('.intro-members__add-member-block button')
@@ -81,35 +86,24 @@ function interfacePage() {
 		const addMemberBlock = addMemberBtn.closest('.intro-members__add-member-block')
 		const surname = addMemberBlock.querySelector('[name="surname"]')
 		const name = addMemberBlock.querySelector('[name="name"]')
-		addMemberBlock.insertAdjacentHTML('afterend', `
-	<div class="intro-members-item">
-		<div class="intro-members-item__surname">${surname.value}</div>
-		<div class="intro-members-item__name">${name.value}</div>
-	</div>
-	`)
-		MEMBERS.push({
+
+		sesstion.members.push({
 			name: name.value,
 			surname: surname.value,
-			id: MEMBERS.length,
+			id: sesstion.members.length,
 			points: 0
 		})
 
+		updateIntroMembersList()
+
 		surname.value = ''
 		name.value = ''
-		updateMembersCount()
-		openMemberPanel()
 	})
-
-	function updateMembersCount() {
-		const membersCountEl = document.querySelector('.intro-members__open-btn span')
-		const membersCount = document.querySelectorAll('.intro-members-item').length
-		membersCountEl.textContent = membersCount
-	}
 
 	const beginGameBtn = document.querySelector('.intro__begin-quiz-btn')
 	beginGameBtn.addEventListener('click', function () {
 
-		if (MEMBERS.length) {
+		if (sesstion.members.length) {
 			viewWin.document.querySelector('.tiles').innerHTML = document.querySelector('.tiles').innerHTML
 			toTiles()
 		} else {
@@ -127,7 +121,7 @@ function interfacePage() {
 		membersBox.classList.remove('lock')
 		membersBox.innerHTML = ''
 
-		MEMBERS.forEach(member => {
+		sesstion.members.forEach(member => {
 			membersBox.insertAdjacentHTML('beforeend', `
 			<div class="members-item" data-member-id="${member.id}">
 				<div class="members-item__name">${member.surname} ${member.name}</div>
@@ -173,7 +167,7 @@ function interfacePage() {
 			item.classList.add('solved')
 
 			const memberId = +item.dataset.memberId
-			const member = MEMBERS.filter(m => m.id === memberId)[0]
+			const member = sesstion.members.filter(m => m.id === memberId)[0]
 			member.points++
 
 			const pointsEl = item.querySelector('.members-item__points')
@@ -191,6 +185,11 @@ function interfacePage() {
 			toMembers(+target.textContent)
 		} else if (target.parentElement.classList.contains('members__to-tiles')) {
 			toTiles()
+		} else if (target.classList.contains('intro-members-item__delete-btn')) {
+			const memberId = +target.closest('.intro-members-item').dataset.memberId
+			const memberIndex = sesstion.members.findIndex(m => m.id === memberId)
+			sesstion.members.splice(memberIndex, 1)
+			updateIntroMembersList()
 		}
 	})
 
@@ -218,6 +217,29 @@ function interfacePage() {
 			}
 		}
 		viewWin.postMessage(JSON.stringify(msg), location.origin)
+	}
+
+	function updateIntroMembersList() {
+		const addMemberBlock = document.querySelector('.intro-members__add-member-block')
+		const membersCountEl = document.querySelector('.intro-members__open-btn span')
+		while (addMemberBlock.nextElementSibling) {
+			addMemberBlock.nextElementSibling?.remove()
+		}
+
+		sesstion.members.forEach(member => {
+			addMemberBlock.insertAdjacentHTML('afterend', `
+			<div class="intro-members-item" data-member-id="${member.id}">
+				<div class="intro-members-item__surname">${member.surname}</div>
+				<div class="intro-members-item__name">${member.name}</div>
+				<button class="intro-members-item__delete-btn">Удалить</button>
+			</div>
+			`)
+		})
+		updateHeightIntroMembersList()
+
+		membersCountEl.textContent = sesstion.members.length
+
+		localStorage.setItem('session', JSON.stringify(sesstion))
 	}
 
 	window.onbeforeunload = function () {

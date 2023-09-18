@@ -165,6 +165,12 @@ section.active {
 .intro-members-item:not(:last-child), .intro-members__add-member-block:not(:last-child) {
   margin-bottom: 10px;
 }
+.intro-members-item__delete-btn {
+  padding: 2px 4px;
+  border: 1px solid black;
+  margin-left: auto;
+}
+
 .members__list.lock * {
   cursor: default;
 }
