@@ -189,10 +189,13 @@ function interfacePage() {
 			toPage(target.dataset.pageTarget)
 		} else if (target.classList.contains('tiles-item') && !target.classList.contains('checked')) {
 			toMembers(+target.textContent)
+		} else if (target.parentElement.classList.contains('members__to-tiles')) {
+			toTiles()
 		}
 	})
 
 	function toMembers(questionNumber) {
+		membersReset()
 		curQuestionIndex = questionNumber - 1
 		const msg = {
 			msg: 'question',
