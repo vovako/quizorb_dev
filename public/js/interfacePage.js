@@ -108,8 +108,17 @@ function interfacePage() {
 
 	const beginGameBtn = document.querySelector('.intro__begin-quiz-btn')
 	beginGameBtn.addEventListener('click', function () {
-		viewWin.document.querySelector('.tiles').innerHTML = document.querySelector('.tiles').innerHTML
-		toTiles()
+
+		if (MEMBERS.length) {
+			viewWin.document.querySelector('.tiles').innerHTML = document.querySelector('.tiles').innerHTML
+			toTiles()
+		} else {
+			const membersOpenBtn = document.querySelector('.intro-members__open-btn')
+			membersOpenBtn.classList.remove('empty-list')
+			setTimeout(() => {
+				membersOpenBtn.classList.add('empty-list')
+			})
+		}
 	})
 
 	function membersReset() {
@@ -179,13 +188,37 @@ function interfacePage() {
 		} else if (target.hasAttribute('data-page-target')) {
 			toPage(target.dataset.pageTarget)
 		} else if (target.classList.contains('tiles-item') && !target.classList.contains('checked')) {
-			membersReset()
-			toPage('members')
+			toMembers(+target.textContent)
 		}
 	})
 
-	ws.onmessage = function() {
-		toPage('tiles')
+	function toMembers(questionNumber) {
+		curQuestionIndex = questionNumber - 1
+		const msg = {
+			msg: 'question',
+			data: {
+				Question: QUESTIONS[curQuestionIndex].Question,
+				IMGQuestion: QUESTIONS[curQuestionIndex].IMGQuestion
+			}
+		}
+		viewWin.postMessage(JSON.stringify(msg), location.origin)
+
+		toPage('members')
+	}
+
+	function toAnswer() {
+		const msg = {
+			msg: 'answer',
+			data: {
+				Answer: QUESTIONS[curQuestionIndex].Answer,
+				IMGAnswer: QUESTIONS[curQuestionIndex].IMGAnswer
+			}
+		}
+		viewWin.postMessage(JSON.stringify(msg), location.origin)
+	}
+
+	window.onbeforeunload = function () {
+		viewWin.close()
 	}
 }
 
