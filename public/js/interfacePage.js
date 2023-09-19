@@ -52,6 +52,7 @@ let curQuestionIndex = null
 
 function interfacePage() {
 	const viewWin = window.open(location.origin + '/view.html')
+	localStorage.clear()//_temp_
 	const sesstion = localStorage.getItem('state') ? JSON.parse(localStorage.getItem('state')) : { members: [], page: '' }
 
 	if (sesstion.members.length) {
@@ -64,7 +65,6 @@ function interfacePage() {
 			data: QUESTIONS.length
 		}
 		viewWin.postMessage(JSON.stringify(msg), location.origin)
-		toPage('tiles')
 	}
 
 	const tilesBox = document.querySelector('.intro-tiles__container')
@@ -73,12 +73,13 @@ function interfacePage() {
 			<div class="intro-tiles-item"  data-tiles-id="${i}">
 				<div class="intro-tiles-item__header">
 					<div class="intro-tiles-item__number">${i + 1}</div>
+					<div class="intro-tiles-item__image">
+						<img src="${q.IMGQuestion}" alt="">
+					</div>
 					<button class="intro-tiles-item__apply-btn">Выбрать</button>
 				</div>
-				<div class="intro-tiles-item__image">
-					<img src="${q.IMGQuestion}" alt="">
-					<div class="intro-tiles-item__descr">${q.Question}</div>
-				</div>
+				
+				<div class="intro-tiles-item__descr">${q.Question}</div>
 			</div>
 		`)
 	});
@@ -117,7 +118,6 @@ function interfacePage() {
 	beginGameBtn.addEventListener('click', function () {
 
 		if (sesstion.members.length) {
-			viewWin.document.querySelector('.tiles').innerHTML = document.querySelector('.tiles').innerHTML
 			toTiles()
 		} else {
 			const membersOpenBtn = document.querySelector('.intro-members__open-btn')
@@ -136,7 +136,6 @@ function interfacePage() {
 	}
 
 	function membersReset() {
-		document.querySelector('.members__to-tiles').classList.remove('active')
 		const membersBox = document.querySelector('.members__list')
 		membersBox.classList.remove('lock')
 		membersBox.innerHTML = ''
@@ -144,10 +143,10 @@ function interfacePage() {
 		sesstion.members.forEach(member => {
 			membersBox.insertAdjacentHTML('beforeend', `
 			<div class="members-item" data-member-id="${member.id}">
+			<div class="members-item__points">${member.points}</div>
 				<div class="members-item__name">${member.surname} ${member.name}</div>
 				<button class="members-item__deny-btn">Неправильно</button>
 				<button class="members-item__apply-btn">Правильно</button>
-				<div class="members-item__points">${member.points}</div>
 			</div>
 			`)
 		})
@@ -175,12 +174,6 @@ function interfacePage() {
 			const item = target.closest('.members-item')
 			item.classList.remove('active')
 			item.classList.add('disabled')
-
-			const members = document.querySelectorAll('.members-item')
-			if (members.length === [...members].filter(m => m.classList.contains('disabled')).length) {
-				document.querySelector('.members__to-tiles').classList.add('active')
-			}
-
 		} else if (target.classList.contains('members-item__apply-btn')) {
 			const item = target.closest('.members-item')
 			item.classList.remove('active')
@@ -193,17 +186,17 @@ function interfacePage() {
 			const pointsEl = item.querySelector('.members-item__points')
 			pointsEl.textContent = member.points
 			target.closest('.members__list').classList.add('lock')
-			document.querySelector('.members__to-tiles').classList.add('active')
 
 			QUESTIONS[curQuestionIndex].Solved = true
-			document.querySelectorAll('.tiles-item')[curQuestionIndex].classList.add('checked')
+			document.querySelectorAll('.intro-tiles-item')[curQuestionIndex].classList.add('checked')
 
 			toAnswer()
 		} else if (target.hasAttribute('data-page-target')) {
 			toPage(target.dataset.pageTarget)
-		} else if (target.classList.contains('tiles-item') && !target.classList.contains('checked')) {
-			toMembers(+target.textContent)
-		} else if (target.parentElement.classList.contains('members__to-tiles')) {
+		} else if (target.classList.contains('intro-tiles-item__apply-btn') && !target.classList.contains('checked')) {
+			curQuestionIndex = +target.closest('.intro-tiles-item').dataset.tilesId
+			toMembers()
+		} else if (target.classList.contains('members__back-btn')) {
 			toTiles()
 		} else if (target.classList.contains('intro-members-item__delete-btn')) {
 			const memberId = +target.closest('.intro-members-item').dataset.memberId
@@ -213,9 +206,8 @@ function interfacePage() {
 		}
 	})
 
-	function toMembers(questionNumber) {
+	function toMembers() {
 		membersReset()
-		curQuestionIndex = questionNumber - 1
 		const msg = {
 			msg: 'question',
 			data: {

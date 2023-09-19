@@ -70,6 +70,11 @@ section.active {
   display: block;
 }
 
+.btn, .intro-tiles-item__apply-btn {
+  padding: 2px 6px;
+  font-size: 18px;
+}
+
 .intro__container {
   display: flex;
   flex-direction: column;
@@ -82,7 +87,7 @@ section.active {
 }
 
 .intro-members {
-  width: 450px;
+  width: min(450px, 100%);
   position: fixed;
   left: 50%;
   bottom: 0;
@@ -131,6 +136,7 @@ section.active {
 }
 .intro-members__add-member-block {
   justify-content: center;
+  flex-wrap: wrap;
 }
 .intro-members__add-member-block input {
   width: 8em;
@@ -183,17 +189,29 @@ section.active {
 }
 .intro-tiles-item__header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 8px;
   justify-content: space-between;
 }
 .intro-tiles-item__image {
-  height: 100px;
+  width: 100%;
 }
 .intro-tiles-item__image img {
   width: 100%;
   height: 100%;
   -o-object-fit: contain;
      object-fit: contain;
+}
+.intro-tiles-item__descr {
+  font-size: 18px;
+}
+.intro-tiles-item.checked {
+  display: none;
+}
+
+.members__header {
+  margin-bottom: 8px;
 }
 .members__list.lock * {
   cursor: default;
@@ -224,6 +242,7 @@ section.active {
   background-color: rgba(255, 255, 255, 0.5);
   padding: 10px;
   gap: 10px;
+  flex-wrap: wrap;
   cursor: pointer;
 }
 .members-item:not(:last-child) {
@@ -234,9 +253,6 @@ section.active {
 }
 .members-item__name {
   flex: 1;
-}
-.members-item__points {
-  padding-right: 20px;
 }
 .members-item__deny-btn, .members-item__apply-btn {
   background-color: red;
@@ -322,6 +338,8 @@ section.active {
   height: 100%;
   -o-object-fit: contain;
      object-fit: contain;
+  -o-object-position: bottom;
+     object-position: bottom;
 }
 .question__text {
   background-color: rgba(0, 0, 0, 0.5);
@@ -330,7 +348,7 @@ section.active {
   position: absolute;
   bottom: 0;
   left: 0;
-  font-size: 50px;
+  font-size: calc(20px + 10 * (100vw - 320px) / 1600);
 }
 .question__text:empty {
   display: none;

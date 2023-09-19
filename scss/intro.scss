@@ -13,7 +13,7 @@
 }
 
 .intro-members {
-	width: 450px;
+	width: min(450px, 100%);
 	position: fixed;
 	left: 50%;
 	bottom: 0;
@@ -74,6 +74,7 @@
 	&__add-member-block {
 		@extend .intro-members-item;
 		justify-content: center;
+		flex-wrap: wrap;
 
 		input {
 			width: 8em;
@@ -137,7 +138,9 @@
 	padding: 10px;
 	&__header {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
+		gap: 6px;
+		margin-bottom: 8px;
 		justify-content: space-between;
 	}
 
@@ -145,10 +148,11 @@
 	}
 
 	&__apply-btn {
+		@extend .btn;
 	}
 
 	&__image {
-		height: 100px;
+		width: 100%;
 
 		img {
 			width: 100%;
@@ -158,11 +162,20 @@
 	}
 
 	&__descr {
+		font-size: 18px;
+	}
+
+	&.checked {
+		display: none;
 	}
 }
 
 .members {
 	&__container {
+	}
+
+	&__header {
+		margin-bottom: 8px;
 	}
 
 	&__list {
@@ -202,7 +215,9 @@
 	background-color: rgba(white, 0.5);
 	padding: 10px;
 	gap: 10px;
+	flex-wrap: wrap;
 	cursor: pointer;
+
 	&:not(:last-child) {
 		margin-bottom: 10px;
 	}
@@ -216,7 +231,6 @@
 	}
 
 	&__points {
-		padding-right: 20px;
 	}
 
 	&__deny-btn {
