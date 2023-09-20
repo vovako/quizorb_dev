@@ -51,21 +51,25 @@ const QUESTIONS = [
 let curQuestionIndex = null
 
 function interfacePage() {
-	const viewWin = window.open(location.origin + '/view.html')
+	const ws = new WebSocket('wss://c5ae-176-28-64-201.ngrok-free.app/websocket/connection')
 	localStorage.clear()//_temp_
-	const sesstion = localStorage.getItem('state') ? JSON.parse(localStorage.getItem('state')) : { members: [], page: '' }
+	const state = localStorage.getItem('state') ? JSON.parse(localStorage.getItem('state')) : { members: [], page: '' }
 
-	if (sesstion.members.length) {
+	ws.onopen = function() {
+		console.log('open');
+	}
+
+	if (state.members.length) {
 		updateIntroMembersList()
 	}
 
-	viewWin.onload = function () {
-		const msg = {
-			msg: 'start',
-			data: QUESTIONS.length
-		}
-		viewWin.postMessage(JSON.stringify(msg), location.origin)
-	}
+	// viewWin.onload = function () {
+	// 	const msg = {
+	// 		msg: 'start',
+	// 		data: QUESTIONS.length
+	// 	}
+	// 	viewWin.postMessage(JSON.stringify(msg), location.origin)
+	// }
 
 	const tilesBox = document.querySelector('.intro-tiles__container')
 	QUESTIONS.forEach((q, i) => {
@@ -101,10 +105,10 @@ function interfacePage() {
 		const surname = addMemberBlock.querySelector('[name="surname"]')
 		const name = addMemberBlock.querySelector('[name="name"]')
 
-		sesstion.members.push({
+		state.members.push({
 			name: name.value,
 			surname: surname.value,
-			id: sesstion.members.length,
+			id: state.members.length,
 			points: 0
 		})
 
@@ -117,7 +121,7 @@ function interfacePage() {
 	const beginGameBtn = document.querySelector('.intro__begin-quiz-btn')
 	beginGameBtn.addEventListener('click', function () {
 
-		if (sesstion.members.length) {
+		if (state.members.length) {
 			toTiles()
 		} else {
 			const membersOpenBtn = document.querySelector('.intro-members__open-btn')
@@ -127,6 +131,30 @@ function interfacePage() {
 			})
 		}
 	})
+
+
+	function updateIntroMembersList() {
+		const addMemberBlock = document.querySelector('.intro-members__add-member-block')
+		const membersCountEl = document.querySelector('.intro-members__open-btn span')
+		while (addMemberBlock.nextElementSibling) {
+			addMemberBlock.nextElementSibling?.remove()
+		}
+
+		state.members.forEach(member => {
+			addMemberBlock.insertAdjacentHTML('afterend', `
+			<div class="intro-members-item" data-member-id="${member.id}">
+				<div class="intro-members-item__surname">${member.surname}</div>
+				<div class="intro-members-item__name">${member.name}</div>
+				<button class="intro-members-item__delete-btn">Удалить</button>
+			</div>
+			`)
+		})
+		updateHeightIntroMembersList()
+
+		membersCountEl.textContent = state.members.length
+
+		localStorage.setItem('state', JSON.stringify(state))
+	}
 
 	function updateHeightIntroMembersList() {
 		const introMembersEl = document.querySelector('.intro-members')
@@ -140,7 +168,7 @@ function interfacePage() {
 		membersBox.classList.remove('lock')
 		membersBox.innerHTML = ''
 
-		sesstion.members.forEach(member => {
+		state.members.forEach(member => {
 			membersBox.insertAdjacentHTML('beforeend', `
 			<div class="members-item" data-member-id="${member.id}">
 			<div class="members-item__points">${member.points}</div>
@@ -163,48 +191,6 @@ function interfacePage() {
 
 		toPage('tiles')
 	}
-
-	document.addEventListener('click', function (evt) {
-		const target = evt.target
-
-		if (target.classList.contains('members-item') && !target.classList.contains('active') && !target.classList.contains('disabled') && !target.classList.contains('solved') && !target.closest('.members__list.lock')) {
-			document.querySelector('.members-item.active')?.classList.remove('active')
-			target.classList.add('active')
-		} else if (target.classList.contains('members-item__deny-btn')) {
-			const item = target.closest('.members-item')
-			item.classList.remove('active')
-			item.classList.add('disabled')
-		} else if (target.classList.contains('members-item__apply-btn')) {
-			const item = target.closest('.members-item')
-			item.classList.remove('active')
-			item.classList.add('solved')
-
-			const memberId = +item.dataset.memberId
-			const member = sesstion.members.filter(m => m.id === memberId)[0]
-			member.points++
-
-			const pointsEl = item.querySelector('.members-item__points')
-			pointsEl.textContent = member.points
-			target.closest('.members__list').classList.add('lock')
-
-			QUESTIONS[curQuestionIndex].Solved = true
-			document.querySelectorAll('.intro-tiles-item')[curQuestionIndex].classList.add('checked')
-
-			toAnswer()
-		} else if (target.hasAttribute('data-page-target')) {
-			toPage(target.dataset.pageTarget)
-		} else if (target.classList.contains('intro-tiles-item__apply-btn') && !target.classList.contains('checked')) {
-			curQuestionIndex = +target.closest('.intro-tiles-item').dataset.tilesId
-			toMembers()
-		} else if (target.classList.contains('members__back-btn')) {
-			toTiles()
-		} else if (target.classList.contains('intro-members-item__delete-btn')) {
-			const memberId = +target.closest('.intro-members-item').dataset.memberId
-			const memberIndex = sesstion.members.findIndex(m => m.id === memberId)
-			sesstion.members.splice(memberIndex, 1)
-			updateIntroMembersList()
-		}
-	})
 
 	function toMembers() {
 		membersReset()
@@ -231,32 +217,48 @@ function interfacePage() {
 		viewWin.postMessage(JSON.stringify(msg), location.origin)
 	}
 
-	function updateIntroMembersList() {
-		const addMemberBlock = document.querySelector('.intro-members__add-member-block')
-		const membersCountEl = document.querySelector('.intro-members__open-btn span')
-		while (addMemberBlock.nextElementSibling) {
-			addMemberBlock.nextElementSibling?.remove()
+
+	document.addEventListener('click', function (evt) {
+		const target = evt.target
+
+		if (target.classList.contains('members-item') && !target.classList.contains('active') && !target.classList.contains('disabled') && !target.classList.contains('solved') && !target.closest('.members__list.lock')) {
+			document.querySelector('.members-item.active')?.classList.remove('active')
+			target.classList.add('active')
+		} else if (target.classList.contains('members-item__deny-btn')) {
+			const item = target.closest('.members-item')
+			item.classList.remove('active')
+			item.classList.add('disabled')
+		} else if (target.classList.contains('members-item__apply-btn')) {
+			const item = target.closest('.members-item')
+			item.classList.remove('active')
+			item.classList.add('solved')
+
+			const memberId = +item.dataset.memberId
+			const member = state.members.filter(m => m.id === memberId)[0]
+			member.points++
+
+			const pointsEl = item.querySelector('.members-item__points')
+			pointsEl.textContent = member.points
+			target.closest('.members__list').classList.add('lock')
+
+			QUESTIONS[curQuestionIndex].Solved = true
+			document.querySelectorAll('.intro-tiles-item')[curQuestionIndex].classList.add('checked')
+
+			toAnswer()
+		} else if (target.hasAttribute('data-page-target')) {
+			toPage(target.dataset.pageTarget)
+		} else if (target.classList.contains('intro-tiles-item__apply-btn') && !target.classList.contains('checked')) {
+			curQuestionIndex = +target.closest('.intro-tiles-item').dataset.tilesId
+			toMembers()
+		} else if (target.classList.contains('members__back-btn')) {
+			toTiles()
+		} else if (target.classList.contains('intro-members-item__delete-btn')) {
+			const memberId = +target.closest('.intro-members-item').dataset.memberId
+			const memberIndex = state.members.findIndex(m => m.id === memberId)
+			state.members.splice(memberIndex, 1)
+			updateIntroMembersList()
 		}
-
-		sesstion.members.forEach(member => {
-			addMemberBlock.insertAdjacentHTML('afterend', `
-			<div class="intro-members-item" data-member-id="${member.id}">
-				<div class="intro-members-item__surname">${member.surname}</div>
-				<div class="intro-members-item__name">${member.name}</div>
-				<button class="intro-members-item__delete-btn">Удалить</button>
-			</div>
-			`)
-		})
-		updateHeightIntroMembersList()
-
-		membersCountEl.textContent = sesstion.members.length
-
-		localStorage.setItem('state', JSON.stringify(sesstion))
-	}
-
-	window.onbeforeunload = function () {
-		viewWin.close()
-	}
+	})
 }
 
 export default interfacePage
