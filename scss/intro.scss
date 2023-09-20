@@ -141,7 +141,6 @@
 		align-items: flex-start;
 		gap: 6px;
 		margin-bottom: 8px;
-		justify-content: space-between;
 	}
 
 	&__number {
@@ -149,10 +148,11 @@
 
 	&__apply-btn {
 		@extend .btn;
+		margin-left: auto;
 	}
 
 	&__image {
-		width: 100%;
+		width: min(100%, 200px);
 
 		img {
 			width: 100%;

@@ -192,10 +192,12 @@ section.active {
   align-items: flex-start;
   gap: 6px;
   margin-bottom: 8px;
-  justify-content: space-between;
+}
+.intro-tiles-item__apply-btn {
+  margin-left: auto;
 }
 .intro-tiles-item__image {
-  width: 100%;
+  width: min(100%, 200px);
 }
 .intro-tiles-item__image img {
   width: 100%;
