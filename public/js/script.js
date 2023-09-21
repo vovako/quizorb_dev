@@ -1,7 +1,7 @@
 import interfacePage from './interfacePage.js'
 import viewPage from './viewPage.js'
 
-const ws = new WebSocket('wss://alii.serveo.net/websocket/connection')
+const ws = new WebSocket('wss://game-zmark.p.tnnl.in/websocket/connection')
 ws.addEventListener('open',(event)=>{
 	console.log("Соединение удалось")
 })
