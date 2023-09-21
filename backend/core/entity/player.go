@@ -16,4 +16,5 @@ type Client struct {
 	Address string
 	Conn    *websocket.Conn
 	InGame  bool
+	Role    string
 }
