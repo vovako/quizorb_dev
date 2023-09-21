@@ -6,10 +6,10 @@ import (
 
 	"github.com/Izumra/OwnGame/core/dto"
 	"github.com/Izumra/OwnGame/core/entity"
-	"github.com/Izumra/OwnGame/core/service"
 	"github.com/Izumra/OwnGame/tools"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 func UpdateWS() fiber.Handler {
@@ -30,6 +30,7 @@ func Connection() fiber.Handler {
 			connections[conn] = &entity.Client{
 				Address: conn,
 				Conn:    c,
+				Role:    "Viewer",
 			}
 			type request struct {
 				Act  string          `json:"action"`
@@ -54,23 +55,27 @@ func Connection() fiber.Handler {
 					log.Println(err.Error())
 					return
 				}
-				game.Questions = entity.SetQuestions()
 				game.AddLead(connections[conn])
 				connections[conn].InGame = true
+				connections[conn].Role = "Lead"
 				for _, v := range connections {
-					if !v.InGame {
+					if !v.InGame && v.Role == "Viewer" {
 						if err := game.AddViewer(v); err != nil {
 							log.Println(err.Error())
 							return
 						} else {
 							v.InGame = true
 							v.Conn.WriteJSON(game)
+							break
 						}
 					}
 
 				}
 			case "select_question":
-				body := service.ValidateBody[dto.SelectQuestionBody](dto.SelectQuestionBody{}, req.Data)
+				var body dto.SelectQuestionBody
+				if err := json.Unmarshal(req.Data, &body); err != nil {
+					return
+				}
 				if game := entity.GetGame(body.Game); game != nil {
 					if err := game.SelectQuestion(body.Question); err != nil {
 						log.Println(err.Error())
@@ -78,7 +83,10 @@ func Connection() fiber.Handler {
 					}
 				}
 			case "answer_question":
-				body := service.ValidateBody[dto.AnswerQuestionBody](dto.AnswerQuestionBody{}, req.Data)
+				var body dto.AnswerQuestionBody
+				if err := json.Unmarshal(req.Data, &body); err != nil {
+					return
+				}
 				if game := entity.GetGame(body.Game); game != nil {
 					if err := game.AnswerQuestion(body.Question, body.Value, body.Answers); err != nil {
 						log.Println(err.Error())
@@ -86,7 +94,28 @@ func Connection() fiber.Handler {
 					}
 				}
 			case "reconnect":
-				//body := service.ValidateBody[dto.ReconnectBody](dto.ReconnectBody{}, req.Data)
+				var body dto.ReconnectBody
+				if err := json.Unmarshal(req.Data, &body); err != nil {
+					return
+				}
+				connections[conn].Role = body.Role
+				if game := entity.GetGame(body.Game); game != nil {
+					if err := game.Reconnect(connections[conn]); err != nil {
+						log.Println(err.Error())
+						return
+					}
+				}
+			case "connect":
+				var id_game uuid.UUID
+				if err := json.Unmarshal(req.Data, &id_game); err != nil {
+					return
+				}
+				if game := entity.GetGame(id_game); game != nil {
+					if err := game.Connect(connections[conn]); err != nil {
+						log.Println(err.Error())
+						return
+					}
+				}
 			}
 		}
 	})

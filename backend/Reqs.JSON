@@ -48,3 +48,20 @@
         ]
     }
 }
+
+//Переподключение к игре
+
+{
+    "action":"reconnect",
+    "data":{
+        "role":"Lead || Viewer",
+        "game":"21f4f7e0-56bd-11ee-9ecf-50c2e80c33eb"
+    }
+}
+
+//Подключение к игре
+
+{
+    "action":"connect",
+    "data":"21f4f7e0-56bd-11ee-9ecf-50c2e80c33eb"
+}
