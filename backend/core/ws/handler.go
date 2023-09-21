@@ -2,6 +2,7 @@ package ws
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/Izumra/OwnGame/core/dto"
 	"github.com/Izumra/OwnGame/core/entity"
@@ -36,17 +37,22 @@ func Connection() fiber.Handler {
 			}
 			var req request
 			if err := c.ReadJSON(&req); err != nil {
-				websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure)
+				if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure) {
+					log.Println(err.Error())
+					return
+				}
 			}
 			switch req.Act {
 			case "game":
 				var players []entity.Player
 				if err := json.Unmarshal(req.Data, &players); err != nil {
-					c.WriteJSON(err.Error())
+					log.Println(err.Error())
+					return
 				}
 				game, err := entity.CreateGame(players)
 				if err != nil {
-					c.WriteJSON(err.Error())
+					log.Println(err.Error())
+					return
 				}
 				game.Questions = entity.SetQuestions()
 				game.AddLead(connections[conn])
@@ -54,7 +60,8 @@ func Connection() fiber.Handler {
 				for _, v := range connections {
 					if !v.InGame {
 						if err := game.AddViewer(v); err != nil {
-							c.WriteJSON(err.Error())
+							log.Println(err.Error())
+							return
 						} else {
 							v.InGame = true
 							v.Conn.WriteJSON(game)
@@ -66,19 +73,20 @@ func Connection() fiber.Handler {
 				body := service.ValidateBody[dto.SelectQuestionBody](dto.SelectQuestionBody{}, req.Data)
 				if game := entity.GetGame(body.Game); game != nil {
 					if err := game.SelectQuestion(body.Question); err != nil {
-						c.WriteJSON(err.Error())
+						log.Println(err.Error())
+						return
 					}
 				}
 			case "answer_question":
 				body := service.ValidateBody[dto.AnswerQuestionBody](dto.AnswerQuestionBody{}, req.Data)
 				if game := entity.GetGame(body.Game); game != nil {
 					if err := game.AnswerQuestion(body.Question, body.Value, body.Answers); err != nil {
-						c.WriteJSON(err.Error())
+						log.Println(err.Error())
+						return
 					}
 				}
 			case "reconnect":
-				body := service.ValidateBody[dto.ReconnectBody](dto.ReconnectBody{}, req.Data)
-				entity.GetGame(body.Game)
+				//body := service.ValidateBody[dto.ReconnectBody](dto.ReconnectBody{}, req.Data)
 			}
 		}
 	})

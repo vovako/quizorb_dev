@@ -51,13 +51,8 @@ const QUESTIONS = [
 let curQuestionIndex = null
 
 function interfacePage() {
-	const ws = new WebSocket('wss://c5ae-176-28-64-201.ngrok-free.app/websocket/connection')
 	localStorage.clear()//_temp_
 	const state = localStorage.getItem('state') ? JSON.parse(localStorage.getItem('state')) : { members: [], page: '' }
-
-	ws.onopen = function() {
-		console.log('open');
-	}
 
 	if (state.members.length) {
 		updateIntroMembersList()
