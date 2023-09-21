@@ -1,32 +1,41 @@
 import { toPage } from "./functions.js"
 
-async function viewPage() {
+async function viewPage(ws) {
 
-	window.addEventListener('message', function (evt) {
-		const msg = JSON.parse(evt.data)
-		console.log(msg);
 
-		switch (msg.msg) {
-			case 'start':
-				toPage('tiles')
-				const tilesBox = document.querySelector('.tiles__container')
-				for (let i = 1; i <= msg.data; i++) {
-					tilesBox.insertAdjacentHTML('beforeend', `<div class="tiles-item">${i}</div>`)
-				}
-				break;
-			case 'tiles':
-				toPage('tiles')
-				updateTiles(msg.data)
-				break;
-			case 'question':
-				toPage('question')
-				updateQuestion(msg.data)
-				break;
-			case 'answer':
-				updateAnswer(msg.data)
-				break;
-		}
-	})
+	ws.onopen = function () {
+		console.log("Соединение удалось")
+	}
+
+	ws.onmessage = function (evt) {
+		console.log(evt.data);
+	}
+
+	// window.addEventListener('message', function (evt) {
+	// 	const msg = JSON.parse(evt.data)
+	// 	console.log(msg);
+
+	// 	switch (msg.msg) {
+	// 		case 'start':
+	// 			toPage('tiles')
+	// 			const tilesBox = document.querySelector('.tiles__container')
+	// 			for (let i = 1; i <= msg.data; i++) {
+	// 				tilesBox.insertAdjacentHTML('beforeend', `<div class="tiles-item">${i}</div>`)
+	// 			}
+	// 			break;
+	// 		case 'tiles':
+	// 			toPage('tiles')
+	// 			updateTiles(msg.data)
+	// 			break;
+	// 		case 'question':
+	// 			toPage('question')
+	// 			updateQuestion(msg.data)
+	// 			break;
+	// 		case 'answer':
+	// 			updateAnswer(msg.data)
+	// 			break;
+	// 	}
+	// })
 
 	function updateTiles(data) {
 		const tiles = document.querySelectorAll('.tiles-item')
@@ -49,10 +58,6 @@ async function viewPage() {
 
 		qTextEl.textContent = data.Answer
 		qImgEl.src = data.IMGAnswer !== '' ? data.IMGAnswer : 'img/temp/img.svg'
-	}
-
-	window.onbeforeunload = function () {
-		return false
 	}
 }
 

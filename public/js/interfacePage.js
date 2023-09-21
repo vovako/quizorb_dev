@@ -50,13 +50,23 @@ const QUESTIONS = [
 ]
 let curQuestionIndex = null
 
-function interfacePage() {
+function interfacePage(ws) {
+
 	localStorage.clear()//_temp_
 	const state = localStorage.getItem('state') ? JSON.parse(localStorage.getItem('state')) : { members: [], page: '' }
 
-	if (state.members.length) {
-		updateIntroMembersList()
+	ws.onopen = function () {
+		console.log("Соединение удалось")
 	}
+
+	ws.onmessage = function (evt) {
+		console.log(evt.data);
+	}
+
+
+	// if (state.members.length) {
+	// 	updateIntroMembersList()
+	// }
 
 	// viewWin.onload = function () {
 	// 	const msg = {
@@ -103,8 +113,7 @@ function interfacePage() {
 		state.members.push({
 			name: name.value,
 			surname: surname.value,
-			id: state.members.length,
-			points: 0
+			id: state.members.length
 		})
 
 		updateIntroMembersList()
@@ -116,8 +125,14 @@ function interfacePage() {
 	const beginGameBtn = document.querySelector('.intro__begin-quiz-btn')
 	beginGameBtn.addEventListener('click', function () {
 
+
+
 		if (state.members.length) {
-			toTiles()
+			// toTiles()
+			ws.send(JSON.stringify({
+				msg: 'game',
+				data: state.members
+			}))
 		} else {
 			const membersOpenBtn = document.querySelector('.intro-members__open-btn')
 			membersOpenBtn.classList.remove('empty-list')
@@ -176,15 +191,9 @@ function interfacePage() {
 	}
 
 	function toTiles() {
-		const qStatuses = Array.from(QUESTIONS.map(q => q.Solved))
+		// const qStatuses = Array.from(QUESTIONS.map(q => q.Solved))
 
-		const msg = {
-			msg: 'tiles',
-			data: qStatuses
-		}
-		viewWin.postMessage(JSON.stringify(msg), location.origin)
-
-		toPage('tiles')
+		// toPage('tiles')
 	}
 
 	function toMembers() {
