@@ -31,6 +31,10 @@ function interfacePage(ws) {
 				localStorage.setItem('session_id', msg.data.ID)
 
 			case 'reconnect':
+				if (msg.error) {
+					localStorage.clear()
+					location.reload()
+				}
 
 				const tilesBox = document.querySelector('.intro-tiles__container')
 				const questions = msg.data.Questions

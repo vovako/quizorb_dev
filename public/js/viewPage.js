@@ -5,7 +5,7 @@ async function viewPage(ws) {
 
 	ws.onopen = function () {
 		console.log("Соединение удалось")
-		
+
 		if (localStorage.getItem('session_id')) {
 			ws.send(JSON.stringify({
 				"action": "reconnect",
@@ -27,6 +27,11 @@ async function viewPage(ws) {
 				localStorage.setItem('session_id', msg.data.ID)
 
 			case 'reconnect':
+				if (msg.error) {
+					localStorage.clear()
+					location.reload()
+				}
+
 				const tilesBox = document.querySelector('.tiles__container')
 				const questions = msg.data.Questions
 				questions.forEach((q, i) => {
