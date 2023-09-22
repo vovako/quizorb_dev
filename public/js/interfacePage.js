@@ -5,7 +5,7 @@ let curQuestionIndex = null
 function interfacePage(ws) {
 
 	// localStorage.clear()//_temp_
-	const state = localStorage.getItem('state') ? JSON.parse(localStorage.getItem('state')) : { members: [], page: '' }
+	const state = localStorage.getItem('state') ? JSON.parse(localStorage.getItem('state')) : { members: [] }
 
 	ws.onopen = function () {
 		console.log("Соединение удалось")
@@ -36,24 +36,23 @@ function interfacePage(ws) {
 					location.reload()
 				}
 
-				const tilesBox = document.querySelector('.intro-tiles__container')
-				const questions = msg.data.Questions
-				questions.forEach((q, i) => {
-					tilesBox.insertAdjacentHTML('beforeend', `
-						<div class="intro-tiles-item ${q.Solved ? 'checked' : ''}" data-tiles-id="${i}">
-							<div class="intro-tiles-item__header">
-								<div class="intro-tiles-item__number">${i + 1}</div>
-								<div class="intro-tiles-item__image">
-									<img src="${q.url_question}" alt="">
-								</div>
-								<button class="intro-tiles-item__apply-btn">Выбрать</button>
-							</div>
-							
-							<div class="intro-tiles-item__descr">${q.question}</div>
-						</div>
-					`)
-				});
+				updateTiles(msg.data.Questions)
 
+				toPage('tiles')
+				break;
+
+			case 'select_question':
+				state.members = msg.data.Players
+				localStorage.setItem('state', JSON.stringify(state))
+				membersReset()
+				toPage('members')
+				break;
+
+			case 'answer_question':
+				updateTiles(msg.data.Questions)
+				break;
+
+			case 'to-tiles':
 				toPage('tiles')
 				break;
 		}
@@ -157,7 +156,7 @@ function interfacePage(ws) {
 		state.members.forEach(member => {
 			membersBox.insertAdjacentHTML('beforeend', `
 			<div class="members-item" data-member-id="${member.id}">
-			<div class="members-item__points">${member.points}</div>
+			<div class="members-item__points">${member.Score}</div>
 				<div class="members-item__name">${member.surname} ${member.name}</div>
 				<button class="members-item__deny-btn">Неправильно</button>
 				<button class="members-item__apply-btn">Правильно</button>
@@ -166,37 +165,25 @@ function interfacePage(ws) {
 		})
 	}
 
-	function toTiles() {
-		// const qStatuses = Array.from(QUESTIONS.map(q => q.Solved))
+	function updateTiles(questions) {
+		const tilesBox = document.querySelector('.intro-tiles__container')
 
-		// toPage('tiles')
+		questions.forEach((q, i) => {
+			tilesBox.insertAdjacentHTML('beforeend', `
+						<div class="intro-tiles-item ${q.Solved ? 'checked' : ''}" data-tiles-id="${i}">
+							<div class="intro-tiles-item__header">
+								<div class="intro-tiles-item__number">${i + 1}</div>
+								<div class="intro-tiles-item__image">
+									<img src="${q.url_question}" alt="">
+								</div>
+								<button class="intro-tiles-item__apply-btn">Выбрать</button>
+							</div>
+							
+							<div class="intro-tiles-item__descr">${q.question}</div>
+						</div>
+					`)
+		});
 	}
-
-	function toMembers() {
-		membersReset()
-		const msg = {
-			msg: 'question',
-			data: {
-				Question: QUESTIONS[curQuestionIndex].Question,
-				IMGQuestion: QUESTIONS[curQuestionIndex].IMGQuestion
-			}
-		}
-		viewWin.postMessage(JSON.stringify(msg), location.origin)
-
-		toPage('members')
-	}
-
-	function toAnswer() {
-		const msg = {
-			msg: 'answer',
-			data: {
-				Answer: QUESTIONS[curQuestionIndex].Answer,
-				IMGAnswer: QUESTIONS[curQuestionIndex].IMGAnswer
-			}
-		}
-		viewWin.postMessage(JSON.stringify(msg), location.origin)
-	}
-
 
 	document.addEventListener('click', function (evt) {
 		const target = evt.target
@@ -215,23 +202,51 @@ function interfacePage(ws) {
 
 			const memberId = +item.dataset.memberId
 			const member = state.members.filter(m => m.id === memberId)[0]
-			member.points++
+			member.points++//
 
 			const pointsEl = item.querySelector('.members-item__points')
 			pointsEl.textContent = member.points
 			target.closest('.members__list').classList.add('lock')
 
-			QUESTIONS[curQuestionIndex].Solved = true
-			document.querySelectorAll('.intro-tiles-item')[curQuestionIndex].classList.add('checked')
+			document.querySelector(`[data-tiles-id="${curQuestionIndex}"]`).classList.add('checked')
 
-			toAnswer()
+			const andwers = [{
+				id_player: memberId,
+				right: true
+			}]
+			document.querySelectorAll('.members-item.disabled').forEach(m => {
+				andwers.push({
+					id_player: +m.dataset.memberId,
+					right: false
+				})
+			})
+
+			ws.send(JSON.stringify({
+				"action": "answer_question",
+				"data": {
+					"question": curQuestionIndex,
+					"game": localStorage.getItem('session_id'),
+					"value": 200,
+					"answers": andwers
+				}
+			}))
 		} else if (target.hasAttribute('data-page-target')) {
 			toPage(target.dataset.pageTarget)
 		} else if (target.classList.contains('intro-tiles-item__apply-btn') && !target.classList.contains('checked')) {
 			curQuestionIndex = +target.closest('.intro-tiles-item').dataset.tilesId
-			toMembers()
+
+			ws.send(JSON.stringify({
+				"action": "select_question",
+				"data": {
+					"question": curQuestionIndex,
+					"game": localStorage.getItem('session_id')
+				}
+			}))
 		} else if (target.classList.contains('members__back-btn')) {
-			toTiles()
+			ws.send(JSON.stringify({
+				action: "to-tiles",
+				data: localStorage.getItem('session_id')
+			}))
 		} else if (target.classList.contains('intro-members-item__delete-btn')) {
 			const memberId = +target.closest('.intro-members-item').dataset.memberId
 			const memberIndex = state.members.findIndex(m => m.id === memberId)

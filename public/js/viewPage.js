@@ -39,45 +39,23 @@ async function viewPage(ws) {
 				})
 				toPage('tiles')
 				break;
-			case 'tiles':
-				toPage('tiles')
-				updateTiles(msg.data)
-				break;
-			case 'question':
+
+			case 'select_question':
+				updateQuestion(msg.data.Question)
+				updateAnswer(msg.data.Question)
 				toPage('question')
-				updateQuestion(msg.data)
 				break;
-			case 'answer':
-				updateAnswer(msg.data)
+
+			case 'answer_question':
+				
+				toPage('answer')
+				break;
+
+			case 'to-tiles':
+				toPage('tiles')
 				break;
 		}
 	}
-
-	// window.addEventListener('message', function (evt) {
-	// 	const msg = JSON.parse(evt.data)
-	// 	console.log(msg);
-
-	// 	switch (msg.msg) {
-	// 		case 'start':
-	// 			toPage('tiles')
-	// 			const tilesBox = document.querySelector('.tiles__container')
-	// 			for (let i = 1; i <= msg.data; i++) {
-	// 				tilesBox.insertAdjacentHTML('beforeend', `<div class="tiles-item">${i}</div>`)
-	// 			}
-	// 			break;
-	// 		case 'tiles':
-	// 			toPage('tiles')
-	// 			updateTiles(msg.data)
-	// 			break;
-	// 		case 'question':
-	// 			toPage('question')
-	// 			updateQuestion(msg.data)
-	// 			break;
-	// 		case 'answer':
-	// 			updateAnswer(msg.data)
-	// 			break;
-	// 	}
-	// })
 
 	function updateTiles(data) {
 		const tiles = document.querySelectorAll('.tiles-item')
@@ -87,19 +65,23 @@ async function viewPage(ws) {
 			}
 		});
 	}
+
 	function updateQuestion(data) {
-		const qTextEl = document.querySelector('.question__text')
-		const qImgEl = document.querySelector('.question__image img')
+		const questionPage = document.querySelector('[data-page="question"]')
+		const qTextEl = questionPage.querySelector('.question__text')
+		const qImgEl = questionPage.querySelector('.question__image img')
 
-		qTextEl.textContent = data.Question
-		qImgEl.src = data.IMGQuestion !== '' ? data.IMGQuestion : 'img/temp/img.svg'
+		qTextEl.textContent = data.question
+		qImgEl.src = data.url_question !== '' ? data.url_question : 'img/temp/img.svg'
 	}
-	function updateAnswer(data) {
-		const qTextEl = document.querySelector('.question__text')
-		const qImgEl = document.querySelector('.question__image img')
 
-		qTextEl.textContent = data.Answer
-		qImgEl.src = data.IMGAnswer !== '' ? data.IMGAnswer : 'img/temp/img.svg'
+	function updateAnswer(data) {
+		const answerPage = document.querySelector('[data-page="answer"]')
+		const qTextEl = answerPage.querySelector('.question__text')
+		const qImgEl = answerPage.querySelector('.question__image img')
+
+		qTextEl.textContent = data.answer
+		qImgEl.src = data.url_answer !== '' ? data.url_answer : 'img/temp/img.svg'
 	}
 }
 
