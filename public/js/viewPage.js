@@ -5,10 +5,47 @@ async function viewPage(ws) {
 
 	ws.onopen = function () {
 		console.log("Соединение удалось")
+		
+		if (localStorage.getItem('session_id')) {
+			ws.send(JSON.stringify({
+				"action": "reconnect",
+				"data": {
+					"role": "Viewer",
+					"game": localStorage.getItem('session_id')
+				}
+			}))
+		}
 	}
 
 	ws.onmessage = function (evt) {
-		console.log(evt.data);
+
+		const msg = JSON.parse(evt.data)
+		console.log(msg);
+
+		switch (msg.action) {
+			case 'game':
+				localStorage.setItem('session_id', msg.data.ID)
+
+			case 'reconnect':
+				const tilesBox = document.querySelector('.tiles__container')
+				const questions = msg.data.Questions
+				questions.forEach((q, i) => {
+					tilesBox.insertAdjacentHTML('beforeend', `<div class="tiles-item ${q.Solved ? 'checked' : ''}">${i + 1}</div>`)
+				})
+				toPage('tiles')
+				break;
+			case 'tiles':
+				toPage('tiles')
+				updateTiles(msg.data)
+				break;
+			case 'question':
+				toPage('question')
+				updateQuestion(msg.data)
+				break;
+			case 'answer':
+				updateAnswer(msg.data)
+				break;
+		}
 	}
 
 	// window.addEventListener('message', function (evt) {
