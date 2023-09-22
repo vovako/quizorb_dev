@@ -2,6 +2,7 @@ package ws
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/Izumra/OwnGame/core/dto"
@@ -17,7 +18,7 @@ func UpdateWS() fiber.Handler {
 		if websocket.IsWebSocketUpgrade(c) {
 			return c.Next()
 		}
-		return c.Status(fiber.StatusUpgradeRequired).JSON(tools.BadRes(fiber.StatusUpgradeRequired, fiber.ErrUpgradeRequired))
+		return c.Status(fiber.StatusUpgradeRequired).JSON("Авторизация не удалась")
 	}
 }
 
@@ -39,7 +40,8 @@ func Connection() fiber.Handler {
 			var req request
 			if err := c.ReadJSON(&req); err != nil {
 				if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure) {
-					log.Println(err.Error())
+					delete(connections, conn)
+					log.Println("Вышел при чтении", err.Error())
 					return
 				}
 			}
@@ -65,7 +67,16 @@ func Connection() fiber.Handler {
 							return
 						} else {
 							v.InGame = true
-							v.Conn.WriteJSON(game)
+							type Resp struct {
+								ID        uuid.UUID
+								Questions []entity.Question
+							}
+							err := game.Lead.Conn.WriteJSON(tools.SuccessRes("game", Resp{ID: game.ID, Questions: game.Questions}))
+							er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("game", Resp{ID: game.ID, Questions: game.Questions}))
+							if err != nil || er != nil {
+								log.Printf("ошибки при создании игры: отправка ответа зрителю - %v; отправка ответа ведущему %v", er, err)
+								return
+							}
 							break
 						}
 					}
@@ -104,6 +115,10 @@ func Connection() fiber.Handler {
 						log.Println(err.Error())
 						return
 					}
+					game.Question = 0
+				} else if err := connections[conn].Conn.WriteJSON(tools.BadRes("reconnect", fmt.Errorf("игра не найдена"))); err != nil {
+					log.Println(err)
+					return
 				}
 			case "connect":
 				var id_game uuid.UUID
@@ -115,6 +130,22 @@ func Connection() fiber.Handler {
 						log.Println(err.Error())
 						return
 					}
+				}
+			case "to-tiles":
+				var id_game uuid.UUID
+				if err := json.Unmarshal(req.Data, &id_game); err != nil {
+					return
+				}
+				if game := entity.GetGame(id_game); game != nil {
+					err := game.Viewer.Conn.WriteJSON(tools.SuccessRes("to-tiles", "to-tiles"))
+					er := game.Lead.Conn.WriteJSON(tools.SuccessRes("to-tiles", "to-tiles"))
+					if err != nil || er != nil {
+						log.Printf("ошибки при возвращении к вопросам: перенос зрителя - %v; перенос ведущего %v", err, er)
+						return
+					}
+				} else if err := connections[conn].Conn.WriteJSON(tools.BadRes("reconnect", fmt.Errorf("игра не найдена"))); err != nil {
+					log.Println(err)
+					return
 				}
 			}
 		}

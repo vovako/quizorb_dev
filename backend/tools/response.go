@@ -1,19 +1,21 @@
 package tools
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+)
 
-func BadRes(code int, err error) *fiber.Map {
+func BadRes(action string, err error) *fiber.Map {
 	return &fiber.Map{
-		"code":  code,
-		"error": err.Error(),
-		"data":  nil,
+		"action": action,
+		"data":   nil,
+		"error":  err.Error(),
 	}
 }
 
-func SuccessRes(data interface{}) *fiber.Map {
+func SuccessRes(action string, data interface{}) *fiber.Map {
 	return &fiber.Map{
-		"code":  200,
-		"error": nil,
-		"data":  data,
+		"action": action,
+		"data":   data,
+		"error":  nil,
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Izumra/OwnGame/core/dto"
+	"github.com/Izumra/OwnGame/tools"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/google/uuid"
 )
@@ -75,26 +76,20 @@ func (game *Game) AddViewer(viewer *Client) error {
 }
 
 func (game *Game) SelectQuestion(question uint) error {
-	if game.Question == 0 && !game.Questions[question].Solved {
+	if !game.Questions[question].Solved {
 		game.Question = question
 		type Response struct {
 			Players  []Player
 			Question Question
 		}
-		resp := Response{
-			Question: game.Questions[question],
-			Players:  game.Players,
-		}
-		err := game.Lead.Conn.WriteJSON(resp)
-		er := game.Viewer.Conn.WriteJSON(game.Questions[question])
+		err := game.Lead.Conn.WriteJSON(tools.SuccessRes("select_question", Response{Question: game.Questions[question], Players: game.Players}))
+		er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("select_question", struct{ Question Question }{game.Questions[question]}))
 		if err != nil || er != nil {
 			return fmt.Errorf("ошибка при ответе ведущему: %v, ошибка при ответе зрителям: %v", err, er)
 		}
 		return nil
-	} else if game.Questions[question].Solved {
-		return fmt.Errorf("выбранный вопрос уже решен")
 	}
-	return fmt.Errorf("вопрос уже выбран")
+	return fmt.Errorf("выбранный вопрос уже решен")
 }
 
 func (game *Game) AnswerQuestion(question uint, costs int, answers []dto.Answer) error {
@@ -111,8 +106,8 @@ func (game *Game) AnswerQuestion(question uint, costs int, answers []dto.Answer)
 	}
 	game.Question = 0
 	game.Questions[question].Solved = true
-	er := game.Viewer.Conn.WriteJSON(game.Questions)
-	err := game.Lead.Conn.WriteJSON(game.Questions)
+	er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("answer_question", struct{ Questions []Question }{game.Questions}))
+	err := game.Lead.Conn.WriteJSON(tools.SuccessRes("answer_question", struct{ Questions []Question }{game.Questions}))
 	if err != nil || er != nil {
 		return fmt.Errorf("ошибка при ответе ведущему: %v, ошибка при ответе зрителям: %v", err, er)
 	}
@@ -123,14 +118,14 @@ func (game *Game) Reconnect(client *Client) error {
 	if client.Role == "Lead" {
 		game.Lead = client
 		client.InGame = true
-		if err := game.Lead.Conn.WriteJSON(game.Questions); err != nil {
+		if err := game.Lead.Conn.WriteJSON(tools.SuccessRes("reconnect", struct{ Questions []Question }{game.Questions})); err != nil {
 			return err
 		}
 		return nil
 	} else if client.Role == "Viewer" {
 		game.Viewer = client
 		client.InGame = true
-		if err := game.Viewer.Conn.WriteJSON(game.Questions); err != nil {
+		if err := game.Viewer.Conn.WriteJSON(tools.SuccessRes("reconnect", struct{ Questions []Question }{game.Questions})); err != nil {
 			return err
 		}
 		return nil
@@ -142,7 +137,7 @@ func (game *Game) Connect(c *Client) error {
 	if game.Viewer == nil {
 		game.Viewer.InGame = true
 		game.Viewer = c
-		err := game.Viewer.Conn.WriteJSON(game.Questions)
+		err := game.Viewer.Conn.WriteJSON(tools.SuccessRes("connect", struct{ Questions []Question }{game.Questions}))
 		if game.Lead != nil {
 			er := game.Lead.Conn.WriteJSON("Игрок подключился")
 			if er != nil {
