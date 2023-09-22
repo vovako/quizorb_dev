@@ -1,67 +1,57 @@
 //JSON-Примеры для взаимодействия с websockets
-
 //Создание игры
-
 {
-    "action":"game",
-    "data":[
-    {
-        "id":1,
-        "name": "Марк",
-        "surname": "Загуменников"
-    },
-    {
-        "id":2,
-        "name": "Ярослав",
-        "surname": "Загуменников"
-    }
-]
+	"action": "game",
+	"data": [
+		{
+			"id": 1,
+			"name": "Марк",
+			"surname": "Загуменников"
+		},
+		{
+			"id": 2,
+			"name": "Ярослав",
+			"surname": "Загуменников"
+		}
+	]
 }
-
 //Выбор вопроса
-
 {
-    "action":"select_question",
-    "data":{
-        "question":1,
-        "game":"21f4f7e0-56bd-11ee-9ecf-50c2e80c33eb"
-    }
+	"action": "select_question",
+	"data": {
+		"question": 1,
+		"game": "21f4f7e0-56bd-11ee-9ecf-50c2e80c33eb"
+	}
 }
-
 //Ответ на вопрос
-
 {
-    "action":"answer_question",
-    "data":{
-        "question":1,
-        "game":"dc4a13fe-56d0-11ee-9343-50c2e80c33eb",
-        "value":200,
-        "answers":[
-            {
-                "id_player":1,
-                "right":false
-            },
-            {
-                "id_player":2,
-                "right":true
-            }
-        ]
-    }
+	"action": "answer_question",
+	"data": {
+		"question": 1,
+		"game": "dc4a13fe-56d0-11ee-9343-50c2e80c33eb",
+		"value": 200,
+		"answers": [
+			{
+				"id_player": 1,
+				"right": false
+			},
+			{
+				"id_player": 2,
+				"right": true
+			}
+		]
+	}
 }
-
 //Переподключение к игре
-
 {
-    "action":"reconnect",
-    "data":{
-        "role":"Lead || Viewer",
-        "game":"21f4f7e0-56bd-11ee-9ecf-50c2e80c33eb"
-    }
+	"action": "reconnect",
+	"data": {
+		"role": "Lead || Viewer",
+		"game": "21f4f7e0-56bd-11ee-9ecf-50c2e80c33eb"
+	}
 }
-
 //Подключение к игре
-
 {
-    "action":"connect",
-    "data":"21f4f7e0-56bd-11ee-9ecf-50c2e80c33eb"
+	"action": "connect",
+	"data": "21f4f7e0-56bd-11ee-9ecf-50c2e80c33eb"
 }
