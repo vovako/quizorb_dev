@@ -4,7 +4,7 @@ let curQuestionIndex = null
 
 function interfacePage(ws) {
 
-	const state = localStorage.getItem('state') ? JSON.parse(localStorage.getItem('state')) : { members: [] }
+	const state = localStorage.getItem('state') ? JSON.parse(localStorage.getItem('state')) : { page: '' }
 	const loading = document.querySelector('.loading')
 
 	ws.onopen = function () {
@@ -49,7 +49,6 @@ function interfacePage(ws) {
 				break;
 
 			case 'select_question':
-				state.members = msg.data.Players
 				localStorage.setItem('state', JSON.stringify(state))
 				toPage('members')
 				break;

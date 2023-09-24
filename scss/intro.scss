@@ -152,7 +152,6 @@
 	}
 
 	&__image {
-
 		img {
 			width: min(200px, 100%);
 			max-height: 200px;
@@ -262,5 +261,41 @@
 		cursor: default;
 		background-color: green;
 		color: white;
+	}
+}
+
+.lead-theme {
+	&__container {
+	}
+
+	&__header {
+		background-color: #fff;
+		padding: 10px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	&__text {
+	}
+
+	&__points {
+	}
+
+	&__actions {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		margin-top: 30vh;
+	}
+
+	&__apply-btn {
+		color: white;
+		background-color: green;
+	}
+
+	&__deny-btn {
+		color: white;
+		background-color: red;
 	}
 }

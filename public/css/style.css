@@ -299,6 +299,28 @@ section.active {
   color: white;
 }
 
+.lead-theme__header {
+  background-color: #fff;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.lead-theme__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 30vh;
+}
+.lead-theme__apply-btn {
+  color: white;
+  background-color: green;
+}
+.lead-theme__deny-btn {
+  color: white;
+  background-color: red;
+}
+
 .waiting__container {
   display: flex;
   align-items: center;
@@ -401,6 +423,7 @@ section.active {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border: 5px solid transparent;
 }
 .theme-item.solved {
   background-color: #51ffab;
@@ -408,6 +431,10 @@ section.active {
 .theme-item.failed {
   opacity: 0.5;
   background-color: #ff8585;
+}
+.theme-item.active {
+  border-color: black;
+  box-shadow: 0 0 5px wheat, 0 0 10px wheat, 0 0 20px wheat, 0 0 50px wheat;
 }
 
 .dn {

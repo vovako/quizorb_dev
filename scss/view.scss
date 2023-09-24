@@ -121,6 +121,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	border: 5px solid transparent;
 
 	&__text {
 	}
@@ -134,5 +135,12 @@
 	&.failed {
 		opacity: 0.5;
 		background-color: #ff8585;
+	}
+	&.active {
+		border-color:black;
+		box-shadow: 0 0 5px wheat,
+		0 0 10px wheat,
+		0 0 20px wheat,
+		0 0 50px wheat;
 	}
 }
