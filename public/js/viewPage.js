@@ -2,7 +2,6 @@ import { toPage } from "./functions.js"
 
 async function viewPage(ws) {
 
-
 	ws.onopen = function () {
 		console.log("Соединение удалось")
 
@@ -38,6 +37,7 @@ async function viewPage(ws) {
 					tilesBox.insertAdjacentHTML('beforeend', `<div class="tiles-item ${q.Solved ? 'checked' : ''}">${i + 1}</div>`)
 				})
 				toPage('tiles')
+				toPage('themes')//_temp_
 				break;
 
 			case 'select_question':

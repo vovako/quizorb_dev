@@ -78,10 +78,61 @@
 		position: absolute;
 		bottom: 0;
 		left: 0;
-		@include adaptiv-value('font-size', 30, 20);
+		@include adaptiv-value("font-size", 30, 20);
 
 		&:empty {
 			display: none;
 		}
+	}
+}
+
+.themes {
+	&__container {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+		gap: 10px;
+	}
+}
+.themes-item {
+	background-color: #fff;
+	padding: 10px;
+	&__text {
+		font-size: 18px;
+	}
+
+	&.failed {
+		background-color: #ff8585;
+	}
+	&.solved {
+		background-color: #51ffab;
+	}
+}
+
+.theme {
+	&__container {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+}
+.theme-item {
+	background-color: #fff;
+	padding: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	&__text {
+	}
+
+	&__reward {
+	}
+
+	&.solved {
+		background-color: #51ffab;
+	}
+	&.failed {
+		opacity: 0.5;
+		background-color: #ff8585;
 	}
 }
