@@ -38,10 +38,30 @@ section {
 	font-size: 18px;
 }
 
+.loading {
+	display: none;
+	background: rgba(white, 0.5);
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	align-items: center;
+	justify-content: center;
+
+	img {
+		width: 100px;
+	}
+
+	&.active {
+		display: flex;
+	}
+}
+
 //===========================================================
 
-@import 'intro';
-@import 'view';
+@import "intro";
+@import "view";
 
 //===========================================================
 
