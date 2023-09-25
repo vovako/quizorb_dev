@@ -1,266 +1,21 @@
-.intro {
+.lead-themes {
 	&__container {
 		display: flex;
 		flex-direction: column;
-		align-items: center;
-	}
-
-	&__begin-quiz-btn {
-		margin-top: 50vh;
-		font-size: 20px;
-		padding: 10px;
+		gap: 8px;
 	}
 }
+.lead-themes-item {
+	background-color: #fff;
+	padding: 8px 10px;
 
-.intro-members {
-	width: min(450px, 100%);
-	position: fixed;
-	left: 50%;
-	bottom: 0;
-	transform: translateX(-50%);
-
-	&__open-btn {
-		background-color: rgba(white, 0.5);
-		padding: 10px;
-		position: relative;
-		text-align: center;
-		border-top-left-radius: 30px;
-		border-top-right-radius: 30px;
-		color: white;
-		img {
-			position: absolute;
-			top: 0;
-			left: 50%;
-			transform: translate(-50%, -100%);
-			cursor: pointer;
-		}
-
-		&.empty-list {
-			animation: emptyMembersList 500ms;
-		}
-
-		@keyframes emptyMembersList {
-			from {
-				background-color: rgba(red, 0.5);
-			}
-			to {
-				background-color: rgba(white, 0.5);
-			}
-		}
-	}
-
-	&__wrapper {
-		background-color: rgba(white, 0.5);
-		padding: 0 10px 20px 10px;
-		position: absolute;
-		bottom: 0;
-		width: 100%;
-		transform: translateY(100%);
-	}
-
-	&.active {
-		.intro-members__open-btn {
-			img {
-				transform: translate(-50%, -100%) rotate(180deg);
-			}
-		}
-	}
-	&:not(.active) {
-		.intro-members__open-btn {
-			cursor: pointer;
-		}
-	}
-
-	&__add-member-block {
-		@extend .intro-members-item;
-		justify-content: center;
-		flex-wrap: wrap;
-
-		input {
-			width: 8em;
-		}
-
-		button {
-			padding: 2px 4px;
-			border: 1px solid black;
-			margin-left: auto;
-		}
-
-		input,
-		button {
-			display: none;
-		}
-
-		&.active {
-			input,
-			button {
-				display: block;
-			}
-			p {
-				display: none;
-			}
-			justify-content: flex-start;
-		}
-	}
-}
-
-.intro-members-item {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	background-color: rgba(white, 0.5);
-	padding: 10px;
-	&:not(:last-child) {
-		margin-bottom: 10px;
-	}
-	&__surname {
-	}
-
-	&__name {
-	}
-	&__delete-btn {
-		padding: 2px 4px;
-		border: 1px solid black;
-		margin-left: auto;
-	}
-}
-
-.intro-tiles {
-	&__container {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-	}
-}
-
-.intro-tiles-item {
-	background-color: rgba(white, 0.5);
-	padding: 10px;
-	&__header {
-		display: flex;
-		align-items: flex-start;
-		gap: 6px;
-		margin-bottom: 8px;
-	}
-
-	&__number {
-	}
-
-	&__apply-btn {
-		@extend .btn;
-		margin-left: auto;
-	}
-
-	&__image {
-		img {
-			width: min(200px, 100%);
-			max-height: 200px;
-		}
-	}
-
-	&__descr {
-		font-size: 18px;
-	}
-
-	&.checked {
-		display: none;
-	}
-}
-
-.members {
-	&__container {
-	}
-
-	&__header {
-		margin-bottom: 8px;
-	}
-
-	&__list {
-		&.lock {
-			* {
-				cursor: default;
-			}
-		}
-	}
-
-	&__to-tiles {
-		background-color: rgba(white, 0.7);
-		padding: 10px 20px;
-		border-bottom-left-radius: 20px;
-		border-bottom-right-radius: 20px;
-		position: fixed;
-		top: 0;
-		left: 50%;
-		transform: translateX(-50%);
-		display: none;
-
-		button {
-			padding: 4px 10px;
-			font-size: 18px;
-			border: 1px solid black;
-		}
-
-		&.active {
-			display: block;
-		}
-	}
-}
-
-.members-item {
-	display: flex;
-	align-items: center;
-	background-color: rgba(white, 0.5);
-	padding: 10px;
-	gap: 10px;
-	flex-wrap: wrap;
-	cursor: pointer;
-
-	&:not(:last-child) {
-		margin-bottom: 10px;
-	}
-
-	& * {
-		pointer-events: none;
-	}
-
-	&__name {
-		flex: 1;
-	}
-
-	&__points {
-	}
-
-	&__deny-btn {
-		background-color: red;
-		padding: 4px 10px;
-		margin: -4px 0;
-		display: none;
-		color: white;
-		font-size: 0.8em;
-		pointer-events: all;
-	}
-
-	&__apply-btn {
-		@extend .members-item__deny-btn;
-		background-color: green;
-		margin-right: 20px;
-	}
-
-	&.active {
-		.members-item__deny-btn {
-			display: block;
-		}
-		cursor: default;
-	}
-	&.disabled {
-		cursor: default;
-		background-color: red;
-		color: white;
-	}
+	&.failed,
 	&.solved {
-		cursor: default;
-		background-color: green;
-		color: white;
+		display: none;
+	}
+
+	&__text {
+		pointer-events: none;
 	}
 }
 
@@ -297,5 +52,16 @@
 	&__deny-btn {
 		color: white;
 		background-color: red;
+	}
+}
+
+.to-themes-btn {
+	&__container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	&__btn {
 	}
 }

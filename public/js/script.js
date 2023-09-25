@@ -1,7 +1,8 @@
 import interfacePage from './interfacePage.js'
 import viewPage from './viewPage.js'
-
-const ws = new WebSocket('wss://game-zmark.p.tnnl.in/websocket/connection')
+const wsOrigin1 = 'wss://game-zmark.p.tnnl.in'
+const wsOrigin2 = 'ws://localhost:8080'
+const ws = new WebSocket(`${wsOrigin1}/websocket/connection`)
 
 switch (location.pathname) {
 	case '/':

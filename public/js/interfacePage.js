@@ -41,26 +41,72 @@ function interfacePage(ws) {
 					location.reload()
 				}
 
-				updateTiles(msg.data.Questions)
-
-				toPage('tiles')
-
 				loading.classList.remove('active')
-				break;
+				toPage('lead-themes')
 
-			case 'select_question':
-				localStorage.setItem('state', JSON.stringify(state))
-				toPage('members')
+			case 'get_themes':
+				updateThemes(msg.data.Themes)
 				break;
 
 			case 'answer_question':
-				updateTiles(msg.data.Questions)
+
+
+			case 'select_theme':
+				updateTheme(msg.data.Questions)
 				break;
 
-			case 'to-tiles':
-				toPage('tiles')
-				break;
+
+
+			// case 'answer_question':
+			// 	updateTiles(msg.data.Questions)
+			// 	break;
+
+			// case 'to-tiles':
+			// 	toPage('tiles')
+			// 	break;
 		}
+	}
+	function updateThemes(themes) {
+
+		const themesBox = document.querySelector('.lead-themes__container')
+		themesBox.innerHTML = ''
+		themes.forEach(theme => {
+			themesBox.insertAdjacentHTML('beforeend', `
+			<div class="lead-themes-item ${theme.Status}" data-theme-id="${theme.id}">
+				<div class="lead-themes-item__text">${theme.Title} (${theme.Answer})</div>
+			</div>
+			`)
+		})
+
+	}
+
+	function updateTheme(questions) {
+
+		const themeBox = document.querySelector('.lead-theme__list')
+		themeBox.innerHTML = ''
+
+		if (questions.findIndex(q => q.Status === 'solved') !== -1) {
+			toPage('to-themes-btn')
+			return
+		}
+
+		questions.sort((a, b) => b.Costs - a.Costs)
+		const curQuestionIndex = questions.findIndex(q => q.Status === '')
+
+		const question = questions[curQuestionIndex]
+		themeBox.insertAdjacentHTML('beforeend', `
+			<div class="lead-theme__item ${question.Status}" data-question-id="${question.id}">
+				<div class="lead-theme__header">
+					<div class="lead-theme__text">Вопрос ${curQuestionIndex + 1}</div>
+					<div class="lead-theme__points"><span>${question.Costs}</span> баллов</div>
+				</div>
+				<div class="lead-theme__actions">
+					<button class="lead-theme__apply-btn btn">Правильно</button>
+					<button class="lead-theme__deny-btn btn">Неправильно</button>
+				</div>
+			</div>
+			`)
+		toPage('lead-theme')
 	}
 
 	function updateTiles(questions) {
@@ -103,8 +149,51 @@ function interfacePage(ws) {
 				action: "to-tiles",
 				data: localStorage.getItem('session_id')
 			}))
+		} else if (target.classList.contains('lead-themes-item')) {
+			ws.send(JSON.stringify({
+				action: 'select_theme',
+				data: {
+					game: localStorage.getItem('session_id'),
+					theme: +target.dataset.themeId
+				}
+			}))
+
+			toPage('lead-theme')
+		} else if (target.classList.contains('lead-theme__deny-btn')) {
+			const questionId = +target.closest('.lead-theme__item').dataset.questionId
+
+			ws.send(JSON.stringify({
+				action: 'answer_question',
+				data: {
+					game: localStorage.getItem('session_id'),
+					status: 'failed',
+					id: questionId
+				}
+			}))
+		} else if (target.classList.contains('lead-theme__apply-btn')) {
+			const questionId = +target.closest('.lead-theme__item').dataset.questionId
+
+			ws.send(JSON.stringify({
+				action: 'answer_question',
+				data: {
+					game: localStorage.getItem('session_id'),
+					status: 'solved',
+					id: questionId
+				}
+			}))
+
+			ws.send(JSON.stringify({
+				action: 'get_themes',
+				data: localStorage.getItem('session_id')
+			}))
+
+		} else if (target.classList.contains('to-themes-btn__btn')) {
+			ws.send(JSON.stringify({
+				action: 'to-tiles',
+				data: localStorage.getItem('session_id')
+			}))
+			toPage('lead-themes')
 		}
 	})
 }
-
 export default interfacePage
