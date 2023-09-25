@@ -2,20 +2,20 @@ package dto
 
 import "github.com/google/uuid"
 
-type SelectQuestionBody struct {
-	Question uint      `json:"question"`
-	Game     uuid.UUID `json:"game"`
+type SelectThemeBody struct {
+	Game  uuid.UUID `json:"game"`
+	Theme uint      `json:"theme"`
 }
 
-type Answer struct {
-	ID    uint `json:"id_player"`
-	Right bool `json:"right"`
-}
-type AnswerQuestionBody struct {
+type SelectQuestionBody struct {
 	Game     uuid.UUID `json:"game"`
 	Question uint      `json:"question"`
-	Value    int       `json:"value"`
-	Answers  []Answer  `json:"answers"`
+}
+
+type AnswerQuestionBody struct {
+	Game     uuid.UUID `json:"game"`
+	Question uint      `json:"id"`
+	Status   string    `json:"status"`
 }
 
 type ReconnectBody struct {
