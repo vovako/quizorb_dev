@@ -1,0 +1,20 @@
+services:
+  client:
+    build: ./
+    ports:
+      - 3000:3000
+    restart: always
+    volumes:
+      - ./:/quizorb
+    depends_on:
+      - server
+  server:
+    build: ./backend
+    restart: always
+    container_name: server
+    ports:
+      - 8080:8080
+    volumes:
+      - ./backend:/quizorb/backend
+    environment:
+      - ENVIRONMENT=production

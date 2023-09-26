@@ -13,7 +13,6 @@ func main() {
 		ServerHeader: "Own game",
 	})
 	ws.SetWebSocket(app)
-
 	app.Use(cors.New())
 	log.Fatal(app.Listen(":8080"))
 }
