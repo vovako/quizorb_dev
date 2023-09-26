@@ -14,6 +14,8 @@ func main() {
 	})
 	ws.SetWebSocket(app)
 	app.Use(cors.New())
-	app.Static("/", "../public")
+	app.Static("/", "../public", fiber.Static{
+		Browse: true,
+	})
 	log.Fatal(app.Listen(":8080"))
 }
