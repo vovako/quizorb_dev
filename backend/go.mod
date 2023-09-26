@@ -8,6 +8,9 @@ require (
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/gofiber/contrib/websocket v1.2.1 // indirect
 	github.com/gofiber/fiber/v2 v2.49.2 // indirect
+	github.com/gofiber/template v1.8.2 // indirect
+	github.com/gofiber/template/html/v2 v2.0.5 // indirect
+	github.com/gofiber/utils v1.1.0 // indirect
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/inconshreveable/log15 v3.0.0-testing.3+incompatible // indirect
 	github.com/inconshreveable/log15/v3 v3.0.0-testing.5 // indirect
