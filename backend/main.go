@@ -14,12 +14,6 @@ func main() {
 	})
 	ws.SetWebSocket(app)
 	app.Use(cors.New())
-	app.Static("/", "../public")
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendFile("../public/index.html")
-	})
-	app.Get("/view", func(c *fiber.Ctx) error {
-		return c.SendFile("../public/view.html")
-	})
+	app.Static("/", "./quizorb/backend/public")
 	log.Fatal(app.Listen(":8080"))
 }

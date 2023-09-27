@@ -6,7 +6,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./backend:/quizorb/backend
+      - ./public:/quizorb/backend/public
     environment:
       - ENVIRONMENT=production
   nginx:
