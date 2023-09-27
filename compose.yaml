@@ -9,3 +9,11 @@ services:
       - ./backend:/quizorb/backend
     environment:
       - ENVIRONMENT=production
+  nginx:
+    build: ./
+    ports:
+      - 80:80
+    restart: always
+    container_name: ngx
+    depends_on:
+      - server
