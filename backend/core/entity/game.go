@@ -139,8 +139,16 @@ func (game *Game) AnswerQuestion(question uint, status string) error {
 	for i, v := range game.Questions {
 		if v.ID == question {
 			game.Questions[i].Status = status
-			q = v
+			q = game.Questions[i]
 			break
+		}
+	}
+	if q.Status == "solved" {
+		for i, v := range game.Themes {
+			if v.ID == q.Theme {
+				game.Themes[i].Status = "solved"
+				break
+			}
 		}
 	}
 	var theme_questions []Question
@@ -149,10 +157,15 @@ func (game *Game) AnswerQuestion(question uint, status string) error {
 			theme_questions = append(theme_questions, v)
 		}
 	}
-	er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("answer_question", struct{ Questions []Question }{Questions: theme_questions}))
-	err := game.Lead.Conn.WriteJSON(tools.SuccessRes("answer_question", struct{ Questions []Question }{Questions: theme_questions}))
-	if err != nil || er != nil {
-		return fmt.Errorf("ошибка при ответе ведущему: %v, ошибка при ответе зрителям: %v", err, er)
+	for _, v := range theme_questions {
+		if v.Status == "" {
+			er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("answer_question", struct{ Questions []Question }{Questions: theme_questions}))
+			err := game.Lead.Conn.WriteJSON(tools.SuccessRes("answer_question", struct{ Questions []Question }{Questions: theme_questions}))
+			if err != nil || er != nil {
+				return fmt.Errorf("ошибка при ответе ведущему: %v, ошибка при ответе зрителям: %v", err, er)
+			}
+			break
+		}
 	}
 	return nil
 }
