@@ -143,29 +143,28 @@ func (game *Game) AnswerQuestion(question uint, status string) error {
 			break
 		}
 	}
-	if q.Status == "solved" {
-		for i, v := range game.Themes {
-			if v.ID == q.Theme {
-				game.Themes[i].Status = "solved"
+	var theme_questions []Question
+	var wrong_answers int
+	for _, v := range game.Questions {
+		if v.Theme == q.Theme {
+			theme_questions = append(theme_questions, v)
+			if v.Status == "failed" {
+				wrong_answers++
+			}
+		}
+	}
+	for i, v := range game.Themes {
+		if v.ID == q.Theme {
+			if q.Status == "solved" || wrong_answers == len(theme_questions) {
+				game.Themes[i].Status = q.Status
 				break
 			}
 		}
 	}
-	var theme_questions []Question
-	for _, v := range game.Questions {
-		if v.Theme == q.Theme {
-			theme_questions = append(theme_questions, v)
-		}
-	}
-	for _, v := range theme_questions {
-		if v.Status == "" {
-			er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("answer_question", struct{ Questions []Question }{Questions: theme_questions}))
-			err := game.Lead.Conn.WriteJSON(tools.SuccessRes("answer_question", struct{ Questions []Question }{Questions: theme_questions}))
-			if err != nil || er != nil {
-				return fmt.Errorf("ошибка при ответе ведущему: %v, ошибка при ответе зрителям: %v", err, er)
-			}
-			break
-		}
+	er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("answer_question", struct{ Questions []Question }{Questions: theme_questions}))
+	err := game.Lead.Conn.WriteJSON(tools.SuccessRes("answer_question", struct{ Questions []Question }{Questions: theme_questions}))
+	if err != nil || er != nil {
+		return fmt.Errorf("ошибка при ответе ведущему: %v, ошибка при ответе зрителям: %v", err, er)
 	}
 	return nil
 }
