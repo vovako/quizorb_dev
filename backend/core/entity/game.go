@@ -35,6 +35,10 @@ func GetGame(game uuid.UUID) *Game {
 	return gamesStore[game]
 }
 
+func DeleteGame(game uuid.UUID) {
+	delete(gamesStore, game)
+}
+
 // Можно ли прикрутить к подключению к игре
 func JoinGame(viewer *Client) *Game {
 	for _, v := range gamesStore {

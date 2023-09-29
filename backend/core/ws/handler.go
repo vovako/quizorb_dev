@@ -156,6 +156,30 @@ func Connection() fiber.Handler {
 					log.Println(err)
 					return
 				}
+			case "restart_game":
+				var id_game uuid.UUID
+				if err := json.Unmarshal(req.Data, &id_game); err != nil {
+					return
+				}
+				if game := entity.GetGame(id_game); game != nil {
+					g, err := entity.CreateGame()
+					if err != nil {
+						return
+					}
+					g.Lead = game.Lead
+					g.Viewer = game.Viewer
+					e := g.Lead.Conn.WriteJSON(tools.SuccessRes("restart_game", g.ID))
+					er := g.Viewer.Conn.WriteJSON(tools.SuccessRes("restart_game", g.ID))
+					if err != nil || e != nil {
+						log.Printf("ошибки при удаление игры: перенос зрителя - %v; перенос ведущего %v", e, er)
+						return
+					}
+					game.Lead = nil
+					game.Viewer = nil
+					entity.DeleteGame(id_game)
+				} else if err := connections[conn].Conn.WriteJSON(tools.BadRes("delete_game", fmt.Errorf("игра не найдена"))); err != nil {
+					return
+				}
 			}
 		}
 	})
