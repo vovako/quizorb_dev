@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/Izumra/OwnGame/core/ws"
 	"github.com/gofiber/fiber/v2"
@@ -14,6 +15,10 @@ func main() {
 	})
 	ws.SetWebSocket(app)
 	app.Use(cors.New())
-	app.Static("/", "./quizorb/backend/public")
+	if os.Getenv("ENVIROMENT") == "production" {
+		app.Static("/", "./public")
+	} else {
+		app.Static("/", "../public")
+	}
 	log.Fatal(app.Listen(":8080"))
 }
