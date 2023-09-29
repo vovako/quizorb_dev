@@ -1,8 +1,15 @@
 .lead-themes {
 	&__container {
+	}
+
+	&__list {
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
+	}
+
+	&__delte-btn {
+		margin-bottom: 10px;
 	}
 }
 .lead-themes-item {
