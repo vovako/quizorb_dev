@@ -53,9 +53,9 @@ function interfacePage(ws) {
 
 			case 'select_theme':
 				updateTheme(msg.data.Questions)
+				const answerEl = document.querySelector('.lead-theme__answer')
+				answerEl.textContent = msg.data.Answer
 				break;
-
-
 
 			// case 'answer_question':
 			// 	updateTiles(msg.data.Questions)
@@ -77,13 +77,13 @@ function interfacePage(ws) {
 			</div>
 			`)
 		})
-
 	}
 
 	function updateTheme(questions) {
 
-		const themeBox = document.querySelector('.lead-theme__list')
-		themeBox.innerHTML = ''
+		const themeContainer = document.querySelector('.lead-theme__container')
+		const headerText = themeContainer.querySelector('.lead-theme__text')
+		const headerPoints = themeContainer.querySelector('.lead-theme__points span')
 
 		if (questions.findIndex(q => q.Status === 'solved') !== -1) {
 			toPage('to-themes-btn')
@@ -94,39 +94,11 @@ function interfacePage(ws) {
 		const curQuestionIndex = questions.findIndex(q => q.Status === '')
 
 		const question = questions[curQuestionIndex]
-		themeBox.insertAdjacentHTML('beforeend', `
-			<div class="lead-theme__item ${question.Status}" data-question-id="${question.id}">
-				<div class="lead-theme__header">
-					<div class="lead-theme__text">Вопрос ${curQuestionIndex + 1}</div>
-					<div class="lead-theme__points"><span>${question.Costs}</span> баллов</div>
-				</div>
-				<div class="lead-theme__actions">
-					<button class="lead-theme__apply-btn btn">Правильно</button>
-					<button class="lead-theme__deny-btn btn">Неправильно</button>
-				</div>
-			</div>
-			`)
+		themeContainer.dataset.questionId = question.id
+		headerText.textContent = curQuestionIndex + 1
+		headerPoints.textContent = question.Costs
+		
 		toPage('lead-theme')
-	}
-
-	function updateTiles(questions) {
-		const tilesBox = document.querySelector('.intro-tiles__container')
-
-		questions.forEach((q, i) => {
-			tilesBox.insertAdjacentHTML('beforeend', `
-						<div class="intro-tiles-item ${q.Solved ? 'checked' : ''}" data-tiles-id="${i}">
-							<div class="intro-tiles-item__header">
-								<div class="intro-tiles-item__number">${i + 1}</div>
-								<div class="intro-tiles-item__image">
-									<img src="${q.url_question}" alt="">
-								</div>
-								<button class="intro-tiles-item__apply-btn">Выбрать</button>
-							</div>
-							
-							<div class="intro-tiles-item__descr">${q.question}</div>
-						</div>
-					`)
-		});
 	}
 
 	document.addEventListener('click', function (evt) {
@@ -160,7 +132,7 @@ function interfacePage(ws) {
 
 			toPage('lead-theme')
 		} else if (target.classList.contains('lead-theme__deny-btn')) {
-			const questionId = +target.closest('.lead-theme__item').dataset.questionId
+			const questionId = +target.closest('.lead-theme__container').dataset.questionId
 
 			ws.send(JSON.stringify({
 				action: 'answer_question',
@@ -171,7 +143,7 @@ function interfacePage(ws) {
 				}
 			}))
 		} else if (target.classList.contains('lead-theme__apply-btn')) {
-			const questionId = +target.closest('.lead-theme__item').dataset.questionId
+			const questionId = +target.closest('.lead-theme__container').dataset.questionId
 
 			ws.send(JSON.stringify({
 				action: 'answer_question',

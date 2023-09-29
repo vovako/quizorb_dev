@@ -81,6 +81,7 @@
 	align-items: center;
 	justify-content: space-between;
 	border: 5px solid transparent;
+	flex-wrap: wrap;
 
 	&__text {
 	}
@@ -88,11 +89,22 @@
 	&__reward {
 	}
 
+	&__question {
+		display: none;
+
+		&.active:not(:empty) {
+			margin-top: 10px;
+			flex: 0 0 100%;
+			display: block;
+			font-size: 16px;
+		}
+	}
+
 	&.solved {
 		background-color: #51ffab;
 	}
 	&.failed {
-		opacity: 0.5;
+		color: white;
 		background-color: #ff8585;
 	}
 	&.active {
@@ -118,7 +130,7 @@
 	right: 0;
 	bottom: 0;
 	background-color: rgba(black, 0.5);
-	
+
 	&__container {
 	}
 
