@@ -57,6 +57,10 @@ async function viewPage(ws) {
 				answerPopup.classList.remove('active')
 				toPage('themes')
 				break;
+			case 'restart_game':
+				localStorage.setItem('session_id', msg.data)
+				location.reload()
+				break;
 		}
 	}
 	function updateThemes(themes) {
@@ -73,7 +77,7 @@ async function viewPage(ws) {
 
 	function updateTheme(questions) {
 
-		if (questions.findIndex(q => q.Status === 'solved') !== -1||questions.findIndex(q => q.Status === '') == -1) {
+		if (questions.findIndex(q => q.Status === 'solved') !== -1 || questions.findIndex(q => q.Status === '') == -1) {
 			const answerPopup = document.querySelector('.answer.popup')
 			answerPopup.classList.add('active')
 			return

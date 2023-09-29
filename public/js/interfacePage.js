@@ -49,26 +49,22 @@ function interfacePage(ws) {
 				break;
 
 			case 'answer_question':
-
-
+				updateTheme(msg.data.Questions)
+				break;
 			case 'select_theme':
 				updateTheme(msg.data.Questions)
 				const answerEl = document.querySelector('.lead-theme__answer')
 				answerEl.textContent = msg.data.Answer
 				break;
-
-			// case 'answer_question':
-			// 	updateTiles(msg.data.Questions)
-			// 	break;
-
-			// case 'to-tiles':
-			// 	toPage('tiles')
-			// 	break;
+			case 'restart_game':
+				localStorage.setItem('session_id', msg.data)
+				location.reload()
+				break;
 		}
 	}
 	function updateThemes(themes) {
 
-		const themesBox = document.querySelector('.lead-themes__container')
+		const themesBox = document.querySelector('.lead-themes__list')
 		themesBox.innerHTML = ''
 		themes.forEach(theme => {
 			themesBox.insertAdjacentHTML('beforeend', `
@@ -171,5 +167,15 @@ function interfacePage(ws) {
 			toPage('lead-themes')
 		}
 	})
+
+	const deleteGameBtn = document.querySelector('.lead-themes__delte-btn')
+	deleteGameBtn.addEventListener('click', function() {
+		ws.send(JSON.stringify({
+			action: 'restart_game',
+			data: localStorage.getItem('session_id')
+		}))
+	})
 }
+
+
 export default interfacePage
