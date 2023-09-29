@@ -2,8 +2,6 @@ import { toPage } from "./functions.js"
 
 async function viewPage(ws) {
 
-	const tempStorage = {}
-
 	ws.onopen = function () {
 		console.log("Соединение удалось")
 
@@ -85,41 +83,16 @@ async function viewPage(ws) {
 		let activeFinded = false
 		themeBox.innerHTML = ''
 		questions.forEach((question, i) => {
+
 			themeBox.insertAdjacentHTML('beforeend', `
 				<div class="theme-item ${question.Status} ${!activeFinded && question.Status !== 'failed' ? 'active' : ''}">
 					<div class="theme-item__text">Вопрос ${i + 1}</div>
 					<div class="theme-item__reward"><span>${question.Costs}</span> баллов</div>
+					<div class="theme-item__question ${activeFinded ? '' : 'active'}">${question.question}</div>
 				</div>
 			`)
 			if (!activeFinded && question.Status !== 'failed') activeFinded = true
 		})
-	}
-
-	function updateTiles(data) {
-		const tiles = document.querySelectorAll('.tiles-item')
-		data.forEach((solved, i) => {
-			if (solved) {
-				tiles[i].classList.add('checked')
-			}
-		});
-	}
-
-	function updateQuestion(data) {
-		const questionPage = document.querySelector('[data-page="question"]')
-		const qTextEl = questionPage.querySelector('.question__text')
-		const qImgEl = questionPage.querySelector('.question__image img')
-
-		qTextEl.textContent = data.question
-		qImgEl.src = data.url_question !== '' ? data.url_question : 'img/temp/img.svg'
-	}
-
-	function updateAnswer(data) {
-		const answerPage = document.querySelector('[data-page="answer"]')
-		const qTextEl = answerPage.querySelector('.question__text')
-		const qImgEl = answerPage.querySelector('.question__image img')
-
-		qTextEl.textContent = data.answer
-		qImgEl.src = data.url_answer !== '' ? data.url_answer : 'img/temp/img.svg'
 	}
 }
 

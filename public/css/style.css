@@ -116,6 +116,14 @@ section.active {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+}
+.lead-theme__answer {
+  margin-top: 10px;
+  color: green;
+  text-align: center;
+  flex: 0 0 100%;
+  font-size: 16px;
 }
 .lead-theme__actions {
   display: flex;
@@ -207,12 +215,22 @@ section.active {
   align-items: center;
   justify-content: space-between;
   border: 5px solid transparent;
+  flex-wrap: wrap;
+}
+.theme-item__question {
+  display: none;
+}
+.theme-item__question.active:not(:empty) {
+  margin-top: 10px;
+  flex: 0 0 100%;
+  display: block;
+  font-size: 16px;
 }
 .theme-item.solved {
   background-color: #51ffab;
 }
 .theme-item.failed {
-  opacity: 0.5;
+  color: white;
   background-color: #ff8585;
 }
 .theme-item.active {
