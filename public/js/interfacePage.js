@@ -85,7 +85,7 @@ function interfacePage(ws) {
 		const headerText = themeContainer.querySelector('.lead-theme__text')
 		const headerPoints = themeContainer.querySelector('.lead-theme__points span')
 
-		if (questions.findIndex(q => q.Status === 'solved') !== -1) {
+		if (questions.findIndex(q => q.Status === 'solved') !== -1||questions.findIndex(q => q.Status === '') == -1) {
 			toPage('to-themes-btn')
 			return
 		}
@@ -141,6 +141,10 @@ function interfacePage(ws) {
 					status: 'failed',
 					id: questionId
 				}
+			}))
+			ws.send(JSON.stringify({
+				action: 'get_themes',
+				data: localStorage.getItem('session_id')
 			}))
 		} else if (target.classList.contains('lead-theme__apply-btn')) {
 			const questionId = +target.closest('.lead-theme__container').dataset.questionId

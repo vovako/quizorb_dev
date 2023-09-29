@@ -50,7 +50,9 @@ async function viewPage(ws) {
 			case 'answer_question':
 				updateTheme(msg.data.Questions)
 				break;
-
+			case 'get_themes':
+				updateThemes(msg.data.Themes)
+				break;
 			case 'to-tiles':
 				answerPopup.classList.remove('active')
 				toPage('themes')
@@ -71,7 +73,7 @@ async function viewPage(ws) {
 
 	function updateTheme(questions) {
 
-		if (questions.findIndex(q => q.Status === 'solved') !== -1) {
+		if (questions.findIndex(q => q.Status === 'solved') !== -1||questions.findIndex(q => q.Status === '') == -1) {
 			const answerPopup = document.querySelector('.answer.popup')
 			answerPopup.classList.add('active')
 			return
