@@ -56,18 +56,10 @@ function interfacePage(ws) {
 				const answerEl = document.querySelector('.lead-theme__answer')
 				answerEl.textContent = msg.data.Answer
 				break;
-			case 'delete_game':
-				localStorage.clear()
+			case 'restart_game':
+				localStorage.setItem('session_id', msg.data)
 				location.reload()
 				break;
-
-			// case 'answer_question':
-			// 	updateTiles(msg.data.Questions)
-			// 	break;
-
-			// case 'to-tiles':
-			// 	toPage('tiles')
-			// 	break;
 		}
 	}
 	function updateThemes(themes) {
@@ -179,7 +171,7 @@ function interfacePage(ws) {
 	const deleteGameBtn = document.querySelector('.lead-themes__delte-btn')
 	deleteGameBtn.addEventListener('click', function() {
 		ws.send(JSON.stringify({
-			action: 'delete_game',
+			action: 'restart_game',
 			data: localStorage.getItem('session_id')
 		}))
 	})

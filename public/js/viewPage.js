@@ -57,8 +57,8 @@ async function viewPage(ws) {
 				answerPopup.classList.remove('active')
 				toPage('themes')
 				break;
-			case 'delete_game':
-				localStorage.clear()
+			case 'restart_game':
+				localStorage.setItem('session_id', msg.data)
 				location.reload()
 				break;
 		}

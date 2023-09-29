@@ -51,8 +51,20 @@ textarea, input {
 
 body {
   font-family: "consolas";
-  background-color: var(--bg-color);
   font-size: 20px;
+  background: var(--bg-color) linear-gradient(109deg, #97ABE0 -1.52%, rgba(96, 121, 187, 0.76) 58.26%, rgba(51, 70, 121, 0.19) 114.41%);
+}
+body .bg-elem-1 {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: calc(160px + 575 * (100vw - 320px) / 1600);
+}
+body .bg-elem-2 {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: calc(200px + 239 * (100vw - 320px) / 1600);
 }
 
 .container {
@@ -61,7 +73,8 @@ body {
 }
 
 section {
-  background: linear-gradient(109deg, #97ABE0 -1.52%, rgba(96, 121, 187, 0.76) 58.26%, rgba(51, 70, 121, 0.19) 114.41%);
+  position: relative;
+  background: transparent;
   padding: 30px 0;
   display: none;
   min-height: 100%;

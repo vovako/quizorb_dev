@@ -2,12 +2,6 @@
 @import "variables";
 @import "fonts";
 
-body {
-	font-family: "consolas";
-	background-color: var(--bg-color);
-	font-size: 20px;
-}
-
 $minWidth: 320;
 $maxWidth: 1920;
 
@@ -17,14 +11,33 @@ $maxWidth: 1920;
 	#{$indentType}: calc(#{$mobSize + px} + #{$addSize} * ((100vw - #{$minWidth+px}) / #{$maxWidth - $minWidth}));
 }
 
+body {
+	font-family: "consolas";
+	font-size: 20px;
+	background: var(--bg-color) linear-gradient(109deg, #97ABE0 -1.52%, rgba(96, 121, 187, 0.76) 58.26%, rgba(51, 70, 121, 0.19) 114.41%);
+
+	.bg-elem-1 {
+		position: absolute;
+		right: 0;
+		top: 0;
+		@include adaptiv-value('width', 735, 160);
+	}
+	.bg-elem-2 {
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		@include adaptiv-value('width', 439, 200);
+	}
+}
+
 .container {
 	padding: 0 15px;
 	margin: 0 auto;
 }
 
 section {
-	// background: linear-gradient(90deg, white, blue, red);
-	background: linear-gradient(109deg, #97ABE0 -1.52%, rgba(96, 121, 187, 0.76) 58.26%, rgba(51, 70, 121, 0.19) 114.41%);
+	position: relative;
+	background: transparent;
 	padding: 30px 0;
 	display: none;
 	min-height: 100%;
