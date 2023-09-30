@@ -77,9 +77,20 @@ async function viewPage(ws) {
 
 	function updateTheme(questions) {
 
-		if (questions.findIndex(q => q.Status === 'solved') !== -1 || questions.findIndex(q => q.Status === '') == -1) {
+		const isSolved = questions.findIndex(q => q.Status === 'solved') !== -1
+		if (isSolved || questions.findIndex(q => q.Status === '') == -1) {
 			const answerPopup = document.querySelector('.answer.popup')
 			answerPopup.classList.add('active')
+
+			if (isSolved) {
+				const pointsEl = document.querySelector('.answer__points-anim')
+				const pointsCount = questions[questions.findIndex(q => q.Status === 'solved')].Costs
+				pointsEl.textContent = pointsCount
+				pointsEl.classList.add('active')
+				setTimeout(() => {
+					pointsEl.classList.remove('active')
+				}, 1000)
+			}
 			return
 		}
 
