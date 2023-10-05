@@ -86,6 +86,9 @@ section.active {
 .btn {
   padding: 2px 6px;
   font-size: 18px;
+  width: -moz-fit-content;
+  width: fit-content;
+  background-color: #fff;
 }
 
 .loading {
@@ -111,8 +114,22 @@ section.active {
   flex-direction: column;
   gap: 8px;
 }
-.lead-themes__delte-btn {
-  margin-bottom: 10px;
+.lead-themes__actions, .lead-theme__header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1em;
+}
+.lead-themes__two-tour-btn.anim {
+  animation: anim 0.3s;
+}
+@keyframes anim {
+  from {
+    background-color: red;
+  }
+  to {
+    background-color: white;
+  }
 }
 
 .lead-themes-item {
@@ -135,6 +152,9 @@ section.active {
   flex-direction: column;
   justify-content: space-between;
 }
+.lead-theme__wrapper {
+  flex: 1;
+}
 .lead-theme__header {
   background-color: #fff;
   padding: 10px;
@@ -150,15 +170,30 @@ section.active {
   flex: 0 0 100%;
   font-size: 16px;
 }
+.lead-theme__question-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.lead-theme__question-image img {
+  max-width: 100%;
+  max-height: 200px;
+}
+.lead-theme__question {
+  margin-top: 0.6em;
+}
 .lead-theme__actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+  margin-top: 0.6em;
 }
 .lead-theme__apply-btn, .lead-theme__deny-btn {
   padding: 30px 5px;
   color: white;
   background-color: green;
+  width: 100%;
 }
 .lead-theme__deny-btn {
   background-color: red;

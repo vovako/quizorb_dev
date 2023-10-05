@@ -8,10 +8,29 @@
 		gap: 8px;
 	}
 
-	&__delte-btn {
-		margin-bottom: 10px;
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-bottom: 1em;
+	}
+
+	&__two-tour-btn {
+		&.anim {
+			animation: anim 0.3s;
+		}
+
+		@keyframes anim {
+			from {
+				background-color: red;
+			}
+			to {
+				background-color: white;
+			}
+		}
 	}
 }
+
 .lead-themes-item {
 	background-color: #fff;
 	padding: 8px 10px;
@@ -37,6 +56,14 @@
 		justify-content: space-between;
 	}
 
+	&__wrapper {
+		flex: 1;
+	}
+
+	&__header-actions {
+		@extend .lead-themes__actions;
+	}
+
 	&__header {
 		background-color: #fff;
 		padding: 10px;
@@ -60,17 +87,33 @@
 		font-size: 16px;
 	}
 
+	&__question-image {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		img {
+			max-width: 100%;
+			max-height: 200px;
+		}
+	}
+
+	&__question {
+		margin-top: 0.6em;
+	}
+
 	&__actions {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 10px;
+		margin-top: 0.6em;
 	}
-
 
 	&__apply-btn {
 		padding: 30px 5px;
 		color: white;
 		background-color: green;
+		width: 100%;
 	}
 
 	&__deny-btn {
