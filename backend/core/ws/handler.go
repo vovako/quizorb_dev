@@ -170,14 +170,54 @@ func Connection() fiber.Handler {
 					g.Viewer = game.Viewer
 					e := g.Lead.Conn.WriteJSON(tools.SuccessRes("restart_game", g.ID))
 					er := g.Viewer.Conn.WriteJSON(tools.SuccessRes("restart_game", g.ID))
+					game.Lead = nil
+					game.Viewer = nil
+					entity.DeleteGame(id_game)
 					if err != nil || e != nil {
 						log.Printf("ошибки при удаление игры: перенос зрителя - %v; перенос ведущего %v", e, er)
 						return
 					}
-					game.Lead = nil
-					game.Viewer = nil
-					entity.DeleteGame(id_game)
 				} else if err := connections[conn].Conn.WriteJSON(tools.BadRes("delete_game", fmt.Errorf("игра не найдена"))); err != nil {
+					return
+				}
+			case "question_trash":
+				var id_game uuid.UUID
+				if err := json.Unmarshal(req.Data, &id_game); err != nil {
+					return
+				}
+				if game := entity.GetGame(id_game); game != nil {
+					if el, ans := game.GetTrashQuestion(); el != nil {
+						type Resp struct {
+							Question *entity.Question
+							Answer   string
+						}
+						e := game.Lead.Conn.WriteJSON(tools.SuccessRes("question_trash", Resp{Question: el, Answer: ans}))
+						er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("question_trash", Resp{Question: el, Answer: ans}))
+						if er != nil || e != nil {
+							log.Printf("ошибки при получении вопроса корзины: вопрос зрителя - %v; вопрос ведущего %v", e, er)
+							return
+						}
+					} else {
+						e := game.Lead.Conn.WriteJSON(tools.BadRes("question_trash", fmt.Errorf("корзина пуста")))
+						er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("question_trash", fmt.Errorf("корзина пуста")))
+						if er != nil || e != nil {
+							log.Printf("ошибки при отправке пустой корзины: вопрос зрителя - %v; вопрос ведущего %v", e, er)
+							return
+						}
+					}
+				} else if err := connections[conn].Conn.WriteJSON(tools.BadRes("question_trash", fmt.Errorf("игра не найдена"))); err != nil {
+					return
+				}
+			case "answer_question_trash":
+				var body dto.AnswerTrashQuestion
+				if er := json.Unmarshal(req.Data, &body); er != nil {
+					return
+				}
+				if game := entity.GetGame(body.Game); game != nil {
+					if err := game.AnswerTrashQuestion(body.Question, body.Status); err != nil {
+						return
+					}
+				} else if err := connections[conn].Conn.WriteJSON(tools.BadRes("answer_question_trash", fmt.Errorf("игра не найдена"))); err != nil {
 					return
 				}
 			}

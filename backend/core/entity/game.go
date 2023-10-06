@@ -2,6 +2,7 @@ package entity
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/Izumra/OwnGame/tools"
 	"github.com/gofiber/contrib/websocket"
@@ -14,6 +15,7 @@ type Game struct {
 	Themes    []Theme
 	Lead      *Client
 	Viewer    *Client
+	Trash     []Question
 }
 
 var gamesStore = make(map[uuid.UUID]*Game)
@@ -54,6 +56,8 @@ type Repository interface {
 	AddLead(*websocket.Conn) error
 	AddViewer(*websocket.Conn) error
 	GetThemes() error
+	GetTrashQuestion() (*Question, string)
+	AnswerTrashQuestion(uint, string) error
 	SelectTheme(uint) error
 	SelectQuestion(uint) error
 	AnswerQuestion() error
@@ -83,6 +87,44 @@ func (game *Game) GetThemes() error {
 	er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("get_themes", struct{ Themes []Theme }{Themes: game.Themes}))
 	if err != nil || er != nil {
 		return fmt.Errorf("ошибка при отправке тем наблюдателю - %v, ведущему - %v", er, err)
+	}
+	return nil
+}
+
+func (game *Game) GetTrashQuestion() (*Question, string) {
+	if len(game.Trash) != 0 {
+		if el := rand.Intn(len(game.Trash)); el != 0 {
+			var answer string
+			for _, va := range game.Themes {
+				if va.ID == game.Trash[el].Theme {
+					answer = va.Answer
+					break
+				}
+			}
+			return &game.Trash[el], answer
+		}
+	}
+	return nil, ""
+}
+
+func (game *Game) AnswerTrashQuestion(question uint, status string) error {
+	for i, v := range game.Trash {
+		if v.ID == question {
+			type Resp struct{ Questions []Question }
+			v.Status = status
+			e := game.Lead.Conn.WriteJSON(tools.SuccessRes("answer_question_trash", Resp{Questions: []Question{v}}))
+			er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("answer_question_trash", Resp{Questions: []Question{v}}))
+			if er != nil || e != nil {
+				return fmt.Errorf("ошибки при ответе на вопрос из корзины: у зрителя - %v; у ведущего %v", e, er)
+			}
+			game.Trash = append(game.Trash[:i], game.Trash[i:]...)
+			return nil
+		}
+	}
+	e := game.Lead.Conn.WriteJSON(tools.SuccessRes("answer_question_trash", fmt.Errorf("вопрос удален")))
+	er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("answer_question_trash", fmt.Errorf("вопрос удален")))
+	if er != nil || e != nil {
+		return fmt.Errorf("ошибки при отпраке ответа: у зрителя - %v; у ведущего %v", e, er)
 	}
 	return nil
 }
@@ -149,20 +191,26 @@ func (game *Game) AnswerQuestion(question uint, status string) error {
 	}
 	var theme_questions []Question
 	var wrong_answers int
-	for _, v := range game.Questions {
-		if v.Theme == q.Theme {
-			theme_questions = append(theme_questions, v)
-			if v.Status == "failed" {
+	for _, quest := range game.Questions {
+		if quest.Theme == q.Theme {
+			theme_questions = append(theme_questions, quest)
+			if quest.Status == "failed" {
+				//game.Trash[quest.ID] = quest
 				wrong_answers++
 			}
 		}
 	}
 	for i, v := range game.Themes {
-		if v.ID == q.Theme {
-			if q.Status == "solved" || wrong_answers == len(theme_questions) {
-				game.Themes[i].Status = q.Status
-				break
+		if v.ID == q.Theme && (q.Status == "solved" || wrong_answers == len(theme_questions)) {
+			if q.Status == "solved" {
+				for _, v := range theme_questions {
+					if v.Status == "" {
+						game.Trash = append(game.Trash, v)
+					}
+				}
 			}
+			game.Themes[i].Status = q.Status
+			break
 		}
 	}
 	er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("answer_question", struct{ Questions []Question }{Questions: theme_questions}))
