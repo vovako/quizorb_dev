@@ -43,3 +43,14 @@
 	"action": "connect",
 	"data": "21f4f7e0-56bd-11ee-9ecf-50c2e80c33eb"
 }
+{
+	"action": "question_trash",
+	"data": "21f4f7e0-56bd-11ee-9ecf-50c2e80c33eb"
+}
+{
+	"action": "answer_question_trash",
+	"data": {
+		"game":"21f4f7e0-56bd-11ee-9ecf-50c2e80c33eb",
+		"question":1
+	}
+}

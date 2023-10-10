@@ -93,16 +93,15 @@ func (game *Game) GetThemes() error {
 
 func (game *Game) GetTrashQuestion() (*Question, string) {
 	if len(game.Trash) != 0 {
-		if el := rand.Intn(len(game.Trash)); el != 0 {
-			var answer string
-			for _, va := range game.Themes {
-				if va.ID == game.Trash[el].Theme {
-					answer = va.Answer
-					break
-				}
+		el := rand.Intn(len(game.Trash))
+		var answer string
+		for _, va := range game.Themes {
+			if va.ID == game.Trash[el].Theme {
+				answer = va.Answer
+				break
 			}
-			return &game.Trash[el], answer
 		}
+		return &game.Trash[el], answer
 	}
 	return nil, ""
 }
@@ -117,7 +116,7 @@ func (game *Game) AnswerTrashQuestion(question uint, status string) error {
 			if er != nil || e != nil {
 				return fmt.Errorf("ошибки при ответе на вопрос из корзины: у зрителя - %v; у ведущего %v", e, er)
 			}
-			game.Trash = append(game.Trash[:i], game.Trash[i:]...)
+			game.Trash = append(game.Trash[:i], game.Trash[i+1:]...)
 			return nil
 		}
 	}
