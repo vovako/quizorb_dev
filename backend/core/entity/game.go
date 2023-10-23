@@ -113,10 +113,10 @@ func (game *Game) AnswerTrashQuestion(question uint, status string) error {
 			v.Status = status
 			e := game.Lead.Conn.WriteJSON(tools.SuccessRes("answer_question_trash", Resp{Questions: []Question{v}}))
 			er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("answer_question_trash", Resp{Questions: []Question{v}}))
+			game.Trash = append(game.Trash[:i], game.Trash[i+1:]...)
 			if er != nil || e != nil {
 				return fmt.Errorf("ошибки при ответе на вопрос из корзины: у зрителя - %v; у ведущего %v", e, er)
 			}
-			game.Trash = append(game.Trash[:i], game.Trash[i+1:]...)
 			return nil
 		}
 	}

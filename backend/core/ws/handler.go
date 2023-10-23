@@ -39,7 +39,7 @@ func Connection() fiber.Handler {
 			}
 			var req request
 			if err := c.ReadJSON(&req); err != nil {
-				if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure) {
+				if websocket.IsUnexpectedCloseError(err) || websocket.IsCloseError(err) {
 					delete(connections, conn)
 					log.Println("Вышел при чтении", err.Error())
 					return
@@ -55,12 +55,14 @@ func Connection() fiber.Handler {
 				game.AddLead(connections[conn])
 				connections[conn].InGame = true
 				connections[conn].Role = "Lead"
+				fmt.Println(connections)
 				for _, v := range connections {
 					if !v.InGame && v.Role == "Viewer" {
 						if err := game.AddViewer(v); err != nil {
 							log.Println(err.Error())
 							return
 						} else {
+							fmt.Println(connections)
 							v.InGame = true
 							type Resp struct {
 								ID     uuid.UUID
