@@ -11,22 +11,40 @@ import (
 
 type Game struct {
 	ID        uuid.UUID `json:"id"`
+	Title     string
+	Pass      string
 	Questions []Question
 	Themes    []Theme
 	Lead      *Client
 	Viewer    *Client
 	Trash     []Question
 }
+type SliceGame struct {
+	ID     uuid.UUID `json:"id"`
+	Title  string    `json:"title"`
+	Lead   *Client   `json:"lead"`
+	Viewer *Client   `json:"viewer"`
+}
 
 var gamesStore = make(map[uuid.UUID]*Game)
 
-func CreateGame() (*Game, error) {
+func GetGames() []*SliceGame {
+	var games []*SliceGame
+	for _, v := range gamesStore {
+		games = append(games, &SliceGame{ID: v.ID, Title: v.Title, Lead: v.Lead, Viewer: v.Viewer})
+	}
+	return games
+}
+
+func CreateGame(title, pass string) (*Game, error) {
 	key, err := uuid.NewUUID()
 	if err != nil {
 		return nil, err
 	}
 	gamesStore[key] = &Game{
 		ID:        key,
+		Pass:      pass,
+		Title:     title,
 		Questions: SetQuestions(),
 		Themes:    SetThemes(),
 	}
@@ -41,17 +59,6 @@ func DeleteGame(game uuid.UUID) {
 	delete(gamesStore, game)
 }
 
-// Можно ли прикрутить к подключению к игре
-func JoinGame(viewer *Client) *Game {
-	for _, v := range gamesStore {
-		if v.Viewer == nil && v.Lead.Address != viewer.Address {
-			v.Viewer = viewer
-			return v
-		}
-	}
-	return nil
-}
-
 type Repository interface {
 	AddLead(*websocket.Conn) error
 	AddViewer(*websocket.Conn) error
@@ -62,6 +69,7 @@ type Repository interface {
 	SelectQuestion(uint) error
 	AnswerQuestion() error
 	Reconnect(*Client) (string, error)
+	Connect(*Client) error
 }
 
 func (game *Game) AddLead(lead *Client) error {
@@ -236,4 +244,27 @@ func (game *Game) Reconnect(client *Client) (string, error) {
 		return addres, nil
 	}
 	return client.Address, fmt.Errorf("неизвестная роль")
+}
+
+func (game *Game) Connect(participant *Client, pass string) error {
+	if pass != game.Pass {
+		err := fmt.Errorf("неверный пароль от комнаты")
+		er := participant.Conn.WriteJSON(tools.BadRes("connect", err))
+		if er != nil {
+			err = er
+		}
+		return err
+	}
+	if participant.Role == "Lead" {
+		game.Lead = participant
+		if err := game.Lead.Conn.WriteJSON(tools.SuccessRes("connect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
+			return err
+		}
+	} else if participant.Role == "Viewer" {
+		game.Viewer = participant
+		if err := game.Viewer.Conn.WriteJSON(tools.SuccessRes("connect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
+			return err
+		}
+	}
+	return nil
 }

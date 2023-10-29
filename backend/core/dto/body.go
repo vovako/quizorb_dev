@@ -23,6 +23,12 @@ type ReconnectBody struct {
 	Role string    `json:"role"`
 }
 
+type ConnectBody struct {
+	Game uuid.UUID `json:"game"`
+	Role string    `json:"role"`
+	Pass string    `json:"password"`
+}
+
 type AnswerTrashQuestion struct {
 	Game     uuid.UUID `json:"game"`
 	Question uint      `json:"question"`

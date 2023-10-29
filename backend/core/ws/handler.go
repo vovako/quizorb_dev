@@ -47,37 +47,57 @@ func Connection() fiber.Handler {
 					return
 				}
 			}
+			log.Println(req.Act, connections[conn].Address, connections[conn].Role)
 			for i, v := range connections {
-				log.Println(req.Act, i, v.InGame, v.Role)
+				log.Println(i, v.InGame, v.Role)
 			}
 			switch req.Act {
 			case "game":
-				game, err := entity.CreateGame()
+				type Body struct {
+					Pass  string `json:"password"`
+					Title string `json:"title"`
+				}
+				var body Body
+				if err := json.Unmarshal(req.Data, &body); err != nil {
+					return
+				}
+				game, err := entity.CreateGame(body.Title, body.Pass)
 				if err != nil {
-					log.Println(err.Error())
 					return
 				}
 				game.AddLead(connections[conn])
 				connections[conn].InGame = true
 				connections[conn].Role = "Lead"
-				for _, v := range connections {
-					if !v.InGame && v.Role == "Viewer" {
-						if err := game.AddViewer(v); err == nil {
-							v.InGame = true
-							type Resp struct {
-								ID     uuid.UUID
-								Themes []entity.Theme
-							}
-							err := game.Lead.Conn.WriteJSON(tools.SuccessRes("game", Resp{ID: game.ID, Themes: game.Themes}))
-							er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("game", Resp{ID: game.ID, Themes: game.Themes}))
-							if err != nil || er != nil {
-								log.Printf("ошибки при создании игры: отправка ответа зрителю - %v; отправка ответа ведущему %v", er, err)
-								return
-							}
-							break
-						}
+				type Resp struct {
+					ID     uuid.UUID
+					Themes []entity.Theme
+				}
+				er := game.Lead.Conn.WriteJSON(tools.SuccessRes("game", Resp{ID: game.ID, Themes: game.Themes}))
+				if er != nil {
+					log.Printf("ошибки при создании игры: отправка ответа ведущему %v", er)
+					return
+				}
+			case "connect":
+				var body dto.ConnectBody
+				if err := json.Unmarshal(req.Data, &body); err != nil {
+					log.Println("тело запроса не такое, как ожидалось")
+					return
+				}
+				if game := entity.GetGame(body.Game); game != nil {
+					connections[conn].Role = body.Role
+					if err := game.Connect(connections[conn], body.Pass); err != nil {
+						return
 					}
-
+				} else {
+					if err := connections[conn].Conn.WriteJSON(tools.BadRes("connect", fmt.Errorf("игра не найдена"))); err != nil {
+						return
+					}
+				}
+			case "games":
+				err := connections[conn].Conn.WriteJSON(tools.SuccessRes("games", entity.GetGames()))
+				if err != nil {
+					log.Printf("ошибки при получении данных об играх %v", err)
+					return
 				}
 			case "get_themes":
 				var id uuid.UUID
@@ -90,7 +110,9 @@ func Connection() fiber.Handler {
 						return
 					}
 				} else {
-					tools.BadRes("get_themes", fmt.Errorf("игра не найдена"))
+					if err := connections[conn].Conn.WriteJSON(tools.BadRes("get_themes", fmt.Errorf("игра не найдена"))); err != nil {
+						return
+					}
 				}
 			case "select_theme":
 				var body dto.SelectThemeBody
@@ -103,7 +125,9 @@ func Connection() fiber.Handler {
 						return
 					}
 				} else {
-					tools.BadRes("select_theme", fmt.Errorf("игра не найдена"))
+					if err := connections[conn].Conn.WriteJSON(tools.BadRes("select_theme", fmt.Errorf("игра не найдена"))); err != nil {
+						return
+					}
 				}
 			case "select_question":
 				var body dto.SelectQuestionBody
@@ -167,7 +191,7 @@ func Connection() fiber.Handler {
 					return
 				}
 				if game := entity.GetGame(id_game); game != nil {
-					g, err := entity.CreateGame()
+					g, err := entity.CreateGame(game.Title, game.Pass)
 					if err != nil {
 						return
 					}
