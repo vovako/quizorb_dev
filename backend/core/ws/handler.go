@@ -28,10 +28,12 @@ func Connection() fiber.Handler {
 	return websocket.New(func(c *websocket.Conn) {
 		for {
 			conn := c.RemoteAddr().String()
-			connections[conn] = &entity.Client{
-				Address: conn,
-				Conn:    c,
-				Role:    "Viewer",
+			if connections[conn] == nil {
+				connections[conn] = &entity.Client{
+					Address: conn,
+					Conn:    c,
+					Role:    "Viewer",
+				}
 			}
 			type request struct {
 				Act  string          `json:"action"`
@@ -45,6 +47,9 @@ func Connection() fiber.Handler {
 					return
 				}
 			}
+			for i, v := range connections {
+				log.Println(req.Act, i, v.InGame, v.Role)
+			}
 			switch req.Act {
 			case "game":
 				game, err := entity.CreateGame()
@@ -55,14 +60,9 @@ func Connection() fiber.Handler {
 				game.AddLead(connections[conn])
 				connections[conn].InGame = true
 				connections[conn].Role = "Lead"
-				fmt.Println(connections)
 				for _, v := range connections {
 					if !v.InGame && v.Role == "Viewer" {
-						if err := game.AddViewer(v); err != nil {
-							log.Println(err.Error())
-							return
-						} else {
-							fmt.Println(connections)
+						if err := game.AddViewer(v); err == nil {
 							v.InGame = true
 							type Resp struct {
 								ID     uuid.UUID
@@ -134,10 +134,13 @@ func Connection() fiber.Handler {
 				}
 				connections[conn].Role = body.Role
 				if game := entity.GetGame(body.Game); game != nil {
-					if err := game.Reconnect(connections[conn]); err != nil {
+					addres, err := game.Reconnect(connections[conn])
+					delete(connections, addres)
+					if err != nil {
 						log.Println(err.Error())
 						return
 					}
+					connections[conn].InGame = true
 				} else if err := connections[conn].Conn.WriteJSON(tools.BadRes("reconnect", fmt.Errorf("игра не найдена"))); err != nil {
 					log.Println(err)
 					return

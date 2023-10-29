@@ -61,7 +61,7 @@ type Repository interface {
 	SelectTheme(uint) error
 	SelectQuestion(uint) error
 	AnswerQuestion() error
-	Reconnect(*Client) error
+	Reconnect(*Client) (string, error)
 }
 
 func (game *Game) AddLead(lead *Client) error {
@@ -194,7 +194,6 @@ func (game *Game) AnswerQuestion(question uint, status string) error {
 		if quest.Theme == q.Theme {
 			theme_questions = append(theme_questions, quest)
 			if quest.Status == "failed" {
-				//game.Trash[quest.ID] = quest
 				wrong_answers++
 			}
 		}
@@ -220,21 +219,21 @@ func (game *Game) AnswerQuestion(question uint, status string) error {
 	return nil
 }
 
-func (game *Game) Reconnect(client *Client) error {
+func (game *Game) Reconnect(client *Client) (string, error) {
 	if client.Role == "Lead" {
+		addres := game.Lead.Address
 		game.Lead = client
-		client.InGame = true
 		if err := game.Lead.Conn.WriteJSON(tools.SuccessRes("reconnect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
-			return err
+			return addres, err
 		}
-		return nil
+		return addres, nil
 	} else if client.Role == "Viewer" {
+		addres := game.Viewer.Address
 		game.Viewer = client
-		client.InGame = true
 		if err := game.Viewer.Conn.WriteJSON(tools.SuccessRes("reconnect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
-			return err
+			return addres, err
 		}
-		return nil
+		return addres, nil
 	}
-	return fmt.Errorf("неизвестная роль")
+	return client.Address, fmt.Errorf("неизвестная роль")
 }
