@@ -13,18 +13,27 @@
 	<img src="img/bg-elem-1.svg" alt="" class="bg-elem-1">
 	<img src="img/bg-elem-2.svg" alt="" class="bg-elem-2">
 
-	<section class="lead-themes active" data-page="lead-themes">
+	<section class="loading active">
+		<img src="img/loading.svg" alt="">
+	</section>
+	
+	<section class="login" data-page="login">
+		<button class="lead">Я ведущий</button>
+		<button class="view">Я зритель</button>
+	</section>
+
+	<!-- lead pages -->
+	<section class="lead-themes" data-page="lead-themes">
 		<div class="lead-themes__container container">
 			<div class="lead-themes__actions">
 				<button class="lead-themes__delte-btn btn">Начать заново</button>
 				<button class="lead-themes__two-tour-btn btn">Вопрос 2 тура</button>
 			</div>
 			<div class="lead-themes__list">
-
 			</div>
 		</div>
 	</section>
-
+	
 	<section class="lead-theme" data-page="lead-theme" data-question-id="">
 		<div class="lead-theme__container container">
 			<div class="lead-theme__header-actions">
@@ -36,8 +45,9 @@
 					<div class="lead-theme__points"><span></span> баллов</div>
 					<div class="lead-theme__answer"></div>
 					<div class="lead-theme__question-image"><img src="" alt=""></div>
-					<div class="lead-theme__question">Наставник цесаревича Александра Николаевича, посещал Оренбуржье вместе со своим учеником. Автор слов государственного
-					гимна Российской империи «Боже, Царя храни!».</div>
+					<div class="lead-theme__question">Наставник цесаревича Александра Николаевича, посещал Оренбуржье вместе со
+						своим учеником. Автор слов государственного
+						гимна Российской империи «Боже, Царя храни!».</div>
 				</div>
 			</div>
 			<div class="lead-theme__actions">
@@ -46,16 +56,47 @@
 			</div>
 		</div>
 	</section>
-
+	
 	<section class="to-themes-btn" data-page="to-themes-btn">
 		<div class="to-themes-btn__container container">
 			<button class="to-themes-btn__btn btn">Перейти к темам</button>
 		</div>
 	</section>
 
-	<section class="loading active">
-		<img src="img/loading.svg" alt="">
+	<!-- view pages -->
+	<section class="waiting" data-page="waiting">
+		<div class="waiting__container container">
+			<div class="waiting__text">Ожидание регистрации участников</div>
+		</div>
 	</section>
+	
+	<section class="tiles" data-page="tiles">
+		<div class="tiles__container container">
+		</div>
+	</section>
+	
+	<section class="themes" data-page="themes">
+		<div class="themes__container container">
+		</div>
+	</section>
+	
+	<section class="theme" data-page="theme">
+		<div class="theme__container container">
+			<div class="theme__list">
+			</div>
+		</div>
+	</section>
+	
+	<div class="popup answer">
+		<div class="answer__container container">
+			<div class="answer__image">
+				<img src="img/temp/img.svg" alt="">
+				<div class="answer__text"></div>
+			</div>
+		</div>
+	
+		<div class="answer__points-anim">100</div>
+	</div>
 </body>
 
 </html>

@@ -1,6 +1,8 @@
 import { toPage } from "./functions.js"
 
-async function viewPage(ws) {
+function viewPage(ws, pages) {
+
+	const loading = document.querySelector('.loading')
 
 	ws.onopen = function () {
 		console.log("Соединение удалось")
@@ -33,13 +35,14 @@ async function viewPage(ws) {
 					location.reload()
 				}
 
+				loading.classList.remove('active')
 				updateThemes(msg.data.Themes)
-				toPage('themes')
+				toPage(pages.themes)
 				break;
 
 			case 'select_theme':
 				updateTheme(msg.data.Questions)
-				toPage('theme')
+				toPage(pages.theme)
 
 				answerPopup.querySelector('.answer__text').textContent = msg.data.Answer
 				answerPopup.querySelector('.answer__image img').src = msg.data.IMGAnswer
@@ -53,7 +56,7 @@ async function viewPage(ws) {
 				break;
 			case 'to-tiles':
 				answerPopup.classList.remove('active')
-				toPage('themes')
+				toPage(pages.themes)
 				break;
 			case 'restart_game':
 				localStorage.setItem('session_id', msg.data)
@@ -62,9 +65,9 @@ async function viewPage(ws) {
 			case 'question_trash':
 				if (Object.keys(msg.data).length < 1) break;
 
-					updateTheme([msg.data.Question])
-					toPage('theme')
-					answerPopup.querySelector('.answer__text').textContent = msg.data.Answer
+				updateTheme([msg.data.Question])
+				toPage(pages.theme)
+				answerPopup.querySelector('.answer__text').textContent = msg.data.Answer
 				answerPopup.querySelector('.answer__image img').src = msg.data.Question.url_answer
 				break;
 			case 'answer_question_trash':
