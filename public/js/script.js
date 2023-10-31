@@ -22,14 +22,6 @@ const pages = {
 
 const params = new URLSearchParams(window.location.search);
 const role = params.get('role')
-
-window.addEventListener('popstate', function() {
-	if (confirm('Выйти в меню игр?')) {
-		history.pushState(null, null, '')
-		location.reload()
-	}
-})
-
 switch (role) {
 	case null:
 		// получение игр
@@ -61,3 +53,9 @@ switch (role) {
 		break
 }
 
+window.addEventListener('popstate', function () {
+	if (confirm('Выйти в меню игр?')) {
+		history.pushState(null, null, '')
+		location.reload()
+	}
+})
