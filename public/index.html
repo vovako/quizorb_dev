@@ -13,14 +13,84 @@
 	<img src="img/bg-elem-1.svg" alt="" class="bg-elem-1">
 	<img src="img/bg-elem-2.svg" alt="" class="bg-elem-2">
 
-	<section class="lead-themes active" data-page="lead-themes">
+	<section class="loading active">
+		<img src="img/loading.svg" alt="">
+	</section>
+
+	<section class="login" data-page="login">
+		<div class="login__container container">
+			<div class="login__games">
+				<button class="login-game">
+					<div class="login-game__title">Игра 1</div>
+					<div class="login-game__role login-game-role">
+						<div class="login-game-role__image">
+							<img src="img/lead.svg" alt="">
+						</div>
+						<img src="img/cross.svg" alt="" class="login-game-role__status">
+					</div>
+					<div class="login-game__role login-game-role">
+						<div class="login-game-role__image">
+							<img src="img/view.svg" alt="">
+						</div>
+						<img src="img/check-mark.svg" alt="" class="login-game-role__status">
+					</div>
+				</button>
+				<button class="login-game">
+					<div class="login-game__title">Игра 1</div>
+					<div class="login-game__role login-game-role">
+						<div class="login-game-role__image">
+							<img src="img/lead.svg" alt="">
+						</div>
+						<img src="img/cross.svg" alt="" class="login-game-role__status">
+					</div>
+					<div class="login-game__role login-game-role">
+						<div class="login-game-role__image">
+							<img src="img/view.svg" alt="">
+						</div>
+						<img src="img/check-mark.svg" alt="" class="login-game-role__status">
+					</div>
+				</button>
+			</div>
+			<button class="login__add-game-btn">
+				<img src="img/add-game.svg" alt="">
+			</button>
+		</div>
+
+		<div class="popup create-game-popup">
+			<div class="create-game-popup__container container">
+				<input type="text" class="create-game-popup__input" name="title" placeholder="Название">
+				<input type="text" class="create-game-popup__input" name="password" placeholder="Пароль">
+				<div class="create-game-popup__actions">
+					<button class="create-game-popup__action create-btn">создать</button>
+					<button class="create-game-popup__action cancel-btn">отмена</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="popup login-popup">
+			<div class="login-popup__container container">
+				<div class="login-popup__title">Игра 1</div>
+				<label class="checkbox-green">
+					<input type="checkbox" id="role-switcher">
+					<span class="checkbox-green-switch" data-label-on="Зрители" data-label-off="Ведущий"></span>
+				</label>
+				<input type="text" class="login-popup__input" name="password" placeholder="Пароль">
+				<div class="login-popup__actions">
+					<button class="login-popup__action login-btn">войти</button>
+					<button class="login-popup__action cancel-btn">отмена</button>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- lead pages -->
+	<section class="lead-themes" data-page="lead-themes">
 		<div class="lead-themes__container container">
 			<div class="lead-themes__actions">
 				<button class="lead-themes__delte-btn btn">Начать заново</button>
 				<button class="lead-themes__two-tour-btn btn">Вопрос 2 тура</button>
 			</div>
 			<div class="lead-themes__list">
-
 			</div>
 		</div>
 	</section>
@@ -36,8 +106,9 @@
 					<div class="lead-theme__points"><span></span> баллов</div>
 					<div class="lead-theme__answer"></div>
 					<div class="lead-theme__question-image"><img src="" alt=""></div>
-					<div class="lead-theme__question">Наставник цесаревича Александра Николаевича, посещал Оренбуржье вместе со своим учеником. Автор слов государственного
-					гимна Российской империи «Боже, Царя храни!».</div>
+					<div class="lead-theme__question">Наставник цесаревича Александра Николаевича, посещал Оренбуржье вместе со
+						своим учеником. Автор слов государственного
+						гимна Российской империи «Боже, Царя храни!».</div>
 				</div>
 			</div>
 			<div class="lead-theme__actions">
@@ -53,9 +124,40 @@
 		</div>
 	</section>
 
-	<section class="loading active">
-		<img src="img/loading.svg" alt="">
+	<!-- view pages -->
+	<section class="waiting" data-page="waiting">
+		<div class="waiting__container container">
+			<div class="waiting__text">Ожидание регистрации участников</div>
+		</div>
 	</section>
+
+	<section class="tiles" data-page="tiles">
+		<div class="tiles__container container">
+		</div>
+	</section>
+
+	<section class="themes" data-page="themes">
+		<div class="themes__container container">
+		</div>
+	</section>
+
+	<section class="theme" data-page="theme">
+		<div class="theme__container container">
+			<div class="theme__list">
+			</div>
+		</div>
+	</section>
+
+	<div class="popup answer">
+		<div class="answer__container container">
+			<div class="answer__image">
+				<img src="img/temp/img.svg" alt="">
+				<div class="answer__text"></div>
+			</div>
+		</div>
+
+		<div class="answer__points-anim">100</div>
+	</div>
 </body>
 
 </html>

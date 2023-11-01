@@ -1,3 +1,4 @@
+@charset "UTF-8";
 * {
   padding: 0px;
   margin: 0px;
@@ -107,6 +108,185 @@ section.active {
 }
 .loading.active {
   display: flex;
+}
+
+.login__container {
+  height: 100%;
+}
+.login__games {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.login__games:empty::after {
+  content: "Нет активных игр";
+  text-align: center;
+  display: block;
+  color: white;
+  font-weight: 500;
+  font-size: 18px;
+}
+.login__add-game-btn {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 5px;
+  border-radius: 6px;
+}
+.login .popup {
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.login .popup.active {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.login .popup .container {
+  background-color: rgba(255, 255, 255, 0.2);
+  width: min(90vw, 350px);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 8px;
+}
+.login .popup input {
+  width: 100%;
+  background-color: transparent;
+  border: white 2px solid;
+  line-height: 1.7em;
+  padding: 0 10px;
+  border-radius: 6px;
+  outline: none;
+  color: white;
+}
+.login .popup input::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+.login .popup input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+.login .popup button {
+  border: white 2px solid;
+  border-radius: 100px;
+  padding: 4px 10px;
+  font-size: 20px;
+  flex: 1;
+  font-weight: 500;
+}
+.login .popup button:nth-child(2) {
+  background-color: transparent;
+  color: white;
+}
+.login .popup button:disabled {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: rgba(0, 0, 0, 0.5);
+  border: transparent 2px solid;
+}
+.login .popup .create-game-popup__actions, .login .popup .login-popup__actions {
+  display: flex;
+  gap: 12px;
+  margin: 20px 20px 0;
+}
+.login .popup .login-popup__title {
+  color: white;
+  text-align: center;
+}
+.login-game {
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  gap: 8px;
+  padding: 8px 12px;
+  align-items: center;
+}
+.login-game > * {
+  pointer-events: none;
+}
+.login-game__title {
+  flex: 1;
+  color: white;
+  font-size: 20px;
+  font-weight: 500;
+  text-align: left;
+}
+.login-game-role {
+  position: relative;
+}
+.login-game-role__status {
+  position: absolute;
+  left: 0;
+  top: 0;
+  translate: -50% 0;
+}
+
+.checkbox-green {
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  font-size: 18px;
+}
+.checkbox-green input[type=checkbox] {
+  display: block;
+  width: 0;
+  height: 0;
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+}
+.checkbox-green input[type=checkbox]:checked + .checkbox-green-switch:before {
+  content: attr(data-label-off);
+  left: 0;
+}
+.checkbox-green input[type=checkbox]:checked + .checkbox-green-switch:after {
+  content: attr(data-label-on);
+  color: black;
+  transform: translate3d(100%, 0, 0);
+}
+.checkbox-green .checkbox-green-switch {
+  display: flex;
+  height: 30px;
+  width: 100%;
+  position: relative;
+  border-radius: 100px;
+  overflow: hidden;
+  background: transparent;
+  border: 2px white solid;
+}
+.checkbox-green .checkbox-green-switch:before {
+  content: attr(data-label-on);
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 5px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  color: white;
+  transition: all 0.3s cubic-bezier(0, 1, 0.5, 1);
+}
+.checkbox-green .checkbox-green-switch:after {
+  content: attr(data-label-off);
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  border-radius: 100px;
+  padding: 5px;
+  position: absolute;
+  top: 0;
+  z-index: 5;
+  background: white;
+  transition: all 0.3s cubic-bezier(0, 1, 0.5, 1);
 }
 
 .lead-themes__list {
@@ -332,12 +512,6 @@ section.active {
 
 .popup {
   display: none;
-}
-.popup.active {
-  display: block;
-}
-
-.answer {
   position: fixed;
   top: 0;
   left: 0;
@@ -345,6 +519,10 @@ section.active {
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
 }
+.popup.active {
+  display: block;
+}
+
 .dn {
   display: none;
 }

@@ -1,11 +1,13 @@
 import { toPage } from "./functions.js"
 
-let curQuestionIndex = null
 
-function interfacePage(ws) {
 
+function interfacePage(ws, pages) {
 	const state = localStorage.getItem('state') ? JSON.parse(localStorage.getItem('state')) : { page: '' }
 	const loading = document.querySelector('.loading')
+	
+	let curQuestionIndex = null
+
 
 	ws.onopen = function () {
 		console.log("Соединение удалось")
@@ -42,7 +44,7 @@ function interfacePage(ws) {
 				}
 
 				loading.classList.remove('active')
-				toPage('lead-themes')
+				toPage(pages.themes)
 
 			case 'get_themes':
 				updateThemes(msg.data.Themes)
@@ -73,10 +75,10 @@ function interfacePage(ws) {
 				}
 				break;
 			case 'to-tiles':
-				toPage('lead-themes')
+				toPage(pages.themes)
 				break;
 			case 'answer_question_trash':
-				toPage('to-themes-btn')
+				toPage(pages.toThemesBtn)
 				break;
 		}
 	}
@@ -102,7 +104,7 @@ function interfacePage(ws) {
 		const headerQuestionImg = themeContainer.querySelector('.lead-theme__question-image img')
 
 		if (questions.findIndex(q => q.Status === 'solved') !== -1 || questions.findIndex(q => q.Status === '') == -1) {
-			toPage('to-themes-btn')
+			toPage(pages.toThemesBtn)
 			return
 		}
 
@@ -116,14 +118,14 @@ function interfacePage(ws) {
 		headerQuestion.textContent = question.question
 		headerQuestionImg.src = question.url_answer
 
-		toPage('lead-theme')
+		toPage(pages.theme)
 	}
 
 	document.addEventListener('click', function (evt) {
 		const target = evt.target
 
 		if (target.hasAttribute('data-page-target')) {
-			toPage(target.dataset.pageTarget)
+			toPage(document.querySelector(`data-page="${target.dataset.pageTarget}"`))
 		} else if (target.classList.contains('intro-tiles-item__apply-btn') && !target.classList.contains('checked')) {
 			curQuestionIndex = +target.closest('.intro-tiles-item').dataset.tilesId
 
@@ -148,7 +150,7 @@ function interfacePage(ws) {
 				}
 			}))
 
-			toPage('lead-theme')
+			toPage(pages.theme)
 		} else if (target.classList.contains('lead-theme__deny-btn')) {
 			const themeSection = target.closest('section.lead-theme')
 			const questionId = +target.closest('.lead-theme__container').dataset.questionId
@@ -174,7 +176,7 @@ function interfacePage(ws) {
 				}))
 			}
 
-			
+
 			ws.send(JSON.stringify({
 				action: 'get_themes',
 				data: localStorage.getItem('session_id')
@@ -214,7 +216,7 @@ function interfacePage(ws) {
 				action: 'to-tiles',
 				data: localStorage.getItem('session_id')
 			}))
-			toPage('lead-themes')
+			toPage(pages.themes)
 		} else if (target.classList.contains('lead-themes__two-tour-btn')) {
 			ws.send(JSON.stringify({
 				action: 'question_trash',
