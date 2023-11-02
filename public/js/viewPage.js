@@ -43,7 +43,7 @@ function viewPage(ws, pages) {
 			case 'select_theme':
 				updateTheme(msg.data.Questions)
 				toPage(pages.theme)
-
+				updateThemeImageHeight()
 				answerPopup.querySelector('.answer__text').textContent = msg.data.Answer
 				answerPopup.querySelector('.answer__image img').src = msg.data.IMGAnswer
 				break;
@@ -108,6 +108,19 @@ function viewPage(ws, pages) {
 
 		questions.sort((a, b) => b.Costs - a.Costs)
 
+		const themeImage = document.querySelector('.theme-body__image')
+		const themeQuestionText = document.querySelector('.theme-body__text')
+
+		let curQuesetionIndex = null
+		for (let i = 0; i < questions.length; i++) {
+			if (questions[i].Status === '') {
+				curQuesetionIndex = i
+				break;
+			}
+		}
+		themeQuestionText.textContent = questions[curQuesetionIndex].question
+		themeImage.src = questions[curQuesetionIndex].url_answer
+
 		const themeBox = document.querySelector('.theme__list')
 		let activeFinded = false
 		themeBox.innerHTML = ''
@@ -117,11 +130,20 @@ function viewPage(ws, pages) {
 				<div class="theme-item ${question.Status} ${!activeFinded && question.Status !== 'failed' ? 'active' : ''}">
 					<div class="theme-item__text">Вопрос ${i + 1}</div>
 					<div class="theme-item__reward"><span>${question.Costs}</span> баллов</div>
-					<div class="theme-item__question ${activeFinded ? '' : 'active'}">${question.question}</div>
 				</div>
 			`)
 			if (!activeFinded && question.Status !== 'failed') activeFinded = true
 		})
+	}
+
+
+	function updateThemeImageHeight() {
+		const themeContainer = document.querySelector('.theme__container')
+		const themeBody = themeContainer.querySelector('.theme-body')
+		const text = themeBody.querySelector('.theme-body__text')
+		const image = themeBody.querySelector('.theme-body__image')
+		const maxImageHeight = themeContainer.clientHeight - (getComputedStyle(themeBody).padding.replace('px', '') * 2) - text.clientHeight + 'px'
+		image.style.maxHeight = maxImageHeight
 	}
 }
 
