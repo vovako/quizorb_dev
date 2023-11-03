@@ -69,7 +69,7 @@ body .bg-elem-2 {
 }
 
 .container {
-  padding: 0 15px;
+  padding: 0 30px;
   margin: 0 auto;
 }
 
@@ -474,10 +474,39 @@ section.active {
   background-color: #51ffab;
 }
 
+.theme {
+  height: 100vh;
+}
+.theme__container {
+  display: flex;
+  gap: 30px;
+  height: 100%;
+}
 .theme__list {
+  flex: 0 0 400px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.theme-body {
+  background-color: rgba(0, 0, 0, 0.2);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  height: -moz-min-content;
+  height: min-content;
+}
+.theme-body__image {
+  max-width: 100%;
+}
+.theme-body__text {
+  padding-top: 20px;
+  flex: 0 0 max-content;
+  color: white;
+  font-weight: 500;
+  font-size: 2.3vw;
 }
 
 .theme-item {
@@ -488,15 +517,6 @@ section.active {
   justify-content: space-between;
   border: 5px solid transparent;
   flex-wrap: wrap;
-}
-.theme-item__question {
-  display: none;
-}
-.theme-item__question.active:not(:empty) {
-  margin-top: 10px;
-  flex: 0 0 100%;
-  display: block;
-  font-size: 16px;
 }
 .theme-item.solved {
   background-color: #51ffab;
