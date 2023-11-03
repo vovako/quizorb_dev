@@ -1,8 +1,85 @@
 //JSON-Примеры для взаимодействия с websockets
 //Создание игры
 {
-	"action": "game"
+	"action": "game",
+	"data":{
+        "title":"Заноба",
+        "password":"12345"
+    }
 }
+//Ответ при успешном создании игры
+{
+    "action": "game",
+    "data": "Игра создана",
+    "error": null
+}
+//Получение списка игр
+{
+    "action":"games"
+}
+//нету игр
+{
+    "action":"games"
+}
+//Есть игры
+{
+    "action": "games",
+    "data": [
+        {
+            "id": "625f5d5c-7a51-11ee-b761-50c2e80c33eb",
+            "title": "Заноба",
+            "lead": false,
+            "viewer": false
+        }
+    ],
+    "error": null
+}
+//Подключение к игре
+{
+    "action":"connect",
+    "data":{
+	    "game":"625f5d5c-7a51-11ee-b761-50c2e80c33eb",
+	    "role":"Lead",
+	    "password":123
+    }
+}
+//Неверный пароль
+{
+    "action": "connect",
+    "data": null,
+    "error": "неверный пароль от комнаты"
+}
+//Lead
+{
+    "action": "connect",
+    "data": {
+        "Themes": [
+            {
+                "id": 1,
+                "Title": "Тема 1",
+                "Answer": "Пушкин А.С.",
+                "IMGAnswer": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR40_Y9C-iQ9LL1MHOLeXHRi85qQpqra8V2OA\u0026usqp=CAU",
+                "Status": ""
+            },
+            {
+                "id": 2,
+                "Title": "Тема 2",
+                "Answer": "Толстой Л.Н.",
+                "IMGAnswer": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqfkuON9pEYuBrAvtYZilSgfieI9G9t6NybiPgGT4GR609DQJQGqfLfNaw_cPLM2pnCrw\u0026usqp=CAU",
+                "Status": ""
+            }
+        ]
+    },
+    "error": null
+}
+
+
+
+
+
+
+
+
 //Выбор вопроса
 {
 	"action": "select_question",

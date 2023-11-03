@@ -13,8 +13,8 @@ type Player struct {
 }
 
 type Client struct {
-	Address string
-	Conn    *websocket.Conn
+	Address string          `json:"-"`
+	Conn    *websocket.Conn `json:"-"`
 	InGame  bool
-	Role    string
+	Role    string `json:"-"`
 }

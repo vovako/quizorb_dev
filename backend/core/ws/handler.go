@@ -61,18 +61,11 @@ func Connection() fiber.Handler {
 				if err := json.Unmarshal(req.Data, &body); err != nil {
 					return
 				}
-				game, err := entity.CreateGame(body.Title, body.Pass)
+				_, err := entity.CreateGame(body.Title, body.Pass)
 				if err != nil {
 					return
 				}
-				game.AddLead(connections[conn])
-				connections[conn].InGame = true
-				connections[conn].Role = "Lead"
-				type Resp struct {
-					ID     uuid.UUID
-					Themes []entity.Theme
-				}
-				er := game.Lead.Conn.WriteJSON(tools.SuccessRes("game", Resp{ID: game.ID, Themes: game.Themes}))
+				er := connections[conn].Conn.WriteJSON(tools.SuccessRes("game", "Игра создана"))
 				if er != nil {
 					log.Printf("ошибки при создании игры: отправка ответа ведущему %v", er)
 					return
@@ -80,13 +73,15 @@ func Connection() fiber.Handler {
 			case "connect":
 				var body dto.ConnectBody
 				if err := json.Unmarshal(req.Data, &body); err != nil {
-					log.Println("тело запроса не такое, как ожидалось")
 					return
 				}
 				if game := entity.GetGame(body.Game); game != nil {
 					connections[conn].Role = body.Role
 					if err := game.Connect(connections[conn], body.Pass); err != nil {
-						return
+						er := connections[conn].Conn.WriteJSON(tools.BadRes("connect", err))
+						if er != nil {
+							return
+						}
 					}
 				} else {
 					if err := connections[conn].Conn.WriteJSON(tools.BadRes("connect", fmt.Errorf("игра не найдена"))); err != nil {

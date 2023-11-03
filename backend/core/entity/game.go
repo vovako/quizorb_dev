@@ -22,16 +22,27 @@ type Game struct {
 type SliceGame struct {
 	ID     uuid.UUID `json:"id"`
 	Title  string    `json:"title"`
-	Lead   *Client   `json:"lead"`
-	Viewer *Client   `json:"viewer"`
+	Lead   bool      `json:"lead"`
+	Viewer bool      `json:"viewer"`
 }
 
 var gamesStore = make(map[uuid.UUID]*Game)
 
-func GetGames() []*SliceGame {
-	var games []*SliceGame
+func GetGames() []SliceGame {
+	var games []SliceGame
 	for _, v := range gamesStore {
-		games = append(games, &SliceGame{ID: v.ID, Title: v.Title, Lead: v.Lead, Viewer: v.Viewer})
+		var lead, viewer bool
+		if v.Lead != nil && v.Lead.Conn.Conn != nil {
+			lead = true
+		} else {
+			v.Lead = nil
+		}
+		if v.Viewer != nil && v.Viewer.Conn.Conn != nil {
+			viewer = true
+		} else {
+			v.Viewer = nil
+		}
+		games = append(games, SliceGame{v.ID, v.Title, lead, viewer})
 	}
 	return games
 }
@@ -72,27 +83,27 @@ type Repository interface {
 	Connect(*Client) error
 }
 
-func (game *Game) AddLead(lead *Client) error {
-	if game.Lead != nil {
+func (g *Game) AddLead(lead *Client) error {
+	if g.Lead != nil {
 		return fmt.Errorf("в игре уже есть ведущий")
 	} else {
-		game.Lead = lead
+		g.Lead = lead
 		return nil
 	}
 }
 
-func (game *Game) AddViewer(viewer *Client) error {
-	if game.Viewer != nil {
+func (g *Game) AddViewer(viewer *Client) error {
+	if g.Viewer != nil {
 		return fmt.Errorf("в игре уже есть наблюдатель")
 	} else {
-		game.Viewer = viewer
+		g.Viewer = viewer
 		return nil
 	}
 }
 
-func (game *Game) GetThemes() error {
-	err := game.Lead.Conn.WriteJSON(tools.SuccessRes("get_themes", struct{ Themes []Theme }{Themes: game.Themes}))
-	er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("get_themes", struct{ Themes []Theme }{Themes: game.Themes}))
+func (g *Game) GetThemes() error {
+	err := g.Lead.Conn.WriteJSON(tools.SuccessRes("get_themes", struct{ Themes []Theme }{Themes: g.Themes}))
+	er := g.Viewer.Conn.WriteJSON(tools.SuccessRes("get_themes", struct{ Themes []Theme }{Themes: g.Themes}))
 	if err != nil || er != nil {
 		return fmt.Errorf("ошибка при отправке тем наблюдателю - %v, ведущему - %v", er, err)
 	}
@@ -248,23 +259,28 @@ func (game *Game) Reconnect(client *Client) (string, error) {
 
 func (game *Game) Connect(participant *Client, pass string) error {
 	if pass != game.Pass {
-		err := fmt.Errorf("неверный пароль от комнаты")
-		er := participant.Conn.WriteJSON(tools.BadRes("connect", err))
-		if er != nil {
-			err = er
-		}
-		return err
+		return fmt.Errorf("неверный пароль от комнаты")
 	}
+	role := ""
 	if participant.Role == "Lead" {
+		role = "ведущий"
+	} else if participant.Role == "Viewer" {
+		role = "наблюдатель"
+	}
+	if participant.Role == "Lead" && game.Lead == nil {
 		game.Lead = participant
+		game.Lead.InGame = true
 		if err := game.Lead.Conn.WriteJSON(tools.SuccessRes("connect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
 			return err
 		}
-	} else if participant.Role == "Viewer" {
+	} else if participant.Role == "Viewer" && game.Viewer == nil {
 		game.Viewer = participant
+		game.Viewer.InGame = true
 		if err := game.Viewer.Conn.WriteJSON(tools.SuccessRes("connect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
 			return err
 		}
+	} else {
+		return fmt.Errorf("в игре уже есть %v", role)
 	}
 	return nil
 }
