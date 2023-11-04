@@ -40,7 +40,7 @@
     "data":{
 	    "game":"625f5d5c-7a51-11ee-b761-50c2e80c33eb",
 	    "role":"Lead",
-	    "password":123
+	    "password":"123"
     }
 }
 //Неверный пароль

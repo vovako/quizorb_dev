@@ -63,16 +63,19 @@ func Connection() fiber.Handler {
 				}
 				_, err := entity.CreateGame(body.Title, body.Pass)
 				if err != nil {
+					delete(connections, conn)
 					return
 				}
 				er := connections[conn].Conn.WriteJSON(tools.SuccessRes("game", "Игра создана"))
 				if er != nil {
 					log.Printf("ошибки при создании игры: отправка ответа ведущему %v", er)
+					delete(connections, conn)
 					return
 				}
 			case "connect":
 				var body dto.ConnectBody
 				if err := json.Unmarshal(req.Data, &body); err != nil {
+					delete(connections, conn)
 					return
 				}
 				if game := entity.GetGame(body.Game); game != nil {
@@ -80,75 +83,84 @@ func Connection() fiber.Handler {
 					if err := game.Connect(connections[conn], body.Pass); err != nil {
 						er := connections[conn].Conn.WriteJSON(tools.BadRes("connect", err))
 						if er != nil {
+							delete(connections, conn)
 							return
 						}
 					}
 				} else {
 					if err := connections[conn].Conn.WriteJSON(tools.BadRes("connect", fmt.Errorf("игра не найдена"))); err != nil {
+						delete(connections, conn)
 						return
 					}
 				}
 			case "games":
 				err := connections[conn].Conn.WriteJSON(tools.SuccessRes("games", entity.GetGames()))
 				if err != nil {
-					log.Printf("ошибки при получении данных об играх %v", err)
+					delete(connections, conn)
 					return
 				}
 			case "get_themes":
 				var id uuid.UUID
 				if err := json.Unmarshal(req.Data, &id); err != nil {
+					delete(connections, conn)
 					return
 				}
 				if game := entity.GetGame(id); game != nil {
 					if err := game.GetThemes(); err != nil {
-						log.Println(err.Error())
+						delete(connections, conn)
 						return
 					}
 				} else {
 					if err := connections[conn].Conn.WriteJSON(tools.BadRes("get_themes", fmt.Errorf("игра не найдена"))); err != nil {
+						delete(connections, conn)
 						return
 					}
 				}
 			case "select_theme":
 				var body dto.SelectThemeBody
 				if err := json.Unmarshal(req.Data, &body); err != nil {
+					delete(connections, conn)
 					return
 				}
 				if game := entity.GetGame(body.Game); game != nil {
 					if err := game.SelectTheme(body.Theme); err != nil {
-						log.Println(err.Error())
+						delete(connections, conn)
 						return
 					}
 				} else {
 					if err := connections[conn].Conn.WriteJSON(tools.BadRes("select_theme", fmt.Errorf("игра не найдена"))); err != nil {
+						delete(connections, conn)
 						return
 					}
 				}
 			case "select_question":
 				var body dto.SelectQuestionBody
 				if err := json.Unmarshal(req.Data, &body); err != nil {
+					delete(connections, conn)
 					return
 				}
 				if game := entity.GetGame(body.Game); game != nil {
 					if err := game.SelectQuestion(body.Question); err != nil {
-						log.Println(err.Error())
+						delete(connections, conn)
 						return
 					}
 				}
 			case "answer_question":
 				var body dto.AnswerQuestionBody
 				if err := json.Unmarshal(req.Data, &body); err != nil {
+					delete(connections, conn)
 					return
 				}
 				if game := entity.GetGame(body.Game); game != nil {
 					if err := game.AnswerQuestion(body.Question, body.Status); err != nil {
-						log.Println(err.Error())
+						delete(connections, conn)
 						return
 					}
 				}
 			case "reconnect":
 				var body dto.ReconnectBody
 				if err := json.Unmarshal(req.Data, &body); err != nil {
+					delete(connections, conn)
 					return
 				}
 				connections[conn].Role = body.Role
@@ -156,28 +168,29 @@ func Connection() fiber.Handler {
 					addres, err := game.Reconnect(connections[conn])
 					delete(connections, addres)
 					if err != nil {
-						log.Println(err.Error())
+						delete(connections, conn)
 						return
 					}
 					connections[conn].InGame = true
 				} else if err := connections[conn].Conn.WriteJSON(tools.BadRes("reconnect", fmt.Errorf("игра не найдена"))); err != nil {
-					log.Println(err)
+					delete(connections, conn)
 					return
 				}
 			case "to-tiles":
 				var id_game uuid.UUID
 				if err := json.Unmarshal(req.Data, &id_game); err != nil {
+					delete(connections, conn)
 					return
 				}
 				if game := entity.GetGame(id_game); game != nil {
 					err := game.Viewer.Conn.WriteJSON(tools.SuccessRes("to-tiles", "to-tiles"))
 					er := game.Lead.Conn.WriteJSON(tools.SuccessRes("to-tiles", "to-tiles"))
 					if err != nil || er != nil {
-						log.Printf("ошибки при возвращении к вопросам: перенос зрителя - %v; перенос ведущего %v", err, er)
+						delete(connections, conn)
 						return
 					}
 				} else if err := connections[conn].Conn.WriteJSON(tools.BadRes("reconnect", fmt.Errorf("игра не найдена"))); err != nil {
-					log.Println(err)
+					delete(connections, conn)
 					return
 				}
 			case "restart_game":
