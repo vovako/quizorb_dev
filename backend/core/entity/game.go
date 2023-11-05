@@ -34,12 +34,12 @@ func GetGames() []SliceGame {
 		var lead, viewer bool
 		if v.Lead != nil && v.Lead.Conn.Conn != nil {
 			lead = true
-		} else {
+		} else if v.Lead != nil {
 			v.Lead.InGame = false
 		}
 		if v.Viewer != nil && v.Viewer.Conn.Conn != nil {
 			viewer = true
-		} else {
+		} else if v.Viewer != nil {
 			v.Viewer.InGame = false
 		}
 		games = append(games, SliceGame{v.ID, v.Title, lead, viewer})
