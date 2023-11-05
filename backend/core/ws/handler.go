@@ -42,6 +42,7 @@ func Connection() fiber.Handler {
 			var req request
 			if err := c.ReadJSON(&req); err != nil {
 				if websocket.IsUnexpectedCloseError(err) || websocket.IsCloseError(err) {
+					connections[conn].InGame = false
 					connections[conn].Conn = nil
 					delete(connections, conn)
 					log.Println("Вышел при чтении", err.Error())
@@ -84,7 +85,7 @@ func Connection() fiber.Handler {
 						}
 					}
 					for _, v := range connections {
-						if v != nil {
+						if v != nil && !v.InGame {
 							c.Conn.WriteJSON(tools.SuccessRes("games", entity.GetGames()))
 						}
 					}
