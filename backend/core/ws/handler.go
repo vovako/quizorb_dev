@@ -34,11 +34,6 @@ func Connection() fiber.Handler {
 					Conn:    c,
 					Role:    "Viewer",
 				}
-				for _, v := range connections {
-					if v != nil {
-						c.Conn.WriteJSON(tools.SuccessRes("games", entity.GetGames()))
-					}
-				}
 			}
 			type request struct {
 				Act  string          `json:"action"`
@@ -47,6 +42,7 @@ func Connection() fiber.Handler {
 			var req request
 			if err := c.ReadJSON(&req); err != nil {
 				if websocket.IsUnexpectedCloseError(err) || websocket.IsCloseError(err) {
+					connections[conn].Conn = nil
 					delete(connections, conn)
 					log.Println("Вышел при чтении", err.Error())
 					return
@@ -85,6 +81,11 @@ func Connection() fiber.Handler {
 						er := connections[conn].Conn.WriteJSON(tools.BadRes("connect", err))
 						if er != nil {
 							return
+						}
+					}
+					for _, v := range connections {
+						if v != nil {
+							c.Conn.WriteJSON(tools.SuccessRes("games", entity.GetGames()))
 						}
 					}
 				} else {
