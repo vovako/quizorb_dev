@@ -270,20 +270,20 @@ func (game *Game) Connect(participant *Client, pass string) error {
 		other = game.Lead
 		role = "наблюдатель"
 	}
-	if participant.Role == "Lead" && (game.Lead == nil || game.Lead.Conn.Conn == nil) {
+	if participant.Role == "Lead" && (game.Lead == nil || game.Lead.Conn == nil) {
 		game.Lead = participant
 		game.Lead.InGame = true
 		if err := game.Lead.Conn.WriteJSON(tools.SuccessRes("connect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
 			return err
 		}
-	} else if participant.Role == "Viewer" && (game.Viewer == nil || game.Viewer.Conn.Conn == nil) {
+	} else if participant.Role == "Viewer" && (game.Viewer == nil || game.Viewer.Conn == nil) {
 		game.Viewer = participant
 		game.Viewer.InGame = true
 		if err := game.Viewer.Conn.WriteJSON(tools.SuccessRes("connect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
 			return err
 		}
 	} else {
-		log.Println("Почему ошибка", user.Conn.Conn, " второй ", other.Conn.Conn)
+		log.Println("Почему ошибка", user.Conn, " второй ", other.Conn)
 		return fmt.Errorf("в игре уже есть %v", role)
 	}
 	return nil
