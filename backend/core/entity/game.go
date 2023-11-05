@@ -2,6 +2,7 @@ package entity
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 
 	"github.com/Izumra/OwnGame/tools"
@@ -262,24 +263,31 @@ func (game *Game) Connect(participant *Client, pass string) error {
 		return fmt.Errorf("неверный пароль от комнаты")
 	}
 	role := ""
+	var user *Client
+	var other *Client
 	if participant.Role == "Lead" {
+		user = game.Lead
+		other = game.Viewer
 		role = "ведущий"
 	} else if participant.Role == "Viewer" {
+		user = game.Viewer
+		other = game.Lead
 		role = "наблюдатель"
 	}
 	if participant.Role == "Lead" && (game.Lead == nil || !game.Lead.InGame) {
 		game.Lead = participant
+		game.Lead.InGame = true
 		if err := game.Lead.Conn.WriteJSON(tools.SuccessRes("connect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
 			return err
 		}
-		game.Lead.InGame = true
 	} else if participant.Role == "Viewer" && (game.Viewer == nil || !game.Viewer.InGame) {
 		game.Viewer = participant
+		game.Viewer.InGame = true
 		if err := game.Viewer.Conn.WriteJSON(tools.SuccessRes("connect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
 			return err
 		}
-		game.Viewer.InGame = true
 	} else {
+		log.Println("Почему ошибка", user, " второй ", other)
 		return fmt.Errorf("в игре уже есть %v", role)
 	}
 	return nil
