@@ -283,7 +283,7 @@ func (game *Game) Connect(participant *Client, pass string) error {
 			return err
 		}
 	} else {
-		log.Println("Почему ошибка", user, " второй ", other)
+		log.Println("Почему ошибка", user.Conn.Conn, " второй ", other.Conn.Conn)
 		return fmt.Errorf("в игре уже есть %v", role)
 	}
 	return nil
