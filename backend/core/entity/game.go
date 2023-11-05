@@ -35,13 +35,9 @@ func GetGames() []SliceGame {
 		var lead, viewer bool
 		if v.Lead != nil && v.Lead.Conn.Conn != nil {
 			lead = true
-		} else if v.Lead != nil {
-			v.Lead.InGame = false
 		}
 		if v.Viewer != nil && v.Viewer.Conn.Conn != nil {
 			viewer = true
-		} else if v.Viewer != nil {
-			v.Viewer.InGame = false
 		}
 		games = append(games, SliceGame{v.ID, v.Title, lead, viewer})
 	}
@@ -274,13 +270,13 @@ func (game *Game) Connect(participant *Client, pass string) error {
 		other = game.Lead
 		role = "наблюдатель"
 	}
-	if participant.Role == "Lead" && (game.Lead == nil || !game.Lead.InGame) {
+	if participant.Role == "Lead" && (game.Lead == nil || game.Lead.Conn.Conn == nil) {
 		game.Lead = participant
 		game.Lead.InGame = true
 		if err := game.Lead.Conn.WriteJSON(tools.SuccessRes("connect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
 			return err
 		}
-	} else if participant.Role == "Viewer" && (game.Viewer == nil || !game.Viewer.InGame) {
+	} else if participant.Role == "Viewer" && (game.Viewer == nil || game.Viewer.Conn.Conn == nil) {
 		game.Viewer = participant
 		game.Viewer.InGame = true
 		if err := game.Viewer.Conn.WriteJSON(tools.SuccessRes("connect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
