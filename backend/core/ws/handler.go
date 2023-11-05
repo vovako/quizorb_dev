@@ -34,6 +34,11 @@ func Connection() fiber.Handler {
 					Conn:    c,
 					Role:    "Viewer",
 				}
+				for _, v := range connections {
+					if v != nil {
+						c.Conn.WriteJSON(tools.SuccessRes("games", entity.GetGames()))
+					}
+				}
 			}
 			type request struct {
 				Act  string          `json:"action"`
