@@ -72,7 +72,6 @@ func Connection() fiber.Handler {
 			case "connect":
 				var body dto.ConnectBody
 				if err := json.Unmarshal(req.Data, &body); err != nil {
-					delete(connections, conn)
 					return
 				}
 				if game := entity.GetGame(body.Game); game != nil {
@@ -83,7 +82,6 @@ func Connection() fiber.Handler {
 							return
 						}
 					}
-					connections[conn].InGame = true
 				} else {
 					if err := connections[conn].Conn.WriteJSON(tools.BadRes("connect", fmt.Errorf("игра не найдена"))); err != nil {
 						return
