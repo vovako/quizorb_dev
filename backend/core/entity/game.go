@@ -274,19 +274,18 @@ func (game *Game) Connect(participant *Client, pass string) error {
 		game.Lead = participant
 		game.Lead.InGame = true
 		if err := game.Lead.Conn.WriteJSON(tools.SuccessRes("connect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
+			game.Lead = nil
 			return err
 		}
 	} else if participant.Role == "Viewer" && (game.Viewer == nil || game.Viewer.Conn == nil) {
 		game.Viewer = participant
 		game.Viewer.InGame = true
 		if err := game.Viewer.Conn.WriteJSON(tools.SuccessRes("connect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
+			game.Viewer = nil
 			return err
 		}
 	} else {
 		log.Println("Почему ошибка", user, " второй ", other)
-		if user != nil {
-			log.Println(user.Conn)
-		}
 		return fmt.Errorf("в игре уже есть %v", role)
 	}
 	return nil
