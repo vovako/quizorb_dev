@@ -19,38 +19,7 @@
 
 	<section class="login" data-page="login">
 		<div class="login__container container">
-			<div class="login__games">
-				<button class="login-game">
-					<div class="login-game__title">Игра 1</div>
-					<div class="login-game__role login-game-role">
-						<div class="login-game-role__image">
-							<img src="img/lead.svg" alt="">
-						</div>
-						<img src="img/cross.svg" alt="" class="login-game-role__status">
-					</div>
-					<div class="login-game__role login-game-role">
-						<div class="login-game-role__image">
-							<img src="img/view.svg" alt="">
-						</div>
-						<img src="img/check-mark.svg" alt="" class="login-game-role__status">
-					</div>
-				</button>
-				<button class="login-game">
-					<div class="login-game__title">Игра 1</div>
-					<div class="login-game__role login-game-role">
-						<div class="login-game-role__image">
-							<img src="img/lead.svg" alt="">
-						</div>
-						<img src="img/cross.svg" alt="" class="login-game-role__status">
-					</div>
-					<div class="login-game__role login-game-role">
-						<div class="login-game-role__image">
-							<img src="img/view.svg" alt="">
-						</div>
-						<img src="img/check-mark.svg" alt="" class="login-game-role__status">
-					</div>
-				</button>
-			</div>
+			<div class="login__games"></div>
 			<button class="login__add-game-btn">
 				<img src="img/add-game.svg" alt="">
 			</button>
@@ -58,11 +27,11 @@
 
 		<div class="popup create-game-popup">
 			<div class="create-game-popup__container container">
-				<input type="text" class="create-game-popup__input" name="title" placeholder="Название">
-				<input type="text" class="create-game-popup__input" name="password" placeholder="Пароль">
+				<input type="text" class="create-game-popup__input" name="title" placeholder="Название" value="Игра 1" required>
+				<input type="text" class="create-game-popup__input" name="password" placeholder="Пароль" required>
 				<div class="create-game-popup__actions">
-					<button class="create-game-popup__action create-btn">создать</button>
-					<button class="create-game-popup__action cancel-btn">отмена</button>
+					<button type="button" class="create-game-popup__action create-btn">создать</button>
+					<button type="button" class="create-game-popup__action cancel-btn">отмена</button>
 				</div>
 			</div>
 		</div>
@@ -74,8 +43,8 @@
 					<input type="checkbox" id="role-switcher">
 					<span class="checkbox-green-switch" data-label-on="Зрители" data-label-off="Ведущий"></span>
 				</label>
-				<input type="text" class="login-popup__input" name="password" placeholder="Пароль">
-				<div class="login-popup__actions">
+				<input type="text" class="login-popup__input" name="password" placeholder="Пароль" required>
+				<div class="login-popup__actions"> 
 					<button class="login-popup__action login-btn">войти</button>
 					<button class="login-popup__action cancel-btn">отмена</button>
 				</div>

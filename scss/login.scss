@@ -12,9 +12,9 @@
 				content: "Нет активных игр";
 				text-align: center;
 				display: block;
-				color: white;
+				color: black;
 				font-weight: 500;
-				font-size: 18px;
+				font-size: 25px;
 			}
 		}
 	}
@@ -57,6 +57,19 @@
 			color: white;
 			&::placeholder {
 				color: rgba(white, 0.5);
+			}
+			&:invalid {
+				border-color: red;
+
+				+ div {
+					.login-btn,
+					.create-btn {
+						background-color: rgba(white, 0.2);
+						color: rgba(black, 0.5);
+						border: transparent 2px solid;
+						pointer-events: none;
+					}
+				}
 			}
 		}
 		button {

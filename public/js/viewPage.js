@@ -1,28 +1,31 @@
-import { toPage } from "./functions.js"
+import { toPage, ws } from "./functions.js"
 
-function viewPage(ws, pages) {
-
+function viewPage(pages) {
+	const URLparams = new URLSearchParams(location.search)
+	const store = {
+		id: URLparams.get('id'),
+		password: sessionStorage.getItem(URLparams.get('id')),
+		role: URLparams.get('role')
+	}
 	const loading = document.querySelector('.loading')
+	const answerPopup = document.querySelector('.answer.popup')
 
 	ws.onopen = function () {
 		console.log("Соединение удалось")
 
-		if (localStorage.getItem('session_id')) {
-			ws.send(JSON.stringify({
-				"action": "reconnect",
-				"data": {
-					"role": "Viewer",
-					"game": localStorage.getItem('session_id')
-				}
-			}))
-		}
+		ws.send(JSON.stringify({
+			"action": "connect",
+			"data": {
+				"game": store.id,
+				"role": store.role,
+				"password": store.password
+			}
+		}))
 	}
 
 	ws.onmessage = function (evt) {
 
 		const msg = JSON.parse(evt.data)
-		const answerPopup = document.querySelector('.answer.popup')
-
 		console.log(msg);
 
 		switch (msg.action) {

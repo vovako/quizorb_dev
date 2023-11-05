@@ -122,9 +122,9 @@ section.active {
   content: "Нет активных игр";
   text-align: center;
   display: block;
-  color: white;
+  color: black;
   font-weight: 500;
-  font-size: 18px;
+  font-size: 25px;
 }
 .login__add-game-btn {
   position: absolute;
@@ -168,6 +168,16 @@ section.active {
 }
 .login .popup input::placeholder {
   color: rgba(255, 255, 255, 0.5);
+}
+.login .popup input:invalid {
+  border-color: red;
+}
+.login .popup input:invalid + div .login-btn,
+.login .popup input:invalid + div .create-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: rgba(0, 0, 0, 0.5);
+  border: transparent 2px solid;
+  pointer-events: none;
 }
 .login .popup button {
   border: white 2px solid;
