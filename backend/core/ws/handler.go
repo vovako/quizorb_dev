@@ -42,6 +42,7 @@ func Connection() fiber.Handler {
 			var req request
 			if err := c.ReadJSON(&req); err != nil {
 				if websocket.IsUnexpectedCloseError(err) || websocket.IsCloseError(err) {
+					connections[conn].Conn.Conn = nil
 					delete(connections, conn)
 					log.Println("Вышел при чтении", err.Error())
 					return
