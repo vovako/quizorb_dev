@@ -269,16 +269,16 @@ func (game *Game) Connect(participant *Client, pass string) error {
 	}
 	if participant.Role == "Lead" && (game.Lead == nil || !game.Lead.InGame) {
 		game.Lead = participant
-		game.Lead.InGame = true
 		if err := game.Lead.Conn.WriteJSON(tools.SuccessRes("connect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
 			return err
 		}
+		game.Lead.InGame = true
 	} else if participant.Role == "Viewer" && (game.Viewer == nil || !game.Viewer.InGame) {
 		game.Viewer = participant
-		game.Viewer.InGame = true
 		if err := game.Viewer.Conn.WriteJSON(tools.SuccessRes("connect", struct{ Themes []Theme }{Themes: game.Themes})); err != nil {
 			return err
 		}
+		game.Viewer.InGame = true
 	} else {
 		return fmt.Errorf("в игре уже есть %v", role)
 	}
