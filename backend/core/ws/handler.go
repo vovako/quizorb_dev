@@ -67,6 +67,11 @@ func Connection() fiber.Handler {
 				if err != nil {
 					return
 				}
+				for _, v := range connections {
+					if v != nil && !v.InGame {
+						v.Conn.WriteJSON(tools.SuccessRes("games", entity.GetGames()))
+					}
+				}
 				er := connections[conn].Conn.WriteJSON(tools.SuccessRes("game", "Игра создана"))
 				if er != nil {
 					return
@@ -86,7 +91,7 @@ func Connection() fiber.Handler {
 					}
 					for _, v := range connections {
 						if v != nil && !v.InGame {
-							c.Conn.WriteJSON(tools.SuccessRes("games", entity.GetGames()))
+							v.Conn.WriteJSON(tools.SuccessRes("games", entity.GetGames()))
 						}
 					}
 				} else {
