@@ -33,10 +33,10 @@ func GetGames() []SliceGame {
 	var games []SliceGame
 	for _, v := range gamesStore {
 		var lead, viewer bool
-		if v.Lead != nil && v.Lead.Conn.Conn != nil {
+		if v.Lead != nil && v.Lead.Conn != nil {
 			lead = true
 		}
-		if v.Viewer != nil && v.Viewer.Conn.Conn != nil {
+		if v.Viewer != nil && v.Viewer.Conn != nil {
 			viewer = true
 		}
 		games = append(games, SliceGame{v.ID, v.Title, lead, viewer})
@@ -283,7 +283,10 @@ func (game *Game) Connect(participant *Client, pass string) error {
 			return err
 		}
 	} else {
-		log.Println("Почему ошибка", user.Conn, " второй ", other.Conn)
+		log.Println("Почему ошибка", user, " второй ", other)
+		if user != nil {
+			log.Println(user.Conn)
+		}
 		return fmt.Errorf("в игре уже есть %v", role)
 	}
 	return nil
