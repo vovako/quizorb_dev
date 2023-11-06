@@ -200,13 +200,18 @@ func Connection() fiber.Handler {
 					}
 					g.Lead = game.Lead
 					g.Viewer = game.Viewer
-					e := g.Lead.Conn.WriteJSON(tools.SuccessRes("restart_game", g.ID))
-					er := g.Viewer.Conn.WriteJSON(tools.SuccessRes("restart_game", g.ID))
+					var e, er error
+					if g.Lead != nil && g.Lead.Conn != nil {
+						e = g.Lead.Conn.WriteJSON(tools.SuccessRes("restart_game", g.ID))
+					}
+					if g.Viewer != nil && g.Viewer.Conn != nil {
+						er = g.Viewer.Conn.WriteJSON(tools.SuccessRes("restart_game", g.ID))
+					}
 					game.Lead = nil
 					game.Viewer = nil
 					entity.DeleteGame(id_game)
 					for _, v := range connections {
-						if v != nil && !v.InGame {
+						if v != nil {
 							v.Conn.WriteJSON(tools.SuccessRes("games", entity.GetGames()))
 						}
 					}
