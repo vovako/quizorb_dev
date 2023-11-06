@@ -29,18 +29,10 @@ function viewPage(pages) {
 		console.log(msg);
 
 		switch (msg.action) {
-			case 'game':
-				localStorage.setItem('session_id', msg.data.ID)
-
-			case 'reconnect':
-				if (msg.error) {
-					localStorage.clear()
-					location.reload()
-				}
-
-				loading.classList.remove('active')
+			case 'connect':
 				updateThemes(msg.data.Themes)
 				toPage(pages.themes)
+				loading.classList.remove('active')
 				break;
 
 			case 'select_theme':
@@ -62,7 +54,11 @@ function viewPage(pages) {
 				toPage(pages.themes)
 				break;
 			case 'restart_game':
-				localStorage.setItem('session_id', msg.data)
+				sessionStorage.removeItem(store.id)
+				store.id = msg.data
+				sessionStorage.setItem(store.id, store.password)
+				URLparams.set('id', store.id)
+				history.pushState(null, null, '?' + URLparams.toString());
 				location.reload()
 				break;
 			case 'question_trash':

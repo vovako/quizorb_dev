@@ -30,9 +30,9 @@ switch (role) {
 		break
 }
 
-window.addEventListener('popstate', function () {
+window.addEventListener('popstate', function (evt) {
 	if (confirm('Выйти в меню игр?')) {
 		history.pushState(null, null, '')
-		location.reload()
+		location = location.pathname
 	}
 })

@@ -34,33 +34,26 @@ function interfacePage(pages) {
 		console.log(msg);
 
 		switch (msg.action) {
-			case 'game':
-				localStorage.setItem('session_id', msg.data.ID)
-
-			case 'reconnect':
-
-				if (msg.error) {
-					localStorage.clear()
-					location.reload()
-				}
-
-				loading.classList.remove('active')
-				toPage(pages.themes)
-
-			case 'get_themes':
+			case 'connect':
 				updateThemes(msg.data.Themes)
-				break;
-
-			case 'answer_question':
-				updateTheme(msg.data.Questions)
+				toPage(pages.themes)
+				loading.classList.remove('active')
 				break;
 			case 'select_theme':
 				updateTheme(msg.data.Questions)
 				const answerEl = document.querySelector('.lead-theme__answer')
 				answerEl.textContent = msg.data.Answer
 				break;
+			case 'answer_question':
+				updateTheme(msg.data.Questions)
+				break;
+			
 			case 'restart_game':
-				localStorage.setItem('session_id', msg.data)
+				sessionStorage.removeItem(store.id)
+				store.id = msg.data
+				sessionStorage.setItem(store.id, store.password)
+				URLparams.set('id', store.id)
+				history.pushState(null, null, '?' + URLparams.toString());
 				location.reload()
 				break;
 			case 'question_trash':
@@ -134,19 +127,19 @@ function interfacePage(pages) {
 				"action": "select_question",
 				"data": {
 					"question": curQuestionIndex,
-					"game": localStorage.getItem('session_id')
+					"game": store.id
 				}
 			}))
 		} else if (target.classList.contains('members__back-btn')) {
 			ws.send(JSON.stringify({
 				action: "to-tiles",
-				data: localStorage.getItem('session_id')
+				data: store.id
 			}))
 		} else if (target.classList.contains('lead-themes-item')) {
 			ws.send(JSON.stringify({
 				action: 'select_theme',
 				data: {
-					game: localStorage.getItem('session_id'),
+					game: store.id,
 					theme: +target.dataset.themeId
 				}
 			}))
@@ -160,7 +153,7 @@ function interfacePage(pages) {
 				ws.send(JSON.stringify({
 					"action": "answer_question_trash",
 					"data": {
-						"game": localStorage.getItem('session_id'),
+						"game": store.id,
 						"question": questionId,
 						Status: 'failed'
 					}
@@ -170,7 +163,7 @@ function interfacePage(pages) {
 				ws.send(JSON.stringify({
 					action: 'answer_question',
 					data: {
-						game: localStorage.getItem('session_id'),
+						game: store.id,
 						status: 'failed',
 						id: questionId
 					}
@@ -180,7 +173,7 @@ function interfacePage(pages) {
 
 			ws.send(JSON.stringify({
 				action: 'get_themes',
-				data: localStorage.getItem('session_id')
+				data: store.id
 			}))
 		} else if (target.classList.contains('lead-theme__apply-btn')) {
 			const themeSection = target.closest('section.lead-theme')
@@ -190,7 +183,7 @@ function interfacePage(pages) {
 				ws.send(JSON.stringify({
 					"action": "answer_question_trash",
 					"data": {
-						"game": localStorage.getItem('session_id'),
+						"game": store.id,
 						"question": questionId,
 						Status: 'solved'
 					}
@@ -200,7 +193,7 @@ function interfacePage(pages) {
 				ws.send(JSON.stringify({
 					action: 'answer_question',
 					data: {
-						game: localStorage.getItem('session_id'),
+						game: store.id,
 						status: 'solved',
 						id: questionId
 					}
@@ -209,24 +202,24 @@ function interfacePage(pages) {
 
 			ws.send(JSON.stringify({
 				action: 'get_themes',
-				data: localStorage.getItem('session_id')
+				data: store.id
 			}))
 
 		} else if (target.classList.contains('to-themes-btn__btn')) {
 			ws.send(JSON.stringify({
 				action: 'to-tiles',
-				data: localStorage.getItem('session_id')
+				data: store.id
 			}))
 			toPage(pages.themes)
 		} else if (target.classList.contains('lead-themes__two-tour-btn')) {
 			ws.send(JSON.stringify({
 				action: 'question_trash',
-				data: localStorage.getItem('session_id')
+				data: store.id
 			}))
 		} else if (target.classList.contains('lead-theme__to-tiles-btn')) {
 			ws.send(JSON.stringify({
 				action: 'to-tiles',
-				data: localStorage.getItem('session_id')
+				data: store.id
 			}))
 		}
 	})
@@ -235,7 +228,7 @@ function interfacePage(pages) {
 	deleteGameBtn.addEventListener('click', function () {
 		ws.send(JSON.stringify({
 			action: 'restart_game',
-			data: localStorage.getItem('session_id')
+			data: store.id
 		}))
 	})
 }
