@@ -180,9 +180,7 @@ func Connection() fiber.Handler {
 					return
 				}
 				if game := entity.GetGame(id_game); game != nil {
-					err := game.Viewer.Conn.WriteJSON(tools.SuccessRes("to-tiles", "to-tiles"))
-					er := game.Lead.Conn.WriteJSON(tools.SuccessRes("to-tiles", "to-tiles"))
-					if err != nil || er != nil {
+					if err := game.SendResponse(tools.SuccessRes("to-tiles", "to-tiles")); err != nil {
 						return
 					}
 				} else if err := connections[conn].Conn.WriteJSON(tools.BadRes("reconnect", fmt.Errorf("игра не найдена"))); err != nil {
@@ -210,11 +208,6 @@ func Connection() fiber.Handler {
 					game.Lead = nil
 					game.Viewer = nil
 					entity.DeleteGame(id_game)
-					for _, v := range connections {
-						if v != nil {
-							v.Conn.WriteJSON(tools.SuccessRes("games", entity.GetGames()))
-						}
-					}
 					if er != nil || e != nil {
 						return
 					}
@@ -232,16 +225,11 @@ func Connection() fiber.Handler {
 							Question *entity.Question
 							Answer   string
 						}
-						e := game.Lead.Conn.WriteJSON(tools.SuccessRes("question_trash", Resp{Question: el, Answer: ans}))
-						er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("question_trash", Resp{Question: el, Answer: ans}))
-						if er != nil || e != nil {
-							log.Printf("ошибки при получении вопроса корзины: вопрос зрителя - %v; вопрос ведущего %v", e, er)
+						if err := game.SendResponse(tools.SuccessRes("question_trash", Resp{Question: el, Answer: ans})); err != nil {
 							return
 						}
 					} else {
-						e := game.Lead.Conn.WriteJSON(tools.BadRes("question_trash", fmt.Errorf("корзина пуста")))
-						er := game.Viewer.Conn.WriteJSON(tools.SuccessRes("question_trash", fmt.Errorf("корзина пуста")))
-						if er != nil || e != nil {
+						if err := game.SendResponse(tools.BadRes("question_trash", fmt.Errorf("корзина пуста"))); err != nil {
 							return
 						}
 					}
