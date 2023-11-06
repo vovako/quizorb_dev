@@ -46,6 +46,11 @@ func Connection() fiber.Handler {
 					connections[conn].Conn = nil
 					delete(connections, conn)
 					log.Println("Вышел при чтении", err.Error())
+					for _, v := range connections {
+						if v != nil && !v.InGame {
+							v.Conn.WriteJSON(tools.SuccessRes("games", entity.GetGames()))
+						}
+					}
 					return
 				}
 			}
@@ -200,6 +205,11 @@ func Connection() fiber.Handler {
 					game.Lead = nil
 					game.Viewer = nil
 					entity.DeleteGame(id_game)
+					for _, v := range connections {
+						if v != nil && !v.InGame {
+							v.Conn.WriteJSON(tools.SuccessRes("games", entity.GetGames()))
+						}
+					}
 					if er != nil || e != nil {
 						return
 					}
