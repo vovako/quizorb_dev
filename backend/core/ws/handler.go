@@ -248,6 +248,12 @@ func Connection() fiber.Handler {
 				} else if err := connections[conn].Conn.WriteJSON(tools.BadRes("answer_question_trash", fmt.Errorf("игра не найдена"))); err != nil {
 					return
 				}
+			case "ping":
+				if connections[conn] != nil && connections[conn].Conn != nil {
+					connections[conn].Conn.WriteJSON(tools.SuccessRes("ping", "pong"))
+				} else {
+					return
+				}
 			}
 		}
 	})
