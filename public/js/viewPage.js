@@ -1,10 +1,11 @@
-import { toPage, ws } from "./functions.js"
+import { toPage, ws, getState, hearbeat } from "./functions.js"
 
 function viewPage(pages) {
 	const URLparams = new URLSearchParams(location.search)
+	const state = getState()
 	const store = {
 		id: URLparams.get('id'),
-		password: sessionStorage.getItem(URLparams.get('id')),
+		password: state.password,
 		role: URLparams.get('role')
 	}
 	const loading = document.querySelector('.loading')
@@ -21,6 +22,11 @@ function viewPage(pages) {
 				"password": store.password
 			}
 		}))
+
+		hearbeat(ws)
+	}
+	ws.onclose = function() {
+		console.log("Соединение закрыто")
 	}
 
 	ws.onmessage = function (evt) {
@@ -54,10 +60,9 @@ function viewPage(pages) {
 				toPage(pages.themes)
 				break;
 			case 'restart_game':
+				sessionStorage.setItem(msg.data, sessionStorage.getItem(store.id))
 				sessionStorage.removeItem(store.id)
-				store.id = msg.data
-				sessionStorage.setItem(store.id, store.password)
-				URLparams.set('id', store.id)
+				URLparams.set('id', msg.data)
 				history.pushState(null, null, '?' + URLparams.toString());
 				location.reload()
 				break;

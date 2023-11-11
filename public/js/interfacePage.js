@@ -1,14 +1,14 @@
-import { toPage, ws } from "./functions.js"
+import { toPage, ws, getState, setState, hearbeat } from "./functions.js"
 
 
 
 function interfacePage(pages) {
-	// const state = localStorage.getItem('state') ? JSON.parse(localStorage.getItem('state')) : { page: '' }
 	const URLparams = new URLSearchParams(location.search)
+	const state = getState()
 	const store = {
 		id: URLparams.get('id'),
-		password: sessionStorage.getItem(URLparams.get('id')),
-		role: URLparams.get('role')
+		password: state.password,
+		role: URLparams.get('role'),
 	}
 
 	const loading = document.querySelector('.loading')
@@ -26,6 +26,11 @@ function interfacePage(pages) {
 				"password": store.password
 			}
 		}))
+
+		hearbeat(ws)
+	}
+	ws.onclose = function () {
+		console.log("Соединение закрыто")
 	}
 
 	ws.onmessage = function (evt) {
@@ -36,7 +41,24 @@ function interfacePage(pages) {
 		switch (msg.action) {
 			case 'connect':
 				updateThemes(msg.data.Themes)
-				toPage(pages.themes)
+				if (state.page === null) {
+					toPage(pages.themes)
+					state.page = 'themes'
+					setState(state)
+				} else if (state.page === 'themes') {
+					toPage(pages.themes)
+				} else if (state.page === 'theme') {
+					ws.send(JSON.stringify({
+						"action": "select_theme",
+						"data": {
+							"game": store.id,
+							"theme": state.theme
+						}
+					}))
+					toPage(pages.theme)
+				} else if (state.page === 'to-themes-btn') {
+					toPage(pages.toThemesBtn)
+				}
 				loading.classList.remove('active')
 				break;
 			case 'select_theme':
@@ -47,12 +69,11 @@ function interfacePage(pages) {
 			case 'answer_question':
 				updateTheme(msg.data.Questions)
 				break;
-			
+
 			case 'restart_game':
+				sessionStorage.setItem(msg.data, sessionStorage.getItem(store.id))
 				sessionStorage.removeItem(store.id)
-				store.id = msg.data
-				sessionStorage.setItem(store.id, store.password)
-				URLparams.set('id', store.id)
+				URLparams.set('id', msg.data)
 				history.pushState(null, null, '?' + URLparams.toString());
 				location.reload()
 				break;
@@ -70,9 +91,13 @@ function interfacePage(pages) {
 				break;
 			case 'to-tiles':
 				toPage(pages.themes)
+				state.page = 'themes'
+				setState(state)
 				break;
 			case 'answer_question_trash':
 				toPage(pages.toThemesBtn)
+				state.page = 'to-themes-btn'
+				setState(state)
 				break;
 		}
 	}
@@ -99,6 +124,8 @@ function interfacePage(pages) {
 
 		if (questions.findIndex(q => q.Status === 'solved') !== -1 || questions.findIndex(q => q.Status === '') == -1) {
 			toPage(pages.toThemesBtn)
+			state.page = 'to-themes-btn'
+			setState(state)
 			return
 		}
 
@@ -113,14 +140,14 @@ function interfacePage(pages) {
 		headerQuestionImg.src = question.url_answer
 
 		toPage(pages.theme)
+		state.page = 'theme'
+		setState(state)
 	}
 
 	document.addEventListener('click', function (evt) {
 		const target = evt.target
 
-		if (target.hasAttribute('data-page-target')) {
-			toPage(document.querySelector(`data-page="${target.dataset.pageTarget}"`))
-		} else if (target.classList.contains('intro-tiles-item__apply-btn') && !target.classList.contains('checked')) {
+		if (target.classList.contains('intro-tiles-item__apply-btn') && !target.classList.contains('checked')) {
 			curQuestionIndex = +target.closest('.intro-tiles-item').dataset.tilesId
 
 			ws.send(JSON.stringify({
@@ -135,16 +162,20 @@ function interfacePage(pages) {
 				action: "to-tiles",
 				data: store.id
 			}))
+
 		} else if (target.classList.contains('lead-themes-item')) {
+			state.theme = +target.dataset.themeId
+			setState(state)
 			ws.send(JSON.stringify({
 				action: 'select_theme',
 				data: {
 					game: store.id,
-					theme: +target.dataset.themeId
+					theme: state.theme
 				}
 			}))
 
 			toPage(pages.theme)
+			state.page = 'theme'
 		} else if (target.classList.contains('lead-theme__deny-btn')) {
 			const themeSection = target.closest('section.lead-theme')
 			const questionId = +target.closest('.lead-theme__container').dataset.questionId
@@ -211,6 +242,7 @@ function interfacePage(pages) {
 				data: store.id
 			}))
 			toPage(pages.themes)
+			state.page = 'themes'
 		} else if (target.classList.contains('lead-themes__two-tour-btn')) {
 			ws.send(JSON.stringify({
 				action: 'question_trash',

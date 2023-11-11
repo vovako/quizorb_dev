@@ -1,4 +1,4 @@
-import { toPage, ws } from "./functions.js"
+import { toPage, ws, hearbeat } from "./functions.js"
 
 function loginPage(pages) {
 	const loading = document.querySelector('.loading')
@@ -16,7 +16,11 @@ function loginPage(pages) {
 		ws.send(JSON.stringify({
 			"action": "games"
 		}))
+
+		hearbeat(ws)
 	}
+
+	ws.onclose = () => console.log('Соединение закрыто');
 
 	ws.onmessage = function (evt) {
 
@@ -76,7 +80,12 @@ function loginPage(pages) {
 					const URLparams = new URLSearchParams(location.search);
 					URLparams.set('role', store.role)
 					URLparams.set('id', store.id)
-					sessionStorage.setItem(store.id, store.password)
+					const state = {
+						password: store.password,
+						page: null
+					}
+					sessionStorage.clear()
+					sessionStorage.setItem(store.id, JSON.stringify(state))
 					history.pushState(null, null, '?' + URLparams.toString());
 					location.reload()
 				}
