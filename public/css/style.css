@@ -394,26 +394,106 @@ section.active {
 }
 .menu-btn {
   background-color: #fff;
-  padding: 11px;
-  width: 50px;
+  padding: 10px;
+  width: 46px;
   aspect-ratio: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 3px;
-  margin-left: auto;
+  justify-content: center;
+  gap: 5px;
   border-radius: 5px;
-  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  z-index: 2;
+  transition: all 300ms ease-in-out;
 }
 .menu-btn span {
   width: 100%;
-  height: 5px;
+  height: 4px;
   background-color: black;
   display: block;
   border-radius: 999px;
+  transition: 300ms ease-in-out;
+  transition-property: rotate;
 }
-.menu-btn.active {
+
+.lead-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  padding-top: 66px;
+  align-items: flex-end;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms linear;
+}
+.lead-menu__item {
+  border-radius: 999px;
+  transform-origin: bottom right;
+  opacity: 0;
+}
+@keyframes showItem {
+  0% {
+    opacity: 0;
+    rotate: -90deg;
+  }
+  100% {
+    opacity: 1;
+    rotate: 0deg;
+  }
+}
+
+#menu-trigger {
+  display: none;
+}
+#menu-trigger:checked ~ .menu-btn {
   border-radius: 50%;
+}
+#menu-trigger:checked ~ .menu-btn span {
+  width: 70%;
+  position: absolute;
+  top: calc(50% - 2px);
+  left: 50%;
+  translate: -50% 0;
+}
+#menu-trigger:checked ~ .menu-btn span:nth-child(1) {
+  rotate: -45deg;
+}
+#menu-trigger:checked ~ .menu-btn span:nth-child(2) {
+  rotate: 135deg;
+  display: none;
+}
+#menu-trigger:checked ~ .menu-btn span:nth-child(3) {
+  rotate: 45deg;
+}
+#menu-trigger:checked ~ .lead-menu {
+  opacity: 1;
+  pointer-events: all;
+}
+#menu-trigger:checked ~ .lead-menu .lead-menu__item {
+  animation: showItem 300ms ease-in-out forwards;
+}
+#menu-trigger:checked ~ .lead-menu .lead-menu__item:nth-child(1) {
+  animation-delay: 0ms;
+}
+#menu-trigger:checked ~ .lead-menu .lead-menu__item:nth-child(2) {
+  animation-delay: 100ms;
+}
+#menu-trigger:checked ~ .lead-menu .lead-menu__item:nth-child(3) {
+  animation-delay: 200ms;
+}
+#menu-trigger:checked ~ .lead-menu .lead-menu__item:nth-child(4) {
+  animation-delay: 300ms;
 }
 
 .waiting__container {
