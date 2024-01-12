@@ -54,17 +54,20 @@ body {
   font-family: "consolas";
   font-size: 20px;
   background: var(--bg-color) linear-gradient(109deg, #97ABE0 -1.52%, rgba(96, 121, 187, 0.76) 58.26%, rgba(51, 70, 121, 0.19) 114.41%);
+  background-attachment: fixed;
 }
 body .bg-elem-1 {
   position: absolute;
   right: 0;
   top: 0;
   width: calc(160px + 575 * (100vw - 320px) / 1600);
+  max-height: 100%;
 }
 body .bg-elem-2 {
   position: absolute;
   left: 0;
   bottom: 0;
+  max-height: 100%;
   width: calc(200px + 239 * (100vw - 320px) / 1600);
 }
 
@@ -304,12 +307,6 @@ section.active {
   flex-direction: column;
   gap: 8px;
 }
-.lead-themes__actions, .lead-theme__header-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 1em;
-}
 .lead-themes__two-tour-btn.anim {
   animation: anim 0.3s;
 }
@@ -325,9 +322,10 @@ section.active {
 .lead-themes-item {
   background-color: #fff;
   padding: 8px 10px;
+  border-radius: 8px;
 }
 .lead-themes-item.failed, .lead-themes-item.solved {
-  display: none;
+  background-color: rgba(255, 255, 255, 0.5);
 }
 .lead-themes-item__text {
   pointer-events: none;
@@ -394,6 +392,30 @@ section.active {
   align-items: center;
   justify-content: center;
 }
+.menu-btn {
+  background-color: #fff;
+  padding: 11px;
+  width: 50px;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 3px;
+  margin-left: auto;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+.menu-btn span {
+  width: 100%;
+  height: 5px;
+  background-color: black;
+  display: block;
+  border-radius: 999px;
+}
+.menu-btn.active {
+  border-radius: 50%;
+}
+
 .waiting__container {
   display: flex;
   align-items: center;
@@ -510,6 +532,11 @@ section.active {
 }
 .theme-body__image {
   max-width: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+.theme-body__image.dn + .theme-body__text {
+  padding-top: 0;
 }
 .theme-body__text {
   padding-top: 20px;
@@ -517,6 +544,9 @@ section.active {
   color: white;
   font-weight: 500;
   font-size: 2.3vw;
+}
+.theme-body__text:empty {
+  padding-top: 0;
 }
 
 .theme-item {

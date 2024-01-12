@@ -8,13 +8,6 @@
 		gap: 8px;
 	}
 
-	&__actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
-		margin-bottom: 1em;
-	}
-
 	&__two-tour-btn {
 		&.anim {
 			animation: anim 0.3s;
@@ -34,10 +27,11 @@
 .lead-themes-item {
 	background-color: #fff;
 	padding: 8px 10px;
+	border-radius: 8px;
 
 	&.failed,
 	&.solved {
-		display: none;
+		background-color: rgba(white, 0.5);
 	}
 
 	&__text {
@@ -61,7 +55,6 @@
 	}
 
 	&__header-actions {
-		@extend .lead-themes__actions;
 	}
 
 	&__header {
@@ -130,5 +123,32 @@
 	}
 
 	&__btn {
+	}
+}
+
+.menu-btn {
+	background-color: #fff;
+	padding: 11px;
+	width: 50px;
+	aspect-ratio: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 3px;
+	margin-left: auto;
+	border-radius: 5px;
+
+	margin-bottom: 20px;	
+
+	span {
+		width: 100%;
+		height: 5px;
+		background-color: black;
+		display: block;
+		border-radius: 999px;
+	}
+
+	&.active {
+		border-radius: 50%;
 	}
 }

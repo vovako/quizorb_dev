@@ -6,7 +6,7 @@ export function toPage(page) {
 	page.classList.add('active')
 }
 
-export const ws = new WebSocket('ws://localhost/websocket/connection')
+export const ws = new WebSocket('ws://127.0.0.1:8080/websocket/connection')
 // export const ws = new WebSocket('wss://izumra.ru/websocket/connection')
 // wss://game-zmark.p.tnnl.in
 // ws://localhost:8080

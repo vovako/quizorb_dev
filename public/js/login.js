@@ -4,6 +4,7 @@ function loginPage(pages) {
 	const loading = document.querySelector('.loading')
 	const createGamePopup = pages.login.querySelector('.create-game-popup')
 	const loginPopup = pages.login.querySelector('.login-popup')
+	let GAMES = null
 	const store = {
 		role: null,
 		password: null,
@@ -31,6 +32,7 @@ function loginPage(pages) {
 		switch (msg.action) {
 			case 'games':
 				const games = msg.data
+				GAMES = games
 
 				if (games?.length > 0) {
 					const gamesBoxEl = pages.login.querySelector('.login__games')
@@ -39,17 +41,19 @@ function loginPage(pages) {
 						gamesBoxEl.insertAdjacentHTML('beforeend', `
 						<button class="login-game" data-game-id="${game.id}">
 							<div class="login-game__title">${game.title}</div>
-							<div class="login-game__role login-game-role">
+							<div class="login-game__role login-game-role lead-role">
 								<div class="login-game-role__image">
 									<img src="img/lead.svg" alt="">
 								</div>
-								<img src="img/${game.lead ? 'check-mark' : 'cross'}.svg" alt="" class="login-game-role__status">
+								<img src="img/cross.svg" alt="" class="login-game-role__status  ${game.lead ? 'dn' : ''}">
+								<img src="img/check-mark.svg" alt="" class="login-game-role__status ${game.lead ? '' : 'dn'}">
 							</div>
-							<div class="login-game__role login-game-role">
+							<div class="login-game__role login-game-role viewer-role">
 								<div class="login-game-role__image">
 									<img src="img/view.svg" alt="">
 								</div>
-								<img src="img/${game.viewer ? 'check-mark' : 'cross'}.svg" alt="" class="login-game-role__status">
+								<img src="img/cross.svg" alt="" class="login-game-role__status  ${game.viewer ? 'dn' : ''}">
+								<img src="img/check-mark.svg" alt="" class="login-game-role__status ${game.viewer ? '' : 'dn'}">
 							</div>
 						</button>
 						`)
@@ -148,6 +152,10 @@ function loginPage(pages) {
 			store.id = target.dataset.gameId
 			loginPopup.querySelector('.login-popup__title').textContent = target.querySelector('.login-game__title').textContent
 			loginPopup.classList.add('active')
+
+			const game = GAMES.filter(g => g.id === store.id)[0]
+			const switcher = document.querySelector('#role-switcher')
+			switcher.checked = game.lead
 		}
 	})
 }
