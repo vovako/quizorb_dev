@@ -32,6 +32,9 @@ button {
 	text-align: center;
 	display: inline-block;
 	border: 0;
+	> * {
+		pointer-events: none;
+	}
 }
 textarea, input {
 	font: inherit;

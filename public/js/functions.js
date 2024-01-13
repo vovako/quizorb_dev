@@ -4,6 +4,9 @@ export function toPage(page) {
 		curPage.classList.remove('active')
 	}
 	page.classList.add('active')
+
+	const pageName = page.dataset.page
+	document.body.dataset.curPage = pageName
 }
 
 export const ws = new WebSocket('ws://127.0.0.1:8080/websocket/connection')
@@ -32,4 +35,19 @@ export function hearbeat(socket) {
 			action: 'ping'
 		}))
 	}, 40000)
+}
+
+export function exitGame() {
+	if (confirm('Выйти в меню игр?')) {
+		history.pushState(null, null, '')
+		location = location.pathname
+	}
+}
+
+export function exitAndDeleteGame() {
+	if (confirm('Удалить игру?')) {
+		history.pushState(null, null, '')
+		//запрос на удаление игры, после чего зрителя направит в лобби
+		location = location.pathname
+	}
 }
