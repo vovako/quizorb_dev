@@ -1,6 +1,7 @@
 import loginPage from "./login.js"
 import interfacePage from './interfacePage.js'
 import viewPage from './viewPage.js'
+import {exitGame} from './functions.js'
 
 const pages = {
 	login: {
@@ -24,15 +25,12 @@ switch (role) {
 		break
 	case 'Lead':
 		interfacePage(pages.lead)
+		document.body.classList.add('lead')
 		break
 	case 'Viewer':
 		viewPage(pages.view)
+		document.body.classList.add('view')
 		break
 }
 
-window.addEventListener('popstate', function (evt) {
-	if (confirm('Выйти в меню игр?')) {
-		history.pushState(null, null, '')
-		location = location.pathname
-	}
-})
+window.addEventListener('popstate', exitGame)

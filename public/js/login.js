@@ -79,6 +79,8 @@ function loginPage(pages) {
 				break
 
 			case 'connect':
+				const noticeEl = document.querySelector('.login-popup__notice')
+				noticeEl.textContent = ''
 				
 				if (msg.error === null) {
 					const URLparams = new URLSearchParams(location.search);
@@ -92,6 +94,8 @@ function loginPage(pages) {
 					sessionStorage.setItem(store.id, JSON.stringify(state))
 					history.pushState(null, null, '?' + URLparams.toString());
 					location.reload()
+				} else {
+					noticeEl.textContent = msg.error
 				}
 				break
 		}

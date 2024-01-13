@@ -37,6 +37,9 @@ button {
   display: inline-block;
   border: 0;
 }
+button > * {
+  pointer-events: none;
+}
 
 textarea, input {
   font: inherit;
@@ -208,6 +211,12 @@ section.active {
   color: white;
   text-align: center;
 }
+.login .popup .login-popup__notice {
+  color: yellow;
+  font-size: 16px;
+  margin: 0 auto;
+}
+
 .login-game {
   display: flex;
   background-color: rgba(0, 0, 0, 0.2);
@@ -389,25 +398,23 @@ section.active {
 
 .to-themes-btn__container {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+}
+.to-themes-btn__container table td {
+  padding-bottom: 8px;
+}
+.to-themes-btn__container table td:nth-child(2) {
+  padding-left: 0.4em;
 }
 .menu-btn {
-  background-color: #fff;
   padding: 10px;
-  width: 46px;
-  aspect-ratio: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 5px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  position: absolute;
-  right: 20px;
-  top: 10px;
-  z-index: 2;
-  transition: all 300ms ease-in-out;
+  transition: border-radius 300ms linear;
+  position: relative;
+  z-index: 1;
 }
 .menu-btn span {
   width: 100%;
@@ -415,8 +422,28 @@ section.active {
   background-color: black;
   display: block;
   border-radius: 999px;
-  transition: 300ms ease-in-out;
+  transition: 300ms linear;
   transition-property: rotate;
+}
+.menu-btn.active {
+  border-radius: 50%;
+}
+.menu-btn.active span {
+  width: 70%;
+  position: absolute;
+  top: calc(50% - 2px);
+  left: 50%;
+  translate: -50% 0;
+}
+.menu-btn.active span:nth-child(1) {
+  rotate: -45deg;
+}
+.menu-btn.active span:nth-child(2) {
+  rotate: 135deg;
+  display: none;
+}
+.menu-btn.active span:nth-child(3) {
+  rotate: 45deg;
 }
 
 .lead-menu {
@@ -426,13 +453,13 @@ section.active {
   left: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.4);
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 10px;
   padding: 20px;
-  padding-top: 66px;
+  padding-top: 10px;
   align-items: flex-end;
-  z-index: 1;
+  z-index: 2;
   opacity: 0;
   pointer-events: none;
   transition: opacity 400ms linear;
@@ -441,6 +468,13 @@ section.active {
   border-radius: 999px;
   transform-origin: bottom right;
   opacity: 0;
+  padding: 4px 10px;
+  font-size: 18px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+.lead-menu__item.danger {
+  background-color: #bf0000;
+  color: white;
 }
 @keyframes showItem {
   0% {
@@ -452,48 +486,74 @@ section.active {
     rotate: 0deg;
   }
 }
-
-#menu-trigger {
-  display: none;
-}
-#menu-trigger:checked ~ .menu-btn {
-  border-radius: 50%;
-}
-#menu-trigger:checked ~ .menu-btn span {
-  width: 70%;
-  position: absolute;
-  top: calc(50% - 2px);
-  left: 50%;
-  translate: -50% 0;
-}
-#menu-trigger:checked ~ .menu-btn span:nth-child(1) {
-  rotate: -45deg;
-}
-#menu-trigger:checked ~ .menu-btn span:nth-child(2) {
-  rotate: 135deg;
-  display: none;
-}
-#menu-trigger:checked ~ .menu-btn span:nth-child(3) {
-  rotate: 45deg;
-}
-#menu-trigger:checked ~ .lead-menu {
+.lead-menu.active {
   opacity: 1;
   pointer-events: all;
 }
-#menu-trigger:checked ~ .lead-menu .lead-menu__item {
+.lead-menu.active .lead-menu__item {
   animation: showItem 300ms ease-in-out forwards;
 }
-#menu-trigger:checked ~ .lead-menu .lead-menu__item:nth-child(1) {
+.lead-menu.active .lead-menu__item:nth-of-type(2) {
   animation-delay: 0ms;
 }
-#menu-trigger:checked ~ .lead-menu .lead-menu__item:nth-child(2) {
+.lead-menu.active .lead-menu__item:nth-of-type(3) {
   animation-delay: 100ms;
 }
-#menu-trigger:checked ~ .lead-menu .lead-menu__item:nth-child(3) {
+.lead-menu.active .lead-menu__item:nth-of-type(4) {
   animation-delay: 200ms;
 }
-#menu-trigger:checked ~ .lead-menu .lead-menu__item:nth-child(4) {
+.lead-menu.active .lead-menu__item:nth-of-type(5) {
   animation-delay: 300ms;
+}
+
+.lead-navbar {
+  position: fixed;
+  right: 0px;
+  left: 0px;
+  top: 0px;
+  padding: 10px 20px;
+  z-index: 2;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  -webkit-backdrop-filter: blur(2px);
+          backdrop-filter: blur(2px);
+  background: linear-gradient(0deg, transparent 0%, rgb(96, 121, 187) 80%);
+}
+.lead-navbar__btn {
+  height: 46px;
+  width: 46px;
+  padding: 6px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+.lead-navbar__btn img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+.lead-navbar__left-questions {
+  color: white;
+  text-shadow: 0 0 10px black;
+  font-size: 20px;
+}
+
+body.lead section {
+  padding-top: 66px;
+}
+body.lead .lead-navbar {
+  display: flex;
+}
+body.lead .lead-menu {
+  display: flex;
+}
+body.lead:not([data-cur-page=lead-themes]) .lead-navbar__left-questions {
+  display: none;
+}
+body.lead[data-cur-page=lead-themes] .lead-theme__to-tiles-btn {
+  display: none;
 }
 
 .waiting__container {

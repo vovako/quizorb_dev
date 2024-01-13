@@ -9,7 +9,7 @@
 	<script type="module" defer src="js/script.js"></script>
 </head>
 
-<body>
+<body data-cur-page="">
 	<img src="img/bg-elem-1.svg" alt="" class="bg-elem-1">
 	<img src="img/bg-elem-2.svg" alt="" class="bg-elem-2">
 
@@ -44,6 +44,7 @@
 					<span class="checkbox-green-switch" data-label-on="Зрители" data-label-off="Ведущий"></span>
 				</label>
 				<input type="text" class="login-popup__input" name="password" placeholder="Пароль" required>
+				<div class="login-popup__notice"></div>
 				<div class="login-popup__actions">
 					<button class="login-popup__action login-btn">войти</button>
 					<button class="login-popup__action cancel-btn">отмена</button>
@@ -62,9 +63,6 @@
 
 	<section class="lead-theme" data-page="lead-theme" data-question-id="">
 		<div class="lead-theme__container container">
-			<div class="lead-theme__header-actions">
-				<button class="lead-theme__to-tiles-btn btn">Назад</button>
-			</div>
 			<div class="lead-theme__wrapper">
 				<div class="lead-theme__header">
 					<div class="lead-theme__text"></div>
@@ -83,28 +81,53 @@
 
 	<section class="to-themes-btn" data-page="to-themes-btn">
 		<div class="to-themes-btn__container container">
-			<button class="to-themes-btn__btn btn">Перейти к темам</button>
+			<table>
+				<tr>
+					<td>баллов</td>
+					<td class="to-themes-btn__points-count">0</td>
+				</tr>
+				<tr>
+					<td>правильных ответов</td>
+					<td class="to-themes-btn__true-answers-count">0</td>
+				</tr>
+				<tr>
+					<td>неправильных ответов</td>
+					<td class="to-themes-btn__false-answers-count">0</td>
+				</tr>
+				<tr>
+					<td>вопросов добавлено во второй тур</td>
+					<td class="to-themes-btn__two-tour-addit">0</td>
+				</tr>
+			</table>
 		</div>
 	</section>
+	
+	<div class="lead-navbar">
+		<button class="lead-theme__to-tiles-btn lead-navbar__btn">
+			<img src="img/back-arrow.svg" alt="">
+		</button>
 
-	<div class="lead-navbar dn">
+		<div class="lead-navbar__left-questions"><span>0</span> нерешенных тем</div>
 		
-
-		<div class="lead-menu-component ">
-			<input type="checkbox" id="menu-trigger">
-			<label class="lead-themes__menu-btn menu-btn" for="menu-trigger">
-				<span></span>
-				<span></span>
-				<span></span>
-			</label>
-			<div class="lead-themes__menu lead-menu">
-				<button class="lead-themes__delte-btn btn lead-menu__item">Начать заново</button>
-				<button class="lead-themes__two-tour-btn btn lead-menu__item">Вопросы 2 тура</button>
-				<button class="exit-game-btn btn lead-menu__item">Покинуть игру</button>
-				<button class="leave-and-delete-game-btn btn lead-menu__item">Покинуть и удалить</button>
-			</div>
-		</div>
+		<button class="lead-themes__menu-btn menu-btn lead-navbar__btn">
+			<span></span>
+			<span></span>
+			<span></span>
+		</button>
 	</div>
+
+	<div class="lead-themes__menu lead-menu">
+		<button class="lead-themes__menu-btn menu-btn lead-navbar__btn">
+			<span></span>
+			<span></span>
+			<span></span>
+		</button>
+		<button class="lead-themes__delte-btn lead-menu__item">Начать заново</button>
+		<button class="lead-themes__two-tour-btn lead-menu__item">Вопросы 2 тура (0)</button>
+		<button class="exit-game-btn lead-menu__item danger">Покинуть игру</button>
+		<button class="leave-and-delete-game-btn lead-menu__item danger">Покинуть и удалить</button>
+	</div>
+	
 
 	<!-- view pages -->
 	<section class="waiting" data-page="waiting">

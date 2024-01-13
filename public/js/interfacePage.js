@@ -1,4 +1,4 @@
-import { toPage, ws, getState, setState, hearbeat } from "./functions.js"
+import { toPage, ws, getState, setState, hearbeat, exitGame, exitAndDeleteGame } from "./functions.js"
 
 function interfacePage(pages) {
 	const URLparams = new URLSearchParams(location.search)
@@ -38,7 +38,6 @@ function interfacePage(pages) {
 
 		switch (msg.action) {
 			case 'connect':
-				document.querySelector('.lead-navbar').classList.remove('dn')
 				updateThemes(msg.data.Themes)
 				if (state.page === null) {
 					toPage(pages.themes)
@@ -114,6 +113,9 @@ function interfacePage(pages) {
 			</div>
 			`)
 		})
+
+		const leftThemesEl = document.querySelector('.lead-navbar__left-questions span')
+		leftThemesEl.textContent = themes.filter(t => t.Status === '').length
 	}
 
 	function updateTheme(questions) {
@@ -125,6 +127,8 @@ function interfacePage(pages) {
 		const headerQuestionImg = themeContainer.querySelector('.lead-theme__question-image img')
 
 		if (questions.findIndex(q => q.Status === 'solved') !== -1 || questions.findIndex(q => q.Status === '') == -1) {
+			updateThemeStatistic()
+
 			toPage(pages.toThemesBtn)
 			state.page = 'to-themes-btn'
 			setState(state)
@@ -144,6 +148,10 @@ function interfacePage(pages) {
 		toPage(pages.theme)
 		state.page = 'theme'
 		setState(state)
+
+		function updateThemeStatistic() {
+			const pointsEl = document.querySelector('.to-themes-btn__points-count')
+		}
 	}
 
 	document.addEventListener('click', function (evt) {
@@ -238,13 +246,7 @@ function interfacePage(pages) {
 				data: store.id
 			}))
 
-		} else if (target.classList.contains('to-themes-btn__btn')) {
-			ws.send(JSON.stringify({
-				action: 'to-tiles',
-				data: store.id
-			}))
-			toPage(pages.themes)
-			state.page = 'themes'
+		
 		} else if (target.classList.contains('lead-themes__two-tour-btn')) {
 			ws.send(JSON.stringify({
 				action: 'question_trash',
@@ -255,6 +257,10 @@ function interfacePage(pages) {
 				action: 'to-tiles',
 				data: store.id
 			}))
+		} else if (target.classList.contains('exit-game-btn')) {
+			exitGame()
+		} else if (target.classList.contains('leave-and-delete-game-btn')) {
+			exitAndDeleteGame()
 		}
 	})
 
@@ -264,6 +270,15 @@ function interfacePage(pages) {
 			action: 'restart_game',
 			data: store.id
 		}))
+	})
+
+	const menuButtons = document.querySelectorAll('.menu-btn')
+	const menuPanel = document.querySelector('.lead-menu')
+	menuButtons.forEach(btn => {
+		btn.addEventListener('click', function() {
+			[...menuButtons].map(b => b.classList.toggle('active'))
+			menuPanel.classList.toggle('active')
+		})
 	})
 }
 
