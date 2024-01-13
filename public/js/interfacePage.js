@@ -1,7 +1,5 @@
 import { toPage, ws, getState, setState, hearbeat } from "./functions.js"
 
-
-
 function interfacePage(pages) {
 	const URLparams = new URLSearchParams(location.search)
 	const state = getState()
@@ -40,6 +38,7 @@ function interfacePage(pages) {
 
 		switch (msg.action) {
 			case 'connect':
+				document.querySelector('.lead-navbar').classList.remove('dn')
 				updateThemes(msg.data.Themes)
 				if (state.page === null) {
 					toPage(pages.themes)
@@ -65,6 +64,9 @@ function interfacePage(pages) {
 				updateTheme(msg.data.Questions)
 				const answerEl = document.querySelector('.lead-theme__answer')
 				answerEl.textContent = msg.data.Answer
+				break;
+			case 'get_themes':
+				updateThemes(msg.data.Themes)
 				break;
 			case 'answer_question':
 				updateTheme(msg.data.Questions)

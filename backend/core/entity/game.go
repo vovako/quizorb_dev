@@ -154,15 +154,7 @@ func (game *Game) SelectTheme(theme uint) error {
 	var theme_questions []Question
 	var t Theme
 	for _, v := range game.Themes {
-		if v.ID == theme && v.Status != "" {
-			if game.Lead != nil && game.Lead.Conn != nil {
-				er := game.Lead.Conn.WriteJSON(tools.BadRes("select_theme", fmt.Errorf("тема уже разгадана")))
-				if er != nil {
-					return er
-				}
-			}
-			return fmt.Errorf("данная тема уже разгадана")
-		} else if v.ID == theme {
+		if v.ID == theme {
 			t = v
 			break
 		}
@@ -190,13 +182,10 @@ func (game *Game) SelectQuestion(question uint) error {
 			q = v
 		}
 	}
-	if q.Status == "" {
-		if err := game.SendResponse(tools.SuccessRes("select_question", struct{ Question Question }{Question: q})); err != nil {
-			return fmt.Errorf("ошибка при ответе на вопрос: %v", err)
-		}
-		return nil
+	if err := game.SendResponse(tools.SuccessRes("select_question", struct{ Question Question }{Question: q})); err != nil {
+		return fmt.Errorf("ошибка при ответе на вопрос: %v", err)
 	}
-	return fmt.Errorf("выбранный вопрос уже решен")
+	return nil
 }
 
 func (game *Game) AnswerQuestion(question uint, status string) error {

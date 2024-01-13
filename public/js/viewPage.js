@@ -148,7 +148,10 @@ function viewPage(pages) {
 		const image = themeBody.querySelector('.theme-body__image')
 		const maxImageHeight = themeContainer.clientHeight - (getComputedStyle(themeBody).padding.replace('px', '') * 2) - text.clientHeight + 'px'
 		image.style.maxHeight = maxImageHeight
+		maxImageHeight.substring(0, maxImageHeight.length-2) === 0 ? image.classList.add('dn') : image.classList.remove('dn')
 	}
+
+	window.addEventListener('resize', updateThemeImageHeight)
 }
 
 export default viewPage

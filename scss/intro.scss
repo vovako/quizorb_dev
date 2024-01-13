@@ -8,13 +8,6 @@
 		gap: 8px;
 	}
 
-	&__actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
-		margin-bottom: 1em;
-	}
-
 	&__two-tour-btn {
 		&.anim {
 			animation: anim 0.3s;
@@ -34,10 +27,11 @@
 .lead-themes-item {
 	background-color: #fff;
 	padding: 8px 10px;
+	border-radius: 8px;
 
 	&.failed,
 	&.solved {
-		display: none;
+		background-color: rgba(white, 0.5);
 	}
 
 	&__text {
@@ -61,7 +55,6 @@
 	}
 
 	&__header-actions {
-		@extend .lead-themes__actions;
 	}
 
 	&__header {
@@ -130,5 +123,122 @@
 	}
 
 	&__btn {
+	}
+}
+
+.menu-btn {
+	background-color: #fff;
+	padding: 10px;
+	width: 46px;
+	aspect-ratio: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 5px;
+	border-radius: 5px;
+	box-shadow: 0 0 10px rgba(black, 0.5);
+	position: absolute;
+	right: 20px;
+	top: 10px;
+	z-index: 2;
+	transition: all 300ms ease-in-out;
+
+	span {
+		width: 100%;
+		height: 4px;
+		background-color: black;
+		display: block;
+		border-radius: 999px;
+
+		transition: 300ms ease-in-out;
+		transition-property: rotate;
+	}
+}
+
+.lead-menu {
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	background-color: rgba(black, 0.4);
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 20px;
+	padding-top: 66px;
+	align-items: flex-end;
+	z-index: 1;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 400ms linear;
+
+	&__item {
+		border-radius: 999px;
+		transform-origin: bottom right;
+		opacity: 0;
+	}
+
+	@keyframes showItem {
+		0% {
+			opacity: 0;
+			rotate: -90deg;
+		}
+
+		100% {
+			opacity: 1;
+			rotate: 0deg;
+		}
+	}
+}
+
+#menu-trigger {
+	display: none;
+
+	&:checked {
+		& ~ .menu-btn {
+			border-radius: 50%;
+
+			span {
+				width: 70%;
+				position: absolute;
+				top: calc(50% - 2px);
+				left: 50%;
+				translate: -50% 0;
+
+				&:nth-child(1) {
+					rotate: -45deg;
+				}
+				&:nth-child(2) {
+					rotate: 135deg;
+					display: none;
+				}
+				&:nth-child(3) {
+					rotate: 45deg;
+				}
+			}
+		}
+
+		& ~ .lead-menu {
+			opacity: 1;
+			pointer-events: all;
+
+			.lead-menu__item {
+				animation: showItem 300ms ease-in-out forwards;
+
+				&:nth-child(1) {
+					animation-delay: 0ms;
+				}
+				&:nth-child(2) {
+					animation-delay: 100ms;
+				}
+				&:nth-child(3) {
+					animation-delay: 200ms;
+				}
+				&:nth-child(4) {
+					animation-delay: 300ms;
+				}
+			}
+		}
 	}
 }

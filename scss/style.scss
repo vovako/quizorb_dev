@@ -15,17 +15,20 @@ body {
 	font-family: "consolas";
 	font-size: 20px;
 	background: var(--bg-color) linear-gradient(109deg, #97ABE0 -1.52%, rgba(96, 121, 187, 0.76) 58.26%, rgba(51, 70, 121, 0.19) 114.41%);
+	background-attachment: fixed;
 
 	.bg-elem-1 {
 		position: absolute;
 		right: 0;
 		top: 0;
 		@include adaptiv-value('width', 735, 160);
+		max-height: 100%;
 	}
 	.bg-elem-2 {
 		position: absolute;
 		left: 0;
 		bottom: 0;
+		max-height: 100%;
 		@include adaptiv-value('width', 439, 200);
 	}
 }

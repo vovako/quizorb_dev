@@ -28,7 +28,7 @@ func Connection() fiber.Handler {
 	return websocket.New(func(c *websocket.Conn) {
 		for {
 			conn := c.RemoteAddr().String()
-			if connections[conn] == nil {
+			if _, ok := connections[conn]; !ok {
 				connections[conn] = &entity.Client{
 					Address: conn,
 					Conn:    c,
