@@ -220,7 +220,10 @@ func (game *Game) AnswerQuestion(question uint, status string) error {
 			break
 		}
 	}
-	if err := game.SendResponse(tools.SuccessRes("answer_question", struct{ Questions []Question }{Questions: theme_questions})); err != nil {
+	if err := game.SendResponse(tools.SuccessRes("answer_question", struct {
+		Questions  []Question
+		TrashCount int
+	}{Questions: theme_questions, TrashCount: len(game.Trash)})); err != nil {
 		return fmt.Errorf("ошибка при ответе на вопрос: %v", err)
 	}
 	return nil
