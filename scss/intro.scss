@@ -56,7 +56,7 @@
 	}
 
 	&__header {
-		background-color: #fff;
+		background-color: rgba(white, 0.5);
 		padding: 10px;
 		display: flex;
 		align-items: center;
@@ -100,15 +100,18 @@
 	}
 
 	&__apply-btn {
-		padding: 30px 5px;
+		padding: 20px 5px;
+		border-radius: 6px;
 		color: white;
 		background-color: green;
 		width: 100%;
+		background: linear-gradient(to right, #0f945a, #36c598, #27d883, #21b76f);
+		box-shadow: 0 4px 15px 0 rgba(18, 167, 105, 0.75);
 	}
 
 	&__deny-btn {
 		@extend .lead-theme__apply-btn;
-		background-color: red;
+		background: linear-gradient(to right, #d82d34, #ec4c53, #ea7d81, #ad131b);
 	}
 }
 
@@ -302,6 +305,7 @@ body {
 				display: none;
 			}
 		}
+
 		&[data-cur-page="lead-themes"] {
 			.lead-theme__to-tiles-btn {
 				display: none;

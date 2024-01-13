@@ -29,9 +29,9 @@ export function setState(state) {
 
 	sessionStorage.setItem(gameId, JSON.stringify(state))
 }
-export function hearbeat(socket) {
+export function hearbeat() {
 	setInterval(() => {
-		socket.send(JSON.stringify({
+		ws.send(JSON.stringify({
 			action: 'ping'
 		}))
 	}, 40000)
@@ -39,15 +39,20 @@ export function hearbeat(socket) {
 
 export function exitGame() {
 	if (confirm('Выйти в меню игр?')) {
+		ws.close()
 		history.pushState(null, null, '')
 		location = location.pathname
 	}
 }
 
-export function exitAndDeleteGame() {
+export function exitAndDeleteGame(gameId) {
 	if (confirm('Удалить игру?')) {
+		// ws.close()
 		history.pushState(null, null, '')
-		//запрос на удаление игры, после чего зрителя направит в лобби
+		ws.send(JSON.stringify({
+			action: 'delete_game',
+			data: gameId
+		}))
 		location = location.pathname
 	}
 }

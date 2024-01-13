@@ -4,6 +4,8 @@ function loginPage(pages) {
 	const loading = document.querySelector('.loading')
 	const createGamePopup = pages.login.querySelector('.create-game-popup')
 	const loginPopup = pages.login.querySelector('.login-popup')
+	const loginNoticeEl = document.querySelector('.login-popup__notice')
+	
 	let GAMES = null
 	const store = {
 		role: null,
@@ -18,7 +20,7 @@ function loginPage(pages) {
 			"action": "games"
 		}))
 
-		hearbeat(ws)
+		hearbeat()
 	}
 
 	ws.onclose = () => console.log('Соединение закрыто');
@@ -79,8 +81,6 @@ function loginPage(pages) {
 				break
 
 			case 'connect':
-				const noticeEl = document.querySelector('.login-popup__notice')
-				noticeEl.textContent = ''
 				
 				if (msg.error === null) {
 					const URLparams = new URLSearchParams(location.search);
@@ -95,7 +95,7 @@ function loginPage(pages) {
 					history.pushState(null, null, '?' + URLparams.toString());
 					location.reload()
 				} else {
-					noticeEl.textContent = msg.error
+					loginNoticeEl.textContent = msg.error
 				}
 				break
 		}
@@ -160,6 +160,8 @@ function loginPage(pages) {
 			const game = GAMES.filter(g => g.id === store.id)[0]
 			const switcher = document.querySelector('#role-switcher')
 			switcher.checked = game.lead
+
+			loginNoticeEl.textContent = ''
 		}
 	})
 }

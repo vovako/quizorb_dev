@@ -23,7 +23,7 @@ function viewPage(pages) {
 			}
 		}))
 
-		hearbeat(ws)
+		hearbeat()
 	}
 	ws.onclose = function() {
 		console.log("Соединение закрыто")

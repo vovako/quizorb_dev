@@ -1,6 +1,7 @@
 import { toPage, ws, getState, setState, hearbeat, exitGame, exitAndDeleteGame } from "./functions.js"
 
 function interfacePage(pages) {
+	const trashQuestionsCountEl = document.querySelector('.lead-themes__two-tour-btn span')
 	const URLparams = new URLSearchParams(location.search)
 	const state = getState()
 	const store = {
@@ -10,7 +11,7 @@ function interfacePage(pages) {
 	}
 
 	const loading = document.querySelector('.loading')
-	let curQuestionIndex = null
+	// let curQuestionIndex = null
 
 
 	ws.onopen = function () {
@@ -25,7 +26,7 @@ function interfacePage(pages) {
 			}
 		}))
 
-		hearbeat(ws)
+		hearbeat()
 	}
 	ws.onclose = function () {
 		console.log("Соединение закрыто")
@@ -68,6 +69,8 @@ function interfacePage(pages) {
 				updateThemes(msg.data.Themes)
 				break;
 			case 'answer_question':
+				
+				trashQuestionsCountEl.textContent = msg.data.TrashCount
 				updateTheme(msg.data.Questions)
 				break;
 
@@ -80,6 +83,7 @@ function interfacePage(pages) {
 				break;
 			case 'question_trash':
 				if (msg.data) {
+
 					updateTheme([msg.data.Question])
 					document.querySelector('.lead-theme').classList.add('trash')
 				} else {
@@ -96,6 +100,7 @@ function interfacePage(pages) {
 				setState(state)
 				break;
 			case 'answer_question_trash':
+				trashQuestionsCountEl.textContent = --trashQuestionsCountEl.textContent
 				toPage(pages.toThemesBtn)
 				state.page = 'to-themes-btn'
 				setState(state)
@@ -127,7 +132,10 @@ function interfacePage(pages) {
 		const headerQuestionImg = themeContainer.querySelector('.lead-theme__question-image img')
 
 		if (questions.findIndex(q => q.Status === 'solved') !== -1 || questions.findIndex(q => q.Status === '') == -1) {
-			updateThemeStatistic()
+			const pointsCount = questions.findIndex(q => q.Status === 'solved').length
+			const solvedCount = questions.findIndex(q => q.Status === 'solved').length
+			const failedCount = questions.findIndex(q => q.Status === 'failed').length
+			updateThemeStatistic(1, solvedCount, failedCount, 1)
 
 			toPage(pages.toThemesBtn)
 			state.page = 'to-themes-btn'
@@ -149,31 +157,23 @@ function interfacePage(pages) {
 		state.page = 'theme'
 		setState(state)
 
-		function updateThemeStatistic() {
+		function updateThemeStatistic(pointsCount, solvedCount, failedCount, twoTourCount) {
 			const pointsEl = document.querySelector('.to-themes-btn__points-count')
+			const solvedEl = document.querySelector('.to-themes-btn__true-answers-count')
+			const failedEl = document.querySelector('.to-themes-btn__false-answers-count')
+			const twoTourQuestionCountEl = document.querySelector('.to-themes-btn__two-tour-addit')
+
+			pointsEl.textContent = pointsCount
+			solvedEl.textContent = solvedCount
+			failedEl.textContent = failedCount
+			twoTourQuestionCountEl.textContent = twoTourCount
 		}
 	}
 
 	document.addEventListener('click', function (evt) {
 		const target = evt.target
 
-		if (target.classList.contains('intro-tiles-item__apply-btn') && !target.classList.contains('checked')) {
-			curQuestionIndex = +target.closest('.intro-tiles-item').dataset.tilesId
-
-			ws.send(JSON.stringify({
-				"action": "select_question",
-				"data": {
-					"question": curQuestionIndex,
-					"game": store.id
-				}
-			}))
-		} else if (target.classList.contains('members__back-btn')) {
-			ws.send(JSON.stringify({
-				action: "to-tiles",
-				data: store.id
-			}))
-
-		} else if (target.classList.contains('lead-themes-item')) {
+		if (target.classList.contains('lead-themes-item')) {
 			state.theme = +target.dataset.themeId
 			setState(state)
 			ws.send(JSON.stringify({
@@ -246,7 +246,7 @@ function interfacePage(pages) {
 				data: store.id
 			}))
 
-		
+
 		} else if (target.classList.contains('lead-themes__two-tour-btn')) {
 			ws.send(JSON.stringify({
 				action: 'question_trash',
@@ -260,7 +260,7 @@ function interfacePage(pages) {
 		} else if (target.classList.contains('exit-game-btn')) {
 			exitGame()
 		} else if (target.classList.contains('leave-and-delete-game-btn')) {
-			exitAndDeleteGame()
+			exitAndDeleteGame(store.id)
 		}
 	})
 
@@ -275,7 +275,7 @@ function interfacePage(pages) {
 	const menuButtons = document.querySelectorAll('.menu-btn')
 	const menuPanel = document.querySelector('.lead-menu')
 	menuButtons.forEach(btn => {
-		btn.addEventListener('click', function() {
+		btn.addEventListener('click', function () {
 			[...menuButtons].map(b => b.classList.toggle('active'))
 			menuPanel.classList.toggle('active')
 		})
