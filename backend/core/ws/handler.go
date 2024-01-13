@@ -253,10 +253,10 @@ func Connection() fiber.Handler {
 				if err := json.Unmarshal(req.Data, &id_game); err != nil {
 					return
 				}
-				entity.DeleteGame(id_game)
-				if connections[conn] != nil && connections[conn].Conn != nil {
-					connections[conn].Conn.WriteJSON(tools.SuccessRes("delete_game", "Игра удалена"))
-				} else {
+				if game := entity.GetGame(id_game); game != nil {
+					game.SendResponse(tools.SuccessRes("delete_game", "Игра удалена"))
+					entity.DeleteGame(id_game)
+				} else if err := connections[conn].Conn.WriteJSON(tools.BadRes("delete_game", fmt.Errorf("игра не найдена"))); err != nil {
 					return
 				}
 			case "ping":
