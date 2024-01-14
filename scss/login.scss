@@ -46,6 +46,12 @@
 			border-radius: 8px;
 		}
 
+		&__notice {
+			color: yellow;
+			font-size: 16px;
+			margin: 0 auto;
+		}
+
 		input {
 			width: 100%;
 			background-color: transparent;
@@ -61,7 +67,7 @@
 			&:invalid {
 				border-color: red;
 
-				+ div {
+				~ div {
 					.login-btn,
 					.create-btn {
 						background-color: rgba(white, 0.2);
@@ -125,12 +131,6 @@
 			}
 
 			&__action {
-			}
-
-			&__notice {
-				color: yellow;
-				font-size: 16px;
-				margin: 0 auto;
 			}
 		}
 	}

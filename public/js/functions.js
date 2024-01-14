@@ -1,4 +1,4 @@
-export function toPage(page) {
+export function toPage(page, state = null) {
 	const curPage = document.querySelector('[data-page].active')
 	if (curPage) {
 		curPage.classList.remove('active')
@@ -7,6 +7,10 @@ export function toPage(page) {
 
 	const pageName = page.dataset.page
 	document.body.dataset.curPage = pageName
+
+	if (state === null) return;
+ 	state.page = pageName
+	setState(state)
 }
 
 export const ws = new WebSocket('ws://127.0.0.1:8080/websocket/connection')
@@ -37,22 +41,30 @@ export function hearbeat() {
 	}, 40000)
 }
 
+export function toLoginPage() {
+	history.pushState(null, null, '')
+	location = location.pathname
+}
+
 export function exitGame() {
 	if (confirm('Выйти в меню игр?')) {
 		ws.close()
-		history.pushState(null, null, '')
-		location = location.pathname
+		toLoginPage()
 	}
 }
 
 export function exitAndDeleteGame(gameId) {
 	if (confirm('Удалить игру?')) {
 		// ws.close()
-		history.pushState(null, null, '')
+		
 		ws.send(JSON.stringify({
 			action: 'delete_game',
 			data: gameId
 		}))
-		location = location.pathname
+		toLoginPage()
 	}
+}
+
+export function waitForImageLoad(image) {
+	return new Promise(resolve => image.onload = resolve)
 }

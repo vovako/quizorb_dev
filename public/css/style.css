@@ -159,6 +159,11 @@ section.active {
   gap: 10px;
   border-radius: 8px;
 }
+.login .popup__notice {
+  color: yellow;
+  font-size: 16px;
+  margin: 0 auto;
+}
 .login .popup input {
   width: 100%;
   background-color: transparent;
@@ -178,8 +183,8 @@ section.active {
 .login .popup input:invalid {
   border-color: red;
 }
-.login .popup input:invalid + div .login-btn,
-.login .popup input:invalid + div .create-btn {
+.login .popup input:invalid ~ div .login-btn,
+.login .popup input:invalid ~ div .create-btn {
   background-color: rgba(255, 255, 255, 0.2);
   color: rgba(0, 0, 0, 0.5);
   border: transparent 2px solid;
@@ -211,12 +216,6 @@ section.active {
   color: white;
   text-align: center;
 }
-.login .popup .login-popup__notice {
-  color: yellow;
-  font-size: 16px;
-  margin: 0 auto;
-}
-
 .login-game {
   display: flex;
   background-color: rgba(0, 0, 0, 0.2);
@@ -316,17 +315,6 @@ section.active {
   flex-direction: column;
   gap: 8px;
 }
-.lead-themes__two-tour-btn.anim {
-  animation: anim 0.3s;
-}
-@keyframes anim {
-  from {
-    background-color: red;
-  }
-  to {
-    background-color: white;
-  }
-}
 
 .lead-themes-item {
   background-color: #fff;
@@ -359,13 +347,15 @@ section.active {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+  overflow: scroll;
+  max-height: 100%;
 }
 .lead-theme__answer {
-  margin-top: 10px;
-  color: green;
-  text-align: center;
-  flex: 0 0 100%;
-  font-size: 16px;
+  margin: 10px auto;
+  width: -moz-fit-content;
+  width: fit-content;
+  font-size: 18px;
+  font-weight: 700;
 }
 .lead-theme__question-image {
   display: flex;
@@ -374,6 +364,7 @@ section.active {
   width: 100%;
 }
 .lead-theme__question-image img {
+  border: 2px solid black;
   max-width: 100%;
   max-height: 200px;
 }
@@ -458,7 +449,7 @@ section.active {
   background-color: rgba(0, 0, 0, 0.4);
   display: none;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
   padding: 20px;
   padding-top: 10px;
   align-items: flex-end;
@@ -468,26 +459,22 @@ section.active {
   transition: opacity 400ms linear;
 }
 .lead-menu__item {
-  border-radius: 999px;
   transform-origin: bottom right;
   opacity: 0;
-  padding: 4px 10px;
-  font-size: 18px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
-.lead-menu__item.danger {
+.lead-menu__item button {
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 18px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+}
+.lead-menu__item button.danger {
   background-color: #bf0000;
   color: white;
 }
-@keyframes showItem {
-  0% {
-    opacity: 0;
-    rotate: -90deg;
-  }
-  100% {
-    opacity: 1;
-    rotate: 0deg;
-  }
+.lead-menu__item button.disabled {
+  background-color: gray;
+  color: rgb(75, 75, 75);
 }
 .lead-menu.active {
   opacity: 1;
@@ -507,6 +494,16 @@ section.active {
 }
 .lead-menu.active .lead-menu__item:nth-of-type(5) {
   animation-delay: 300ms;
+}
+@keyframes showItem {
+  0% {
+    opacity: 0;
+    rotate: -90deg;
+  }
+  100% {
+    opacity: 1;
+    rotate: 0deg;
+  }
 }
 
 .lead-navbar {

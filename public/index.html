@@ -29,6 +29,7 @@
 			<div class="create-game-popup__container container">
 				<input type="text" class="create-game-popup__input" name="title" placeholder="Название" value="Игра 1" required>
 				<input type="text" class="create-game-popup__input" name="password" placeholder="Пароль" required>
+				<div class="popup__notice"></div>
 				<div class="create-game-popup__actions">
 					<button type="button" class="create-game-popup__action create-btn">создать</button>
 					<button type="button" class="create-game-popup__action cancel-btn">отмена</button>
@@ -44,7 +45,7 @@
 					<span class="checkbox-green-switch" data-label-on="Зрители" data-label-off="Ведущий"></span>
 				</label>
 				<input type="text" class="login-popup__input" name="password" placeholder="Пароль" required>
-				<div class="login-popup__notice"></div>
+				<div class="popup__notice"></div>
 				<div class="login-popup__actions">
 					<button class="login-popup__action login-btn">войти</button>
 					<button class="login-popup__action cancel-btn">отмена</button>
@@ -67,14 +68,17 @@
 				<div class="lead-theme__header">
 					<div class="lead-theme__text"></div>
 					<div class="lead-theme__points"><span></span> баллов</div>
-					<div class="lead-theme__answer"></div>
+
 					<div class="lead-theme__question-image"><img src="" alt=""></div>
 					<div class="lead-theme__question"></div>
 				</div>
 			</div>
-			<div class="lead-theme__actions">
-				<button class="lead-theme__apply-btn btn">Верно</button>
-				<button class="lead-theme__deny-btn btn">Неверно</button>
+			<div class="lead-theme__footer">
+				<div class="lead-theme__answer">Ответ: <span></span></div>
+				<div class="lead-theme__actions">
+					<button class="lead-theme__apply-btn btn">Верно</button>
+					<button class="lead-theme__deny-btn btn">Неверно</button>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -101,14 +105,14 @@
 			</table>
 		</div>
 	</section>
-	
+
 	<div class="lead-navbar">
 		<button class="lead-theme__to-tiles-btn lead-navbar__btn">
 			<img src="img/back-arrow.svg" alt="">
 		</button>
 
 		<div class="lead-navbar__left-questions"><span>0</span> нерешенных тем</div>
-		
+
 		<button class="lead-themes__menu-btn menu-btn lead-navbar__btn">
 			<span></span>
 			<span></span>
@@ -122,12 +126,20 @@
 			<span></span>
 			<span></span>
 		</button>
-		<button class="lead-themes__delte-btn lead-menu__item">Начать заново</button>
-		<button class="lead-themes__two-tour-btn lead-menu__item">Вопросы 2 тура (<span>0</span>)</button>
-		<button class="exit-game-btn lead-menu__item danger">Покинуть игру</button>
-		<button class="leave-and-delete-game-btn lead-menu__item danger">Покинуть и удалить</button>
+		<div class="lead-menu__item">
+			<button class="lead-themes__restart-game-btn">Начать заново</button>
+		</div>
+		<div class="lead-menu__item">
+			<button class="lead-themes__two-tour-btn disabled">Вопросы 2 тура (<span>0</span>)</button>
+		</div>
+		<div class="lead-menu__item">
+			<button class="exit-game-btn danger">Покинуть игру</button>
+		</div>
+		<div class="lead-menu__item">
+			<button class="leave-and-delete-game-btn danger">Покинуть и удалить</button>
+		</div>
 	</div>
-	
+
 
 	<!-- view pages -->
 	<section class="waiting" data-page="waiting">
@@ -136,10 +148,10 @@
 		</div>
 	</section>
 
-	<section class="tiles" data-page="tiles">
+	<!-- <section class="tiles" data-page="tiles">
 		<div class="tiles__container container">
 		</div>
-	</section>
+	</section> -->
 
 	<section class="themes" data-page="themes">
 		<div class="themes__container container">

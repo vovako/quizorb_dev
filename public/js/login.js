@@ -4,7 +4,8 @@ function loginPage(pages) {
 	const loading = document.querySelector('.loading')
 	const createGamePopup = pages.login.querySelector('.create-game-popup')
 	const loginPopup = pages.login.querySelector('.login-popup')
-	const loginNoticeEl = document.querySelector('.login-popup__notice')
+	const createNoticeEl = document.querySelector('.create-game-popup .popup__notice')
+	const loginNoticeEl = document.querySelector('.login-popup .popup__notice')
 	
 	let GAMES = null
 	const store = {
@@ -106,6 +107,9 @@ function loginPage(pages) {
 	//добавление игры
 	const openPopupAddGameBtn = document.querySelector('.login__add-game-btn')
 	openPopupAddGameBtn.addEventListener('click', function () {
+		createGamePopup.querySelector('input[name="password"]').value = ''
+		createNoticeEl.textContent = ''
+
 		createGamePopup.classList.add('active')
 	})
 
@@ -162,6 +166,7 @@ function loginPage(pages) {
 			switcher.checked = game.lead
 
 			loginNoticeEl.textContent = ''
+			loginPopup.querySelector('.login-popup__input').value = ''
 		}
 	})
 }

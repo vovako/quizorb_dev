@@ -1,26 +1,11 @@
 .lead-themes {
-	&__container {}
+	&__container {
+	}
 
 	&__list {
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
-	}
-
-	&__two-tour-btn {
-		&.anim {
-			animation: anim 0.3s;
-		}
-
-		@keyframes anim {
-			from {
-				background-color: red;
-			}
-
-			to {
-				background-color: white;
-			}
-		}
 	}
 }
 
@@ -62,18 +47,22 @@
 		align-items: center;
 		justify-content: space-between;
 		flex-wrap: wrap;
+
+		overflow: scroll;
+		max-height: 100%;
 	}
 
-	&__text {}
+	&__text {
+	}
 
-	&__points {}
+	&__points {
+	}
 
 	&__answer {
-		margin-top: 10px;
-		color: green;
-		text-align: center;
-		flex: 0 0 100%;
-		font-size: 16px;
+		margin: 10px auto;
+		width: fit-content;
+		font-size: 18px;
+		font-weight: 700;
 	}
 
 	&__question-image {
@@ -83,6 +72,7 @@
 		width: 100%;
 
 		img {
+			border: 2px solid black;
 			max-width: 100%;
 			max-height: 200px;
 		}
@@ -131,7 +121,8 @@
 		}
 	}
 
-	&__btn {}
+	&__btn {
+	}
 }
 
 .menu-btn {
@@ -190,7 +181,7 @@
 	background-color: rgba(black, 0.4);
 	display: none;
 	flex-direction: column;
-	gap: 10px;
+	gap: 14px;
 	padding: 20px;
 	padding-top: 10px;
 	align-items: flex-end;
@@ -200,28 +191,23 @@
 	transition: opacity 400ms linear;
 
 	&__item {
-		border-radius: 999px;
 		transform-origin: bottom right;
 		opacity: 0;
-		padding: 4px 10px;
-		font-size: 18px;
-		box-shadow: 0 0 10px rgba(black, 0.5);
+		button {
+			border-radius: 999px;
+			padding: 6px 10px;
+			font-size: 18px;
+			box-shadow: 0 0 10px rgba(black, 0.9);
 
-		&.danger {
-			background-color: #bf0000;
-			color: white;
-		}
-	}
+			&.danger {
+				background-color: #bf0000;
+				color: white;
+			}
 
-	@keyframes showItem {
-		0% {
-			opacity: 0;
-			rotate: -90deg;
-		}
-
-		100% {
-			opacity: 1;
-			rotate: 0deg;
+			&.disabled {
+				background-color: gray;
+				color: rgb(75, 75, 75);
+			}
 		}
 	}
 
@@ -246,6 +232,18 @@
 
 			&:nth-of-type(5) {
 				animation-delay: 300ms;
+			}
+		}
+
+		@keyframes showItem {
+			0% {
+				opacity: 0;
+				rotate: -90deg;
+			}
+
+			100% {
+				opacity: 1;
+				rotate: 0deg;
 			}
 		}
 	}

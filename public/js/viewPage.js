@@ -1,4 +1,4 @@
-import { toPage, ws, getState, hearbeat } from "./functions.js"
+import { toPage, ws, getState, hearbeat, waitForImageLoad } from "./functions.js"
 
 function viewPage(pages) {
 	const URLparams = new URLSearchParams(location.search)
@@ -25,7 +25,7 @@ function viewPage(pages) {
 
 		hearbeat()
 	}
-	ws.onclose = function() {
+	ws.onclose = function () {
 		console.log("Соединение закрыто")
 	}
 
@@ -43,10 +43,9 @@ function viewPage(pages) {
 
 			case 'select_theme':
 				updateTheme(msg.data.Questions)
-				toPage(pages.theme)
-				updateThemeImageHeight()
 				answerPopup.querySelector('.answer__text').textContent = msg.data.Answer
-				answerPopup.querySelector('.answer__image img').src = msg.data.IMGAnswer
+				const imageEl = answerPopup.querySelector('.answer__image img')
+				imageEl.src = msg.data.IMGAnswer
 				break;
 
 			case 'answer_question':
@@ -70,9 +69,12 @@ function viewPage(pages) {
 				if (Object.keys(msg.data).length < 1) break;
 
 				updateTheme([msg.data.Question])
-				toPage(pages.theme)
 				answerPopup.querySelector('.answer__text').textContent = msg.data.Answer
-				answerPopup.querySelector('.answer__image img').src = msg.data.Question.url_answer
+				const answerImageEl = answerPopup.querySelector('.answer__image img')
+				answerImageEl.src = msg.data.Question.url_answer
+				waitForImageLoad(answerImageEl).then(() => {
+					toPage(pages.theme)
+				})
 				break;
 			case 'answer_question_trash':
 				updateTheme(msg.data.Questions)
@@ -124,6 +126,10 @@ function viewPage(pages) {
 		}
 		themeQuestionText.textContent = questions[curQuesetionIndex].question
 		themeImage.src = questions[curQuesetionIndex].url_answer
+		waitForImageLoad(themeImage).then(() => {
+			toPage(pages.theme)
+			updateThemeImageHeight()
+		})
 
 		const themeBox = document.querySelector('.theme__list')
 		let activeFinded = false
@@ -148,7 +154,7 @@ function viewPage(pages) {
 		const image = themeBody.querySelector('.theme-body__image')
 		const maxImageHeight = themeContainer.clientHeight - (getComputedStyle(themeBody).padding.replace('px', '') * 2) - text.clientHeight + 'px'
 		image.style.maxHeight = maxImageHeight
-		maxImageHeight.substring(0, maxImageHeight.length-2) === 0 ? image.classList.add('dn') : image.classList.remove('dn')
+		maxImageHeight.substring(0, maxImageHeight.length - 2) === 0 ? image.classList.add('dn') : image.classList.remove('dn')
 	}
 
 	window.addEventListener('resize', updateThemeImageHeight)

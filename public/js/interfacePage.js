@@ -1,18 +1,132 @@
-import { toPage, ws, getState, setState, hearbeat, exitGame, exitAndDeleteGame } from "./functions.js"
+import { toPage, ws, getState, setState, hearbeat, exitGame, exitAndDeleteGame, toLoginPage, waitForImageLoad } from "./functions.js"
 
 function interfacePage(pages) {
-	const trashQuestionsCountEl = document.querySelector('.lead-themes__two-tour-btn span')
 	const URLparams = new URLSearchParams(location.search)
 	const state = getState()
+	if (state === null) toLoginPage();
+
 	const store = {
 		id: URLparams.get('id'),
 		password: state.password,
 		role: URLparams.get('role'),
 	}
 
+	const trashQuestionsCountEl = document.querySelector('.lead-themes__two-tour-btn span')
 	const loading = document.querySelector('.loading')
-	// let curQuestionIndex = null
 
+	const applyAnswerBtn = document.querySelector('.lead-theme__apply-btn')
+	applyAnswerBtn.addEventListener('click', function () {
+		const questionId = +pages.theme.querySelector('.container').dataset.questionId
+
+		if (pages.theme.classList.contains('trash')) {
+			ws.send(JSON.stringify({
+				"action": "answer_question_trash",
+				"data": {
+					"game": store.id,
+					"question": questionId,
+					Status: 'solved'
+				}
+			}))
+			pages.theme.classList.remove('trash')
+		} else {
+			ws.send(JSON.stringify({
+				action: 'answer_question',
+				data: {
+					game: store.id,
+					status: 'solved',
+					id: questionId
+				}
+			}))
+		}
+
+		ws.send(JSON.stringify({
+			action: 'get_themes',
+			data: store.id
+		}))
+	})
+
+
+	const denyAnswerBtn = document.querySelector('.lead-theme__deny-btn')
+	denyAnswerBtn.addEventListener('click', function () {
+		const questionId = +pages.theme.querySelector('.container').dataset.questionId
+
+		if (pages.theme.classList.contains('trash')) {
+			ws.send(JSON.stringify({
+				"action": "answer_question_trash",
+				"data": {
+					"game": store.id,
+					"question": questionId,
+					Status: 'failed'
+				}
+			}))
+			pages.theme.classList.remove('trash')
+		} else {
+			ws.send(JSON.stringify({
+				action: 'answer_question',
+				data: {
+					game: store.id,
+					status: 'failed',
+					id: questionId
+				}
+			}))
+		}
+
+
+		ws.send(JSON.stringify({
+			action: 'get_themes',
+			data: store.id
+		}))
+	})
+
+	const menuButtons = document.querySelectorAll('.menu-btn')
+	const menuPanel = document.querySelector('.lead-menu')
+	menuButtons.forEach(btn => {
+		btn.addEventListener('click', function () {
+			toggleMenu()
+		})
+	})
+
+	menuPanel.addEventListener('click', function (evt) {
+		if (evt.target !== menuPanel) return
+
+		toggleMenu(false)
+	})
+
+	const twoTourBtn = document.querySelector('.lead-themes__two-tour-btn')
+	twoTourBtn.addEventListener('click', function () {
+		if (twoTourBtn.classList.contains('disabled')) return;
+
+		ws.send(JSON.stringify({
+			action: 'question_trash',
+			data: store.id
+		}))
+	})
+
+	const toThemesBtn = document.querySelector('.lead-theme__to-tiles-btn')
+	toThemesBtn.addEventListener('click', function () {
+		ws.send(JSON.stringify({
+			action: 'to-tiles',
+			data: store.id
+		}))
+	})
+
+	const exitGameBtn = document.querySelector('.exit-game-btn')
+	exitGameBtn.addEventListener('click', function () {
+		exitGame()
+	})
+
+	const exitAndDeleteGameBtn = document.querySelector('.leave-and-delete-game-btn')
+	exitAndDeleteGameBtn.addEventListener('click', function () {
+		exitAndDeleteGame(store.id)
+	})
+
+	const restartGameBtn = document.querySelector('.lead-themes__restart-game-btn')
+	restartGameBtn.addEventListener('click', function () {
+		ws.send(JSON.stringify({
+			action: 'restart_game',
+			data: store.id
+		}))
+	})
 
 	ws.onopen = function () {
 		console.log("Соединение удалось")
@@ -40,13 +154,10 @@ function interfacePage(pages) {
 		switch (msg.action) {
 			case 'connect':
 				updateThemes(msg.data.Themes)
-				if (state.page === null) {
+
+				if (state.page === null || state.page === pages.themes.dataset.page) {
 					toPage(pages.themes)
-					state.page = 'themes'
-					setState(state)
-				} else if (state.page === 'themes') {
-					toPage(pages.themes)
-				} else if (state.page === 'theme') {
+				} else if (state.page === pages.theme.dataset.page) {
 					ws.send(JSON.stringify({
 						"action": "select_theme",
 						"data": {
@@ -55,58 +166,63 @@ function interfacePage(pages) {
 						}
 					}))
 					toPage(pages.theme)
-				} else if (state.page === 'to-themes-btn') {
+
+				} else if (state.page === pages.toThemesBtn.dataset.page) {
 					toPage(pages.toThemesBtn)
 				}
 				loading.classList.remove('active')
 				break;
+
 			case 'select_theme':
 				updateTheme(msg.data.Questions)
-				const answerEl = document.querySelector('.lead-theme__answer')
+				const answerEl = document.querySelector('.lead-theme__answer span')
 				answerEl.textContent = msg.data.Answer
 				break;
+
 			case 'get_themes':
 				updateThemes(msg.data.Themes)
 				break;
+
 			case 'answer_question':
-				
-				trashQuestionsCountEl.textContent = msg.data.TrashCount
+				trashQuestionsCountEl.textContent = msg.data.TrashCount;
+				msg.data.TrashCount <= 0 ? trashQuestionsCountEl.parentElement.classList.add('disabled') : trashQuestionsCountEl.parentElement.classList.remove('disabled')
+
 				updateTheme(msg.data.Questions)
 				break;
 
 			case 'restart_game':
+				state.page = null
+				setState(state)
+
 				sessionStorage.setItem(msg.data, sessionStorage.getItem(store.id))
 				sessionStorage.removeItem(store.id)
+
 				URLparams.set('id', msg.data)
 				history.pushState(null, null, '?' + URLparams.toString());
 				location.reload()
 				break;
-			case 'question_trash':
-				if (msg.data) {
 
-					updateTheme([msg.data.Question])
-					document.querySelector('.lead-theme').classList.add('trash')
-				} else {
-					const questionTwoTourBtn = document.querySelector('.lead-themes__two-tour-btn')
-					questionTwoTourBtn.classList.remove('anim')
-					setTimeout(() => {
-						questionTwoTourBtn.classList.add('anim')
-					}, 10);
-				}
+			case 'question_trash':
+				if (msg.error) return;
+
+				updateTheme([msg.data.Question])
+				document.querySelector('.lead-theme').classList.add('trash')
+				toggleMenu(false)
 				break;
+
 			case 'to-tiles':
-				toPage(pages.themes)
-				state.page = 'themes'
-				setState(state)
+				toPage(pages.themes, state)
 				break;
+
 			case 'answer_question_trash':
 				trashQuestionsCountEl.textContent = --trashQuestionsCountEl.textContent
-				toPage(pages.toThemesBtn)
-				state.page = 'to-themes-btn'
-				setState(state)
+				if (+trashQuestionsCountEl.textContent <= 0) trashQuestionsCountEl.classList.add('disabled')
+
+				toPage(pages.toThemesBtn, state)
 				break;
 		}
 	}
+
 	function updateThemes(themes) {
 
 		const themesBox = document.querySelector('.lead-themes__list')
@@ -132,14 +248,12 @@ function interfacePage(pages) {
 		const headerQuestionImg = themeContainer.querySelector('.lead-theme__question-image img')
 
 		if (questions.findIndex(q => q.Status === 'solved') !== -1 || questions.findIndex(q => q.Status === '') == -1) {
-			const pointsCount = questions.findIndex(q => q.Status === 'solved').length
-			const solvedCount = questions.findIndex(q => q.Status === 'solved').length
-			const failedCount = questions.findIndex(q => q.Status === 'failed').length
-			updateThemeStatistic(1, solvedCount, failedCount, 1)
+			// const pointsCount = questions.findIndex(q => q.Status === 'solved').length
+			// const solvedCount = questions.findIndex(q => q.Status === 'solved').length
+			// const failedCount = questions.findIndex(q => q.Status === 'failed').length
+			// updateThemeStatistic(1, solvedCount, failedCount, 1)
 
-			toPage(pages.toThemesBtn)
-			state.page = 'to-themes-btn'
-			setState(state)
+			toPage(pages.toThemesBtn, state)
 			return
 		}
 
@@ -153,9 +267,9 @@ function interfacePage(pages) {
 		headerQuestion.textContent = question.question
 		headerQuestionImg.src = question.url_answer
 
-		toPage(pages.theme)
-		state.page = 'theme'
-		setState(state)
+		waitForImageLoad(headerQuestionImg).then(() => {
+			toPage(pages.theme, state)
+		})
 
 		function updateThemeStatistic(pointsCount, solvedCount, failedCount, twoTourCount) {
 			const pointsEl = document.querySelector('.to-themes-btn__points-count')
@@ -168,10 +282,26 @@ function interfacePage(pages) {
 			failedEl.textContent = failedCount
 			twoTourQuestionCountEl.textContent = twoTourCount
 		}
+
+		
+	}
+
+	function toggleMenu(state = null) {
+		if (state === null) {
+			[...menuButtons].map(b => b.classList.toggle('active'))
+			menuPanel.classList.toggle('active')
+		} else if (state === false) {
+			[...menuButtons].map(b => b.classList.remove('active'))
+			menuPanel.classList.remove('active')
+		} else if (state === true) {
+			[...menuButtons].map(b => b.classList.add('active'))
+			menuPanel.classList.add('active')
+		}
 	}
 
 	document.addEventListener('click', function (evt) {
 		const target = evt.target
+		console.log(target);
 
 		if (target.classList.contains('lead-themes-item')) {
 			state.theme = +target.dataset.themeId
@@ -184,101 +314,7 @@ function interfacePage(pages) {
 				}
 			}))
 
-			toPage(pages.theme)
-			state.page = 'theme'
-		} else if (target.classList.contains('lead-theme__deny-btn')) {
-			const themeSection = target.closest('section.lead-theme')
-			const questionId = +target.closest('.lead-theme__container').dataset.questionId
-
-			if (themeSection.classList.contains('trash')) {
-				ws.send(JSON.stringify({
-					"action": "answer_question_trash",
-					"data": {
-						"game": store.id,
-						"question": questionId,
-						Status: 'failed'
-					}
-				}))
-				themeSection.classList.remove('trash')
-			} else {
-				ws.send(JSON.stringify({
-					action: 'answer_question',
-					data: {
-						game: store.id,
-						status: 'failed',
-						id: questionId
-					}
-				}))
-			}
-
-
-			ws.send(JSON.stringify({
-				action: 'get_themes',
-				data: store.id
-			}))
-		} else if (target.classList.contains('lead-theme__apply-btn')) {
-			const themeSection = target.closest('section.lead-theme')
-			const questionId = +target.closest('.lead-theme__container').dataset.questionId
-
-			if (themeSection.classList.contains('trash')) {
-				ws.send(JSON.stringify({
-					"action": "answer_question_trash",
-					"data": {
-						"game": store.id,
-						"question": questionId,
-						Status: 'solved'
-					}
-				}))
-				themeSection.classList.remove('trash')
-			} else {
-				ws.send(JSON.stringify({
-					action: 'answer_question',
-					data: {
-						game: store.id,
-						status: 'solved',
-						id: questionId
-					}
-				}))
-			}
-
-			ws.send(JSON.stringify({
-				action: 'get_themes',
-				data: store.id
-			}))
-
-
-		} else if (target.classList.contains('lead-themes__two-tour-btn')) {
-			ws.send(JSON.stringify({
-				action: 'question_trash',
-				data: store.id
-			}))
-		} else if (target.classList.contains('lead-theme__to-tiles-btn')) {
-			ws.send(JSON.stringify({
-				action: 'to-tiles',
-				data: store.id
-			}))
-		} else if (target.classList.contains('exit-game-btn')) {
-			exitGame()
-		} else if (target.classList.contains('leave-and-delete-game-btn')) {
-			exitAndDeleteGame(store.id)
 		}
-	})
-
-	const deleteGameBtn = document.querySelector('.lead-themes__delte-btn')
-	deleteGameBtn.addEventListener('click', function () {
-		ws.send(JSON.stringify({
-			action: 'restart_game',
-			data: store.id
-		}))
-	})
-
-	const menuButtons = document.querySelectorAll('.menu-btn')
-	const menuPanel = document.querySelector('.lead-menu')
-	menuButtons.forEach(btn => {
-		btn.addEventListener('click', function () {
-			[...menuButtons].map(b => b.classList.toggle('active'))
-			menuPanel.classList.toggle('active')
-		})
 	})
 }
 
