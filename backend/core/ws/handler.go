@@ -254,9 +254,9 @@ func Connection() fiber.Handler {
 					return
 				}
 				if game := entity.GetGame(id_game); game != nil {
-					game.SendResponse(tools.SuccessRes("delete_game", "Игра удалена"))
 					entity.DeleteGame(id_game)
-					delete(connections, conn)
+					game.SendResponse(tools.SuccessRes("delete_game", "Игра удалена"))
+					game = nil
 				} else if err := connections[conn].Conn.WriteJSON(tools.BadRes("delete_game", fmt.Errorf("игра не найдена"))); err != nil {
 					return
 				}
