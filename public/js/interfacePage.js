@@ -11,7 +11,6 @@ function interfacePage(pages) {
 		role: URLparams.get('role'),
 	}
 
-	const trashQuestionsCountEl = document.querySelector('.lead-themes__two-tour-btn span')
 	const loading = document.querySelector('.loading')
 
 	const applyAnswerBtn = document.querySelector('.lead-theme__apply-btn')
@@ -27,7 +26,7 @@ function interfacePage(pages) {
 					Status: 'solved'
 				}
 			}))
-			pages.theme.classList.remove('trash')
+			// pages.theme.classList.remove('trash')
 		} else {
 			ws.send(JSON.stringify({
 				action: 'answer_question',
@@ -153,6 +152,10 @@ function interfacePage(pages) {
 
 		switch (msg.action) {
 			case 'connect':
+				if (msg.error !== null) {
+					toLoginPage()
+				}
+				updateTrashCount(msg.data.TrashCount)
 				updateThemes(msg.data.Themes)
 
 				if (state.page === null || state.page === pages.themes.dataset.page) {
@@ -184,9 +187,7 @@ function interfacePage(pages) {
 				break;
 
 			case 'answer_question':
-				trashQuestionsCountEl.textContent = msg.data.TrashCount;
-				msg.data.TrashCount <= 0 ? trashQuestionsCountEl.parentElement.classList.add('disabled') : trashQuestionsCountEl.parentElement.classList.remove('disabled')
-
+				updateTrashCount(msg.data.TrashCount)
 				updateTheme(msg.data.Questions)
 				break;
 
@@ -215,8 +216,9 @@ function interfacePage(pages) {
 				break;
 
 			case 'answer_question_trash':
-				trashQuestionsCountEl.textContent = --trashQuestionsCountEl.textContent
-				if (+trashQuestionsCountEl.textContent <= 0) trashQuestionsCountEl.classList.add('disabled')
+
+				updateTrashCount(-1)
+				updateThemeStatistic(msg.data.Questions)
 
 				toPage(pages.toThemesBtn, state)
 				break;
@@ -248,10 +250,7 @@ function interfacePage(pages) {
 		const headerQuestionImg = themeContainer.querySelector('.lead-theme__question-image img')
 
 		if (questions.findIndex(q => q.Status === 'solved') !== -1 || questions.findIndex(q => q.Status === '') == -1) {
-			// const pointsCount = questions.findIndex(q => q.Status === 'solved').length
-			// const solvedCount = questions.findIndex(q => q.Status === 'solved').length
-			// const failedCount = questions.findIndex(q => q.Status === 'failed').length
-			// updateThemeStatistic(1, solvedCount, failedCount, 1)
+			updateThemeStatistic(questions)
 
 			toPage(pages.toThemesBtn, state)
 			return
@@ -270,20 +269,44 @@ function interfacePage(pages) {
 		waitForImageLoad(headerQuestionImg).then(() => {
 			toPage(pages.theme, state)
 		})
+	}
 
-		function updateThemeStatistic(pointsCount, solvedCount, failedCount, twoTourCount) {
-			const pointsEl = document.querySelector('.to-themes-btn__points-count')
-			const solvedEl = document.querySelector('.to-themes-btn__true-answers-count')
-			const failedEl = document.querySelector('.to-themes-btn__false-answers-count')
-			const twoTourQuestionCountEl = document.querySelector('.to-themes-btn__two-tour-addit')
+	function updateThemeStatistic(questions) {
+		const pointsEl = document.querySelector('.to-themes-btn__points-count')
+		const solvedEl = document.querySelector('.to-themes-btn__true-answers-count')
+		const failedEl = document.querySelector('.to-themes-btn__false-answers-count')
+		const twoTourQuestionCountEl = document.querySelector('.to-themes-btn__two-tour-addit')
 
-			pointsEl.textContent = pointsCount
-			solvedEl.textContent = solvedCount
-			failedEl.textContent = failedCount
-			twoTourQuestionCountEl.textContent = twoTourCount
+		const pointsCount = questions.filter(q => q.Status === 'solved')[0]?.Costs ?? 0;
+		const solvedCount = questions.filter(q => q.Status === 'solved').length
+		const failedCount = questions.filter(q => q.Status === 'failed').length
+		const twoTourQuestionsCount = questions.filter(q => q.Status === '').length
+
+		const isTrash = pages.theme.classList.contains('trash')
+
+		pointsEl.textContent = pointsCount
+		solvedEl.textContent = solvedCount
+		failedEl.textContent = failedCount
+		twoTourQuestionCountEl.textContent = isTrash ? 0 : twoTourQuestionsCount
+
+		if (isTrash) {
+			pages.theme.classList.remove('trash')
 		}
+	}
 
+	function updateTrashCount(count) {
+		const trashQuestionsBtn = document.querySelector('.lead-themes__two-tour-btn')
+		const trashQuestionsCountEl = trashQuestionsBtn.querySelector('span')
 		
+
+		if (count === -1) {
+			trashQuestionsCountEl.textContent = --trashQuestionsCountEl.textContent
+			// if (+trashQuestionsCountEl.textContent <= 0) trashQuestionsCountEl.classList.add('disabled')
+		} else {
+			trashQuestionsCountEl.textContent = count;
+		}
+		+trashQuestionsCountEl.textContent === 0 ? trashQuestionsCountEl.parentElement.classList.add('disabled') : trashQuestionsCountEl.parentElement.classList.remove('disabled')
+
 	}
 
 	function toggleMenu(state = null) {
@@ -301,7 +324,7 @@ function interfacePage(pages) {
 
 	document.addEventListener('click', function (evt) {
 		const target = evt.target
-		console.log(target);
+		// console.log(target);
 
 		if (target.classList.contains('lead-themes-item')) {
 			state.theme = +target.dataset.themeId
