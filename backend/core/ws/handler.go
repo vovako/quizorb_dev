@@ -68,18 +68,18 @@ func Connection() fiber.Handler {
 				if err := json.Unmarshal(req.Data, &body); err != nil {
 					return
 				}
-				_, err := entity.CreateGame(body.Title, body.Pass)
-				if err != nil {
-					return
-				}
-				for _, v := range connections {
-					if v != nil && !v.InGame {
-						v.Conn.WriteJSON(tools.SuccessRes("games", entity.GetGames()))
+				if _, err := entity.CreateGame(body.Title, body.Pass); err != nil {
+					connections[conn].Conn.WriteJSON(tools.BadRes("game", err))
+				} else {
+					for _, v := range connections {
+						if v != nil && !v.InGame {
+							v.Conn.WriteJSON(tools.SuccessRes("games", entity.GetGames()))
+						}
 					}
-				}
-				er := connections[conn].Conn.WriteJSON(tools.SuccessRes("game", "Игра создана"))
-				if er != nil {
-					return
+					er := connections[conn].Conn.WriteJSON(tools.SuccessRes("game", "Игра создана"))
+					if er != nil {
+						return
+					}
 				}
 			case "connect":
 				var body dto.ConnectBody

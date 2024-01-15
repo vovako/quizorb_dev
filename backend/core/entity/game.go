@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 
@@ -47,6 +48,11 @@ func CreateGame(title, pass string) (*Game, error) {
 	key, err := uuid.NewUUID()
 	if err != nil {
 		return nil, err
+	}
+	for _, v := range gamesStore {
+		if v.Title == title {
+			return nil, errors.New("игра с таким именем уже существует")
+		}
 	}
 	gamesStore[key] = &Game{
 		ID:        key,
