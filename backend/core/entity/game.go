@@ -143,6 +143,7 @@ func (game *Game) GetTrashQuestion() (*Question, string) {
 func (game *Game) AnswerTrashQuestion(question uint, status string) error {
 	for i, v := range game.Trash {
 		if v.ID == question {
+			v.Status = status
 			game.Trash = append(game.Trash[:i], game.Trash[i+1:]...)
 			if err := game.SendResponse(tools.SuccessRes("answer_question_trash", struct{ Questions []Question }{Questions: []Question{v}})); err != nil {
 				return fmt.Errorf("ошибки при ответе на вопрос из корзины: %v", err)
