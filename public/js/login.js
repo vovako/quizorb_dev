@@ -34,13 +34,12 @@ function loginPage(pages) {
 
 		switch (msg.action) {
 			case 'games':
-				const games = msg.data
-				GAMES = games
+				GAMES = msg.data ?? []
 
-				if (games?.length > 0) {
+				if (GAMES?.length > 0) {
 					const gamesBoxEl = pages.login.querySelector('.login__games')
 					gamesBoxEl.innerHTML = ''
-					games.forEach(game => {
+					GAMES.forEach(game => {
 						gamesBoxEl.insertAdjacentHTML('beforeend', `
 						<button class="login-game" data-game-id="${game.id}">
 							<div class="login-game__title">${game.title}</div>
@@ -61,9 +60,8 @@ function loginPage(pages) {
 						</button>
 						`)
 					});
-
-					const titleInput = pages.login.querySelector('.create-game-popup [name="title"]')
-					titleInput.value = `Игра ${games.length + 1}`
+					updateDefaultNewGameName()
+					
 				}
 
 				toPage(pages.login)
@@ -72,6 +70,12 @@ function loginPage(pages) {
 				break
 
 			case 'game':
+				if (msg.error !== null) {
+					createNoticeEl.textContent = msg.error
+					return
+				}
+
+
 				if (msg.data === 'Игра создана') {
 					createGamePopup.classList.remove('active')
 
@@ -102,11 +106,16 @@ function loginPage(pages) {
 		}
 	}
 
+	function updateDefaultNewGameName() {
+		const titleInput = pages.login.querySelector('.create-game-popup [name="title"]')
+		titleInput.value = `Игра ${GAMES.length + 1}`
+	}
 
 
 	//добавление игры
 	const openPopupAddGameBtn = document.querySelector('.login__add-game-btn')
 	openPopupAddGameBtn.addEventListener('click', function () {
+		updateDefaultNewGameName()
 		createGamePopup.querySelector('input[name="password"]').value = ''
 		createNoticeEl.textContent = ''
 

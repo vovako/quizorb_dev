@@ -1,4 +1,4 @@
-import { toPage, ws, getState, hearbeat, waitForImageLoad } from "./functions.js"
+import { toPage, ws, getState, hearbeat, waitForImageLoad, toLoginPage } from "./functions.js"
 
 function viewPage(pages) {
 	const URLparams = new URLSearchParams(location.search)
@@ -36,6 +36,9 @@ function viewPage(pages) {
 
 		switch (msg.action) {
 			case 'connect':
+				if (msg.error !== null) {
+					toLoginPage()
+				}
 				updateThemes(msg.data.Themes)
 				toPage(pages.themes)
 				loading.classList.remove('active')
@@ -67,7 +70,7 @@ function viewPage(pages) {
 				break;
 			case 'question_trash':
 				if (Object.keys(msg.data).length < 1) break;
-
+				answerPopup.classList.remove('active')
 				updateTheme([msg.data.Question])
 				answerPopup.querySelector('.answer__text').textContent = msg.data.Answer
 				const answerImageEl = answerPopup.querySelector('.answer__image img')
@@ -78,6 +81,10 @@ function viewPage(pages) {
 				break;
 			case 'answer_question_trash':
 				updateTheme(msg.data.Questions)
+				break;
+
+			case 'delete_game':
+				toLoginPage()
 				break;
 		}
 	}
