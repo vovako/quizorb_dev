@@ -192,25 +192,17 @@ func Connection() fiber.Handler {
 					return
 				}
 				if game := entity.GetGame(id_game); game != nil {
+					lead := game.Lead
+					viewer := game.Viewer
+					entity.DeleteGame(id_game)
 					g, err := entity.CreateGame(game.Title, game.Pass)
 					if err != nil {
+						log.Println(err.Error())
 						return
 					}
-					g.Lead = game.Lead
-					g.Viewer = game.Viewer
-					var e, er error
-					if g.Lead != nil && g.Lead.Conn != nil {
-						e = g.Lead.Conn.WriteJSON(tools.SuccessRes("restart_game", g.ID))
-					}
-					if g.Viewer != nil && g.Viewer.Conn != nil {
-						er = g.Viewer.Conn.WriteJSON(tools.SuccessRes("restart_game", g.ID))
-					}
-					game.Lead = nil
-					game.Viewer = nil
-					entity.DeleteGame(id_game)
-					if er != nil || e != nil {
-						return
-					}
+					g.Lead = lead
+					g.Viewer = viewer
+					g.SendResponse(tools.SuccessRes("restart_game", g.ID))
 				} else if err := connections[conn].Conn.WriteJSON(tools.BadRes("delete_game", fmt.Errorf("игра не найдена"))); err != nil {
 					return
 				}
